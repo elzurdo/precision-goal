@@ -48,3 +48,55 @@ def plot_success_rates(success, failure, ci_fraction=CI_FRACTION,
 
     if ylabel is not None:
         plt.ylabel(ylabel)
+
+
+def _get_sequence_idx(sequence):
+    n_samples = len(sequence)
+    return np.arange(n_samples)+ 1
+
+def plot_sequence_experiment_cumsum_average(sequence, success_rate_true=None, xlabel="iteration", msize=5):
+    if success_rate_true:
+        theta_true_str = r"$\theta_{true}$"
+        title = f" {theta_true_str} = {success_rate_true:0.2f}"
+    else:
+        title = None
+    dsuccess_rate_plot = 0.07
+
+    sequence_idx = _get_sequence_idx(sequence)
+    sequence_average = sequence.cumsum() / sequence_idx
+
+    #errorbar = 1.96 * np.sqrt((sequence_average * (1. - sequence_average)) / sequence_idx )
+    #plt.errorbar(sequence_idx, sequence_average, yerr=errorbar, color="gray", alpha=0.05)
+    plt.scatter(sequence_idx[sequence == 1], sequence_average[sequence == 1], color = "green", alpha=0.7, s=msize)
+    plt.scatter(sequence_idx[sequence == 0], sequence_average[sequence == 0], color = "red", alpha=0.7, s=msize)
+    if success_rate_true:
+        plt.hlines(success_rate_true, sequence_idx[0], sequence_idx[-1], color="gray", linestyle='--', alpha=0.3)
+        plt.annotate(title, xy=(sequence_idx[-500], success_rate_true + 0.004), color="gray", alpha=0.4)
+
+        plt.ylim(success_rate_true - dsuccess_rate_plot, success_rate_true + dsuccess_rate_plot)
+
+    plt.xlabel(xlabel)
+    plt.ylabel("cumsum average")
+    if title:
+        plt.title(title)
+
+def plot_sequence_experiment_nhst_combo_results(sequence, success_rate_true, success_rate_null, p_values, p_value_thresh=0.05, xlabel="iteration", msize=5):
+
+    sequence_idx = _get_sequence_idx(sequence)
+
+    plt.subplot(2, 1, 1)
+    plot_sequence_experiment_cumsum_average(sequence, success_rate_true=success_rate_true,xlabel=xlabel, msize=msize)
+
+    plt.subplot(2, 1, 2)
+    plt.hlines(p_value_thresh, sequence_idx[0], sequence_idx[-1], color="gray", linestyle='--', alpha=0.3)
+    plt.scatter(sequence_idx[p_values >= p_value_thresh], p_values[p_values >= p_value_thresh], color = "gray", alpha=0.7, s=msize)
+    plt.scatter(sequence_idx[p_values < p_value_thresh], p_values[p_values < p_value_thresh], color = "blue", marker='x', s=msize * 10)
+    plt.xlabel(xlabel)
+    plt.annotate(f"decision criterion p-value={p_value_thresh:0.2f}", xy=(sequence_idx[-500], p_value_thresh + 0.02), color="gray", alpha=0.4)
+    theta_null_str = r"$\theta_{null}$"
+    title = f" {theta_null_str} = {success_rate_null:0.2f}"
+    plt.title(title)
+    plt.ylabel("p-value")
+    plt.ylim(-0.1, 0.5)
+
+    plt.tight_layout()

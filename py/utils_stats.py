@@ -1,5 +1,5 @@
 from scipy.optimize import fmin
-from scipy.stats import beta
+from scipy.stats import beta, binom_test # binom_test is binomtest (in later versions ...)
 import numpy as np
 
 CI_FRACTION = 0.95
@@ -54,3 +54,15 @@ def get_success_rates(d_success = 0.00001, min_range=0., max_range=1., including
     success_rates = np.arange(min_range, max_range_, d_success)
 
     return d_success, success_rates
+
+
+def sequence_to_sequential_pvalues(sequence, success_rate_null=0.5):
+    p_values = []
+    
+    for idx, successes in enumerate(sequence.cumsum()):
+        p_value = binom_test(successes, n=idx + 1, p=success_rate_null, alternative='two-sided') # alternative {‘two-sided’, ‘greater’, ‘less’},
+        p_values.append(p_value)
+    
+    p_values = np.array(p_values)
+    
+    return p_values
