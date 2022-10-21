@@ -100,3 +100,35 @@ def plot_sequence_experiment_nhst_combo_results(sequence, success_rate_true, suc
     plt.ylim(-0.1, 0.5)
 
     plt.tight_layout()
+
+
+def plot_sequence_experiment_hdi_rope_combo_results(sequence, success_rate_true, success_rate_null, ci_mins, ci_maxs, within_rope, rope_min, rope_max, xlabel="iteration", msize=5):
+
+    sequence_idx = _get_sequence_idx(sequence)
+
+    plt.subplot(2, 1, 1)
+    plot_sequence_experiment_cumsum_average(sequence, success_rate_true=success_rate_true,xlabel=xlabel, msize=msize)
+
+    plt.subplot(2, 1, 2)
+    sequence_average = sequence.cumsum() / sequence_idx
+    lower_uncertainty = sequence_average - ci_mins
+    upper_uncertainty = ci_maxs - sequence_average
+
+    plt.errorbar(sequence_idx[within_rope], sequence_average[within_rope], yerr=(upper_uncertainty[within_rope], lower_uncertainty[within_rope]), color="green", alpha=0.3)
+    reject_higher = ci_mins > rope_max
+    plt.errorbar(sequence_idx[reject_higher], sequence_average[reject_higher], yerr=(upper_uncertainty[reject_higher], lower_uncertainty[reject_higher]), color="red", alpha=0.3)
+    reject_lower = ci_maxs < rope_min
+    plt.errorbar(sequence_idx[reject_lower], sequence_average[reject_lower], yerr=(upper_uncertainty[reject_lower], lower_uncertainty[reject_lower]), color="orange", alpha=0.3)
+    inconclusive = ~(within_rope + reject_higher + reject_lower)
+    plt.errorbar(sequence_idx[inconclusive], sequence_average[inconclusive], yerr=(upper_uncertainty[inconclusive], lower_uncertainty[inconclusive]), color="gray", alpha=0.3)
+
+    plt.hlines(rope_min, sequence_idx[0], sequence_idx[-1], color="black", linestyle='--', alpha=0.5)
+    plt.hlines(rope_max, sequence_idx[0], sequence_idx[-1], color="black", linestyle='--', alpha=0.5)
+    plt.annotate(f"rope min={rope_min:0.2f}", xy=(sequence_idx[-500], rope_min - 0.04), color="gray", alpha=0.4)
+    plt.annotate(f"rope max={rope_max:0.2f}", xy=(sequence_idx[-500], rope_max + 0.02), color="gray", alpha=0.4)
+    plt.ylabel("cumsum average\nHDI 95% CI")
+    plt.ylim(success_rate_true - 0.3, success_rate_true + 0.3)
+    theta_null_str = r"$\theta_{null}$"
+    title = f" {theta_null_str} = {success_rate_null:0.2f}"
+    plt.title(title)
+    plt.tight_layout()

@@ -78,6 +78,67 @@ plot_sequence_experiment_nhst_combo_results(sequence,
 
 # -
 
+# ## HDI + ROPE
+
+from utils_stats import successes_failures_to_hdi_ci_limits
+from utils_viz import plot_sequence_experiment_hdi_rope_combo_results
+
+
+def sequence_to_hdi_within_rope(sequence, rope_min, rope_max):
+    within_rope = []
+    ci_mins = []
+    ci_maxs = []
+    
+    for idx, successes in enumerate(sequence.cumsum()):
+        failures = (idx + 1) - successes
+        
+        if not successes:
+            successes += 0.01
+            
+        if not failures:
+            failures += 0.01
+        
+        ci_min, ci_max = successes_failures_to_hdi_ci_limits(successes, failures)
+        this_within_rope = (ci_min >= rope_min) & (ci_max <= rope_max)
+        #this_within_rope, ci_min, ci_max = successes_failures_to_hdi_within_rope(successes, failures, rope_min, rope_max)
+        #print(idx, successes, failures, ci_min, ci_max)
+        within_rope.append(this_within_rope)
+        ci_mins.append(ci_min)
+        ci_maxs.append(ci_max)
+    
+    within_rope = np.array(within_rope)
+    ci_mins = np.array(ci_mins)
+    ci_maxs = np.array(ci_maxs)
+    
+    return within_rope, ci_mins, ci_maxs
+
+
+# +
+#success_rate_null = 0.5
+#success_rate = 0.55
+rope_width = 0.1 #success_rate * 0.1
+# --------
+
+rope_min = success_rate_null - rope_width / 2
+rope_max = success_rate_null + rope_width / 2
+# -
+
+within_rope, ci_mins, ci_maxs = sequence_to_hdi_within_rope(sequence, rope_min, rope_max)
+hdi_widths = ci_maxs - ci_mins
+
+plot_sequence_experiment_hdi_rope_combo_results(sequence, success_rate, success_rate_null, ci_mins, ci_maxs, within_rope, rope_min, rope_max, xlabel="iteration", msize=5)
+
+# +
+plt.plot(sequence_idx, ci_maxs - ci_mins, color="purple")
+plt.ylabel("HDI 95% CI width")
+#plt.xlabel(xlabel)
+#plt.xscale('log')
+
+plt.tight_layout()
+# -
+
+
+
 # # Many Sequence Experiements
 
 # ## NHST
