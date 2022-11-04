@@ -64,12 +64,14 @@ len(sequence)
 # > *For every new flip of the coin, stop and reject the null hypothesis, that θ=0.50, if p < .05 (two-tailed, conditionalizing on the current N), otherwise flip again.*
 
 # +
-success_rate_null=0.5
+success_rate_null = 0.5
 p_values = sequence_to_sequential_pvalues(sequence, success_rate_null=success_rate_null)
 
 len(p_values)
 
 # +
+plt.figure(figsize=(FIG_WIDTH, FIG_HEIGHT))
+
 plot_sequence_experiment_nhst_combo_results(sequence, 
                                             success_rate, success_rate_null, p_values, 
                                             p_value_thresh=0.05, 
@@ -126,20 +128,25 @@ rope_max = success_rate_null + rope_width / 2
 within_rope, ci_mins, ci_maxs = sequence_to_hdi_within_rope(sequence, rope_min, rope_max)
 hdi_widths = ci_maxs - ci_mins
 
+# +
+plt.figure(figsize=(FIG_WIDTH, FIG_HEIGHT))
+
 plot_sequence_experiment_hdi_rope_combo_results(sequence, success_rate, success_rate_null, ci_mins, ci_maxs, within_rope, rope_min, rope_max, xlabel="iteration", msize=5)
 
 # +
-plt.plot(sequence_idx, ci_maxs - ci_mins, color="purple")
+from utils_viz import _get_sequence_idx
+
+plt.plot(_get_sequence_idx(sequence), ci_maxs - ci_mins, color="purple")
 plt.ylabel("HDI 95% CI width")
 #plt.xlabel(xlabel)
 #plt.xscale('log')
 
 plt.tight_layout()
 # -
+# # Many Sequence Experiments
 
-
-
-# # Many Sequence Experiements
+from utils_stats import stop_decision_multiple_experiments
+from utils_viz import plot_decision_rates_nhst
 
 # ## NHST
 
@@ -157,11 +164,7 @@ success_rate = 0.65
 success_rate_null = 0.5
 
 alternative = 'two-sided' # 'greater'
-p_value_thresh = 0.05
-# -
-
-
-
+p_value_thresh = 0.05 # alpha
 # +
 samples = generate_biomial_sequence(success_rate=success_rate,
                                      n_samples=n_samples,
@@ -172,43 +175,14 @@ samples = generate_biomial_sequence(success_rate=success_rate,
 samples.shape
 
 # +
-from scipy.stats import binom_test
+nhst_details = {'success_rate_null': success_rate_null,'p_value_thresh': p_value_thresh, 'alternative': alternative}
 
-experiement_stop_results = {'successes': [], 'trials': [], 'p_value': []}
-iteration_stopping_on_or_prior = {iteration: 0 for iteration in range(1, n_samples + 1)}
 
-for sample in samples:
-    successes = 0
-    this_iteration = 0
-    for toss in sample:
-        successes += toss
-        this_iteration += 1
-        
-        p_value = binom_test(successes, n=this_iteration, p=success_rate_null, alternative=alternative)
-        
-        if p_value < p_value_thresh:
-            for iteration in range(this_iteration, n_samples+1):
-                iteration_stopping_on_or_prior[iteration] += 1
-                
-            break
-    experiement_stop_results['successes'].append(successes)
-    experiement_stop_results['trials'].append(this_iteration)
-    experiement_stop_results['p_value'].append(p_value)
+nhst_experiment_stop_results, nhst_iteration_stopping_on_or_prior = \
+stop_decision_multiple_experiments(samples, nhst_details=nhst_details)
+# -
 
-# +
-msize = 5
-xlabel = "bah"
-title = "df"
-
-sr_iteration_stopping_on_or_prior = pd.Series(iteration_stopping_on_or_prior)
-sr_nhst_reject = sr_iteration_stopping_on_or_prior / experiments
-
-plt.scatter(sr_nhst_reject.index, sr_nhst_reject + 0.01, alpha=0.7, s=msize, color="purple")
-plt.scatter(sr_nhst_reject.index, 1. - sr_nhst_reject, alpha=0.7, s=msize, color="gray")
-
-plt.xscale('log')
-plt.xlabel(xlabel)
-plt.title(title)
+plot_decision_rates_nhst(experiments, nhst_iteration_stopping_on_or_prior)
 
 # +
 df_stop_results = pd.DataFrame(experiement_stop_results)

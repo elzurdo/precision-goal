@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import pandas as pd
 import numpy as np
 
 from utils_stats import (CI_FRACTION,
@@ -7,6 +8,8 @@ from utils_stats import (CI_FRACTION,
                          beta,
                          test_value
                          )
+
+theta_null_str = r"$\theta_{null}$"
 
 def plot_success_rates(success, failure, ci_fraction=CI_FRACTION,
                        min_psuccess=0.85, max_psucess=1.,d_psuccess=0.0001,
@@ -54,7 +57,7 @@ def _get_sequence_idx(sequence):
     n_samples = len(sequence)
     return np.arange(n_samples)+ 1
 
-def plot_sequence_experiment_cumsum_average(sequence, success_rate_true=None, xlabel="iteration", msize=5):
+def plot_sequence_experiment_cumsum_average(sequence, success_rate_true=None, xlabel="test no.", msize=5):
     if success_rate_true:
         theta_true_str = r"$\theta_{true}$"
         title = f" {theta_true_str} = {success_rate_true:0.2f}"
@@ -71,7 +74,7 @@ def plot_sequence_experiment_cumsum_average(sequence, success_rate_true=None, xl
     plt.scatter(sequence_idx[sequence == 0], sequence_average[sequence == 0], color = "red", alpha=0.7, s=msize)
     if success_rate_true:
         plt.hlines(success_rate_true, sequence_idx[0], sequence_idx[-1], color="gray", linestyle='--', alpha=0.3)
-        plt.annotate(title, xy=(sequence_idx[-500], success_rate_true + 0.004), color="gray", alpha=0.4)
+        plt.annotate(title, xy=(sequence_idx[-500], success_rate_true + 0.004), color="black", alpha=0.7)
 
         plt.ylim(success_rate_true - dsuccess_rate_plot, success_rate_true + dsuccess_rate_plot)
 
@@ -80,7 +83,7 @@ def plot_sequence_experiment_cumsum_average(sequence, success_rate_true=None, xl
     if title:
         plt.title(title)
 
-def plot_sequence_experiment_nhst_combo_results(sequence, success_rate_true, success_rate_null, p_values, p_value_thresh=0.05, xlabel="iteration", msize=5):
+def plot_sequence_experiment_nhst_combo_results(sequence, success_rate_true, success_rate_null, p_values, p_value_thresh=0.05, xlabel="test no.", msize=5):
 
     sequence_idx = _get_sequence_idx(sequence)
 
@@ -88,12 +91,28 @@ def plot_sequence_experiment_nhst_combo_results(sequence, success_rate_true, suc
     plot_sequence_experiment_cumsum_average(sequence, success_rate_true=success_rate_true,xlabel=xlabel, msize=msize)
 
     plt.subplot(2, 1, 2)
+    
+    
     plt.hlines(p_value_thresh, sequence_idx[0], sequence_idx[-1], color="gray", linestyle='--', alpha=0.3)
     plt.scatter(sequence_idx[p_values >= p_value_thresh], p_values[p_values >= p_value_thresh], color = "gray", alpha=0.7, s=msize)
     plt.scatter(sequence_idx[p_values < p_value_thresh], p_values[p_values < p_value_thresh], color = "blue", marker='x', s=msize * 10)
     plt.xlabel(xlabel)
-    plt.annotate(f"decision criterion p-value={p_value_thresh:0.2f}", xy=(sequence_idx[-500], p_value_thresh + 0.02), color="gray", alpha=0.4)
-    theta_null_str = r"$\theta_{null}$"
+    plt.annotate(f"decision criterion p-value={p_value_thresh:0.2f}", xy=(sequence_idx[-500], p_value_thresh + 0.02), color="black", alpha=0.7)
+    
+    idx_reject = sequence_idx[p_values < p_value_thresh][0] # zurda
+    print(sequence_idx[p_values < p_value_thresh])
+    sequence_average = sequence.cumsum() / sequence_idx
+    value_reject = sequence_average[p_values < p_value_thresh][0]
+
+    idx_decision = idx_reject
+    value_decision = value_reject
+
+    plt.annotate(f'decision: reject at {idx_decision}', xy=(idx_decision, p_value_thresh),  xycoords='data', color='black',
+            xytext=(0.5, 0.1), textcoords='axes fraction',
+            arrowprops=dict(facecolor='green', shrink=0.05),
+            horizontalalignment='right', verticalalignment='top', alpha=0.7
+            )
+    
     title = f" {theta_null_str} = {success_rate_null:0.2f}"
     plt.title(title)
     plt.ylabel("p-value")
@@ -102,7 +121,7 @@ def plot_sequence_experiment_nhst_combo_results(sequence, success_rate_true, suc
     plt.tight_layout()
 
 
-def plot_sequence_experiment_hdi_rope_combo_results(sequence, success_rate_true, success_rate_null, ci_mins, ci_maxs, within_rope, rope_min, rope_max, xlabel="iteration", msize=5):
+def plot_sequence_experiment_hdi_rope_combo_results(sequence, success_rate_true, success_rate_null, ci_mins, ci_maxs, within_rope, rope_min, rope_max, xlabel="test no.", msize=5):
 
     sequence_idx = _get_sequence_idx(sequence)
 
@@ -114,7 +133,17 @@ def plot_sequence_experiment_hdi_rope_combo_results(sequence, success_rate_true,
     lower_uncertainty = sequence_average - ci_mins
     upper_uncertainty = ci_maxs - sequence_average
 
+    idx_accept = sequence_idx[within_rope][0]
+    value_accept = sequence_average[within_rope][0]
+    # TODO: compare to reject_higher, reject_lower to see which is the first decision in sequence
+    idx_decision = idx_accept
     plt.errorbar(sequence_idx[within_rope], sequence_average[within_rope], yerr=(upper_uncertainty[within_rope], lower_uncertainty[within_rope]), color="green", alpha=0.3)
+    plt.annotate(f'decision: accept at {idx_decision}', xy=(idx_decision, value_accept),  xycoords='data', color='black',
+            xytext=(0.8, 0.95), textcoords='axes fraction',
+            arrowprops=dict(facecolor='green', shrink=0.05),
+            horizontalalignment='right', verticalalignment='top', alpha=0.7
+            )
+    
     reject_higher = ci_mins > rope_max
     plt.errorbar(sequence_idx[reject_higher], sequence_average[reject_higher], yerr=(upper_uncertainty[reject_higher], lower_uncertainty[reject_higher]), color="red", alpha=0.3)
     reject_lower = ci_maxs < rope_min
@@ -124,11 +153,31 @@ def plot_sequence_experiment_hdi_rope_combo_results(sequence, success_rate_true,
 
     plt.hlines(rope_min, sequence_idx[0], sequence_idx[-1], color="black", linestyle='--', alpha=0.5)
     plt.hlines(rope_max, sequence_idx[0], sequence_idx[-1], color="black", linestyle='--', alpha=0.5)
-    plt.annotate(f"rope min={rope_min:0.2f}", xy=(sequence_idx[-500], rope_min - 0.04), color="gray", alpha=0.4)
-    plt.annotate(f"rope max={rope_max:0.2f}", xy=(sequence_idx[-500], rope_max + 0.02), color="gray", alpha=0.4)
+    plt.annotate(f"rope min={rope_min:0.2f}", xy=(sequence_idx[-500], rope_min - 0.04), color="black", alpha=0.7)
+    plt.annotate(f"rope max={rope_max:0.2f}", xy=(sequence_idx[-500], rope_max + 0.02), color="black", alpha=0.7)
     plt.ylabel("cumsum average\nHDI 95% CI")
     plt.ylim(success_rate_true - 0.3, success_rate_true + 0.3)
     theta_null_str = r"$\theta_{null}$"
     title = f" {theta_null_str} = {success_rate_null:0.2f}"
     plt.title(title)
     plt.tight_layout()
+
+
+def plot_decision_rates_nhst(n_experiments, iteration_stopping_on_or_prior):
+    msize = 5
+    xlabel = "test no."
+    ylabel = f"decision rate at {xlabel} (or lower)"
+    title = f"{n_experiments:,} experiments"
+    theta_null_str = r"$\theta_{null}$"
+
+    sr_iteration_stopping_on_or_prior = pd.Series(iteration_stopping_on_or_prior)
+    sr_nhst_reject = sr_iteration_stopping_on_or_prior / n_experiments
+
+    plt.plot(sr_nhst_reject.index, sr_nhst_reject + 0.01, alpha=0.7, color="red", linewidth=3, label=f"reject {theta_null_str}")
+    plt.plot(sr_nhst_reject.index, 1. - sr_nhst_reject, alpha=0.7, color="gray", linewidth=3, linestyle='--', label="not reject / inconclusive")
+
+    plt.legend()
+    plt.xscale('log')
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.title(title)

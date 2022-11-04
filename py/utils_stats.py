@@ -66,3 +66,32 @@ def sequence_to_sequential_pvalues(sequence, success_rate_null=0.5):
     p_values = np.array(p_values)
     
     return p_values
+
+
+def stop_decision_multiple_experiments(samples, nhst_details=None):
+    n_samples = samples.shape[1]
+
+    experiment_stop_results = {'successes': [], 'trials': [], 'p_value': []}
+    iteration_stopping_on_or_prior = {iteration: 0 for iteration in range(1, n_samples + 1)}
+
+    for sample in samples:
+        successes = 0
+        this_iteration = 0
+        for toss in sample:
+            successes += toss
+            this_iteration += 1
+            
+            if nhst_details is not None:
+                p_value = binom_test(successes, n=this_iteration, p=nhst_details['success_rate_null'], alternative=nhst_details['alternative'])
+            
+            if p_value < nhst_details['p_value_thresh']:
+                for iteration in range(this_iteration, n_samples+1):
+                    iteration_stopping_on_or_prior[iteration] += 1
+                    
+                break
+        experiment_stop_results['successes'].append(successes)
+        experiment_stop_results['trials'].append(this_iteration)
+        if nhst_details is not None:
+            experiment_stop_results['p_value'].append(p_value)
+
+    return experiment_stop_results, iteration_stopping_on_or_prior
