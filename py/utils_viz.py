@@ -181,3 +181,24 @@ def plot_decision_rates_nhst(n_experiments, iteration_stopping_on_or_prior):
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.title(title)
+
+
+def plot_decision_rates(n_experiments, df_decision_counts):
+    linewidth = 3
+    xlabel = "test no."
+    ylabel = f"decision rate at {xlabel} (or lower)"
+    title = f"{n_experiments:,} experiments"
+    theta_null_str = r"$\theta_{null}$"
+
+    plt.plot(df_decision_counts.index, df_decision_counts['accept'] / n_experiments, color="green", label=f"accept {theta_null_str}", linewidth=linewidth, linestyle='-.')
+    plt.plot(df_decision_counts.index, df_decision_counts['reject'] / n_experiments, color="red", label=f"reject {theta_null_str}", linewidth=linewidth)
+    plt.plot(df_decision_counts.index, df_decision_counts['inconclusive'] / n_experiments, color="gray", label="inconclusive", linewidth=linewidth, linestyle='--')
+
+    plt.legend()
+    plt.xscale('log')
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.title(title)
+
+
+    

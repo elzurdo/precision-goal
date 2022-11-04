@@ -228,5 +228,23 @@ df_plot = df_stop_results.copy()
 
 df_plot['p_value'].hist(bins=20)
 # -
+# ## HDI + ROPE
 
 
+from utils_stats import stop_decision_multiple_experiments_bayesian
+from utils_viz import plot_decision_rates
+
+# +
+bayes_details = {}
+bayes_details['rope_min'] = rope_min
+bayes_details['rope_max'] = rope_max
+
+hidrope_experiment_stop_results, df_decision_counts_hdirope = \
+stop_decision_multiple_experiments_bayesian(samples, bayes_details=bayes_details)
+
+
+print(df_decision_counts_hdirope.shape)
+df_decision_counts_hdirope.head(4)
+# -
+
+plot_decision_rates(experiments, df_decision_counts_hdirope.rename(columns={'within':'accept'}))

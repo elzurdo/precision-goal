@@ -1,6 +1,7 @@
 from scipy.optimize import fmin
 from scipy.stats import beta, binom_test # binom_test is binomtest (in later versions ...)
 import numpy as np
+import pandas as pd
 
 CI_FRACTION = 0.95
 MIN_COUNTS = 1.
@@ -95,3 +96,64 @@ def stop_decision_multiple_experiments(samples, nhst_details=None):
             experiment_stop_results['p_value'].append(p_value)
 
     return experiment_stop_results, iteration_stopping_on_or_prior
+
+
+def stop_decision_multiple_experiments_bayesian(samples, bayes_details=None):
+
+    n_experiments = samples.shape[0]
+    n_samples = samples.shape[1]
+
+    experiment_stop_results = {'successes': [], 'trials': [], 'within_rope': [], 'ci_min': [], 'ci_max': []}
+    iteration_stopping_on_or_prior_within = {iteration: 0 for iteration in range(1, n_samples + 1)}
+    iteration_stopping_on_or_prior_below = iteration_stopping_on_or_prior_within.copy()
+    iteration_stopping_on_or_prior_above = iteration_stopping_on_or_prior_within.copy()
+
+
+    for sample in samples:
+        successes = 0
+        this_iteration = 0
+        for toss in sample:
+            successes += toss
+            this_iteration += 1
+            
+            failures = this_iteration - successes
+        
+            if this_iteration > 5: # cannot rely on below 5
+                ci_min, ci_max = successes_failures_to_hdi_ci_limits(successes, failures)
+                this_within_rope = (ci_min >= bayes_details['rope_min']) & (ci_max <= bayes_details['rope_max'])
+
+                if this_within_rope:
+                    for iteration in range(this_iteration, n_samples+1):
+                        iteration_stopping_on_or_prior_within[iteration] += 1
+                    break
+
+                if (ci_max < bayes_details['rope_min']): 
+                    for iteration in range(this_iteration, n_samples+1):
+                        iteration_stopping_on_or_prior_below[iteration] += 1
+                    break
+
+                if (ci_min > bayes_details['rope_max']):
+                    for iteration in range(this_iteration, n_samples+1):
+                        iteration_stopping_on_or_prior_above[iteration] += 1
+                    break
+                
+                
+        experiment_stop_results['successes'].append(successes)
+        experiment_stop_results['trials'].append(this_iteration)
+        experiment_stop_results['within_rope'].append(this_within_rope)
+        experiment_stop_results['ci_min'].append(ci_min)
+        experiment_stop_results['ci_max'].append(ci_max)
+
+    
+    df_decision_counts = pd.DataFrame({'within': iteration_stopping_on_or_prior_within,
+               'below': iteration_stopping_on_or_prior_below, 
+              'above': iteration_stopping_on_or_prior_above,
+              })
+
+    df_decision_counts.index.name = "iteration_number"
+    df_decision_counts['reject'] = df_decision_counts['above'] + df_decision_counts['below']
+    df_decision_counts['inconclusive'] = n_experiments - df_decision_counts['within'] - df_decision_counts['reject']
+    
+    return experiment_stop_results, df_decision_counts
+
+
