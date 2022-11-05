@@ -163,7 +163,7 @@ def plot_sequence_experiment_hdi_rope_combo_results(sequence, success_rate_true,
     plt.tight_layout()
 
 
-def plot_sequence_experiment_pitg_combo_results(sequence, setup, results, xlabel="test no.", msize=5):
+def plot_sequence_experiment_pitg_combo_results(sequence, setup, results, xlabel="test no.", msize=5, conservative=False):
 
     sequence_idx = _get_sequence_idx(sequence)
 
@@ -188,15 +188,26 @@ def plot_sequence_experiment_pitg_combo_results(sequence, setup, results, xlabel
     inconclusive = goal & results['inconclusive_hdi_plus_rope'] 
     plt.errorbar(sequence_idx[inconclusive], sequence_average[inconclusive], yerr=(upper_uncertainty[inconclusive], lower_uncertainty[inconclusive]), color="black", alpha=0.3)
 
-    idx_accept = sequence_idx[accept][0]
-    value_accept = sequence_average[accept][0]
+    idx_goal = sequence_idx[goal][0]
+    value_goal= sequence_average[goal][0]
     # TODO: compare to reject_higher, reject_lower to see which is the first decision in sequence
-    idx_decision = idx_accept
-    plt.annotate(f'decision: accept at {idx_decision}', xy=(idx_decision, value_accept),  xycoords='data', color='black',
+    idx_decision = idx_goal
+    plt.annotate(f'decision: accept at {idx_decision}', xy=(idx_decision, value_goal),  xycoords='data', color='purple',
             xytext=(0.8, 0.95), textcoords='axes fraction',
-            arrowprops=dict(facecolor='green', shrink=0.05),
+            arrowprops=dict(facecolor='purple', shrink=0.05),
             horizontalalignment='right', verticalalignment='top', alpha=0.7
-            )
+            )    
+    
+    if conservative:
+        idx_accept = sequence_idx[accept][0]
+        value_accept = sequence_average[accept][0]
+        # TODO: compare to reject_higher, reject_lower to see which is the first decision in sequence
+        idx_decision = idx_accept
+        plt.annotate(f'conservative decision: accept at {idx_decision}', xy=(idx_decision, value_accept),  xycoords='data', color='green',
+                xytext=(0.8, 0.2), textcoords='axes fraction',
+                arrowprops=dict(facecolor='green', shrink=0.05),
+                horizontalalignment='right', verticalalignment='top', alpha=0.7
+                )
 
     plt.hlines(setup['rope_min'], sequence_idx[0], sequence_idx[-1], color="black", linestyle='--', alpha=0.5)
     plt.hlines(setup['rope_max'], sequence_idx[0], sequence_idx[-1], color="black", linestyle='--', alpha=0.5)

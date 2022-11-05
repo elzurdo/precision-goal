@@ -86,6 +86,33 @@ from utils_stats import successes_failures_to_hdi_ci_limits
 from utils_viz import plot_sequence_experiment_hdi_rope_combo_results
 
 
+def sequence_to_ci_details(sequence):
+    ci_mins = []
+    ci_maxs = []
+    
+    for idx, successes in enumerate(sequence.cumsum()):
+        failures = (idx + 1) - successes
+        
+        if not failures:
+            failures += 1
+            successes += 1
+        if not successes:
+            failures += 1
+            successes += 1
+             
+        ci_min, ci_max = successes_failures_to_hdi_ci_limits(successes, failures)
+        # print(successes, failures, ci_min, ci_max)
+
+        ci_mins.append(ci_min)
+        ci_maxs.append(ci_max)
+    
+    ci_mins = np.array(ci_mins)
+    ci_maxs = np.array(ci_maxs)
+    
+    return ci_mins, ci_maxs
+
+
+"""
 def sequence_to_hdi_within_rope(sequence, rope_min, rope_max):
     within_rope = []
     ci_mins = []
@@ -113,7 +140,8 @@ def sequence_to_hdi_within_rope(sequence, rope_min, rope_max):
     ci_maxs = np.array(ci_maxs)
     
     return within_rope, ci_mins, ci_maxs
-
+"""
+None
 
 # +
 #success_rate_null = 0.5
@@ -147,31 +175,6 @@ plt.tight_layout()
 
 from utils_viz import plot_sequence_experiment_pitg_combo_results
 
-
-def sequence_to_ci_details(sequence):
-    ci_mins = []
-    ci_maxs = []
-    
-    for idx, successes in enumerate(sequence.cumsum()):
-        failures = (idx + 1) - successes
-        
-        if not failures:
-            failures += 1
-            successes += 1
-        if not successes:
-            failures += 1
-            successes += 1
-             
-        ci_min, ci_max = successes_failures_to_hdi_ci_limits(successes, failures)
-        # print(successes, failures, ci_min, ci_max)
-
-        ci_mins.append(ci_min)
-        ci_maxs.append(ci_max)
-    
-    ci_mins = np.array(ci_mins)
-    ci_maxs = np.array(ci_maxs)
-    
-    return ci_mins, ci_maxs
 
 
 # +
@@ -216,7 +219,7 @@ results_pitg = {
 
 plt.figure(figsize=(FIG_WIDTH, FIG_HEIGHT))
 
-plot_sequence_experiment_pitg_combo_results(sequence, setup_pitg, results_pitg, xlabel="test no.", msize=5)
+plot_sequence_experiment_pitg_combo_results(sequence, setup_pitg, results_pitg, xlabel="test no.", msize=5, conservative=True)
 
 # -
 
