@@ -163,6 +163,52 @@ def plot_sequence_experiment_hdi_rope_combo_results(sequence, success_rate_true,
     plt.tight_layout()
 
 
+def plot_sequence_experiment_pitg_combo_results(sequence, setup, results, xlabel="test no.", msize=5):
+
+    sequence_idx = _get_sequence_idx(sequence)
+
+    plt.subplot(2, 1, 1)
+    plot_sequence_experiment_cumsum_average(sequence, success_rate_true=setup['success_rate'],xlabel=xlabel, msize=msize)
+
+    plt.subplot(2, 1, 2)
+    sequence_average = sequence.cumsum() / sequence_idx
+    lower_uncertainty = sequence_average - results['ci_mins']
+    upper_uncertainty = results['ci_maxs'] - sequence_average
+
+    goal = results['precision_goal_achieved']
+    #plt.errorbar(sequence_idx[goal], sequence_average[goal], yerr=(upper_uncertainty[goal], lower_uncertainty[goal]), color="purple", alpha=0.05)
+    plt.errorbar(sequence_idx[~goal], sequence_average[~goal], yerr=(upper_uncertainty[~goal], lower_uncertainty[~goal]), color="gray", alpha=0.3)
+
+    accept = goal & results['accept_within']
+    plt.errorbar(sequence_idx[accept], sequence_average[accept], yerr=(upper_uncertainty[accept], lower_uncertainty[accept]), color="green", alpha=0.3)
+
+    reject = goal & results['reject_outside'] 
+    plt.errorbar(sequence_idx[reject], sequence_average[reject], yerr=(upper_uncertainty[reject], lower_uncertainty[reject]), color="red", alpha=0.3)
+
+    inconclusive = goal & results['inconclusive_hdi_plus_rope'] 
+    plt.errorbar(sequence_idx[inconclusive], sequence_average[inconclusive], yerr=(upper_uncertainty[inconclusive], lower_uncertainty[inconclusive]), color="black", alpha=0.3)
+
+    idx_accept = sequence_idx[accept][0]
+    value_accept = sequence_average[accept][0]
+    # TODO: compare to reject_higher, reject_lower to see which is the first decision in sequence
+    idx_decision = idx_accept
+    plt.annotate(f'decision: accept at {idx_decision}', xy=(idx_decision, value_accept),  xycoords='data', color='black',
+            xytext=(0.8, 0.95), textcoords='axes fraction',
+            arrowprops=dict(facecolor='green', shrink=0.05),
+            horizontalalignment='right', verticalalignment='top', alpha=0.7
+            )
+
+    plt.hlines(setup['rope_min'], sequence_idx[0], sequence_idx[-1], color="black", linestyle='--', alpha=0.5)
+    plt.hlines(setup['rope_max'], sequence_idx[0], sequence_idx[-1], color="black", linestyle='--', alpha=0.5)
+    plt.annotate(f"rope min={setup['rope_min']:0.2f}", xy=(sequence_idx[-500], setup['rope_min'] - 0.04), color="black", alpha=0.7)
+    plt.annotate(f"rope max={setup['rope_max']:0.2f}", xy=(sequence_idx[-500], setup['rope_max'] + 0.02), color="black", alpha=0.7)
+    plt.ylabel("cumulative sum\nHDI 95% CI")
+    plt.ylim(setup['success_rate'] - 0.3, setup['success_rate'] + 0.3)
+    title = f" {theta_null_str} = {setup['success_rate_null']:0.2f}"
+    plt.title(title)
+    plt.tight_layout()
+
+
 def plot_decision_rates_nhst(n_experiments, iteration_stopping_on_or_prior):
     msize = 5
     xlabel = "test no."

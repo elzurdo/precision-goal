@@ -143,6 +143,83 @@ plt.ylabel("HDI 95% CI width")
 
 plt.tight_layout()
 # -
+# ## Precisions Is The Goal
+
+from utils_viz import plot_sequence_experiment_pitg_combo_results
+
+
+def sequence_to_ci_details(sequence):
+    ci_mins = []
+    ci_maxs = []
+    
+    for idx, successes in enumerate(sequence.cumsum()):
+        failures = (idx + 1) - successes
+        
+        if not failures:
+            failures += 1
+            successes += 1
+        if not successes:
+            failures += 1
+            successes += 1
+             
+        ci_min, ci_max = successes_failures_to_hdi_ci_limits(successes, failures)
+        # print(successes, failures, ci_min, ci_max)
+
+        ci_mins.append(ci_min)
+        ci_maxs.append(ci_max)
+    
+    ci_mins = np.array(ci_mins)
+    ci_maxs = np.array(ci_maxs)
+    
+    return ci_mins, ci_maxs
+
+
+# +
+rope_precision_fraction = 0.8
+precision_goal = rope_width * rope_precision_fraction
+
+print(f"{success_rate_null:0.2}: null")
+print(f"{rope_min:0.2}: ROPE min")
+print(f"{rope_max:0.2}: ROPE max")
+print("-" * 20)
+print(f"{precision_goal:0.2}: Precision Goal")
+print("-" * 20)
+print(f"{success_rate:0.2}: true")
+# -
+
+ci_mins, ci_maxs = sequence_to_ci_details(sequence)
+
+# +
+reject_lower = np.where(ci_maxs < rope_min, True, False)
+reject_higher = np.where(ci_mins > rope_max, True, False)
+accept_within = (ci_mins >= rope_min) & (ci_maxs <= rope_max)
+reject_outside = reject_lower | reject_higher
+inconclusive_hdi_plus_rope = ~(accept_within | reject_outside)
+
+precision_goal_achieved = np.where(ci_maxs - ci_mins <= precision_goal, True, False)
+
+# +
+setup_pitg = {'success_rate': success_rate,
+         'success_rate_null': success_rate_null,
+              'rope_min': rope_min,
+              'rope_max': rope_max
+        }
+
+results_pitg = {
+    'ci_mins': ci_mins,
+    'ci_maxs': ci_maxs,
+    'accept_within': accept_within,
+    'reject_outside': reject_outside,
+    'inconclusive_hdi_plus_rope': inconclusive_hdi_plus_rope,
+    'precision_goal_achieved': precision_goal_achieved
+}
+
+plt.figure(figsize=(FIG_WIDTH, FIG_HEIGHT))
+
+plot_sequence_experiment_pitg_combo_results(sequence, setup_pitg, results_pitg, xlabel="test no.", msize=5)
+
+# -
+
 # # Many Sequence Experiments
 
 from utils_stats import stop_decision_multiple_experiments
@@ -248,3 +325,7 @@ df_decision_counts_hdirope.head(4)
 # -
 
 plot_decision_rates(experiments, df_decision_counts_hdirope.rename(columns={'within':'accept'}))
+
+# ## Precision Is The Goal
+
+
