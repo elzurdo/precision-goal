@@ -236,15 +236,11 @@ alternative = 'two-sided' # 'greater'
 p_value_thresh = 0.05 # alpha
 # +
 nhst_details = {'success_rate_null': success_rate_null,'p_value_thresh': p_value_thresh, 'alternative': alternative}
-step = 5
+step = 1
 
 nhst_experiment_stop_results, nhst_iteration_stopping_on_or_prior = \
-stop_decision_multiple_experiments(samples, nhst_details=nhst_details, step=step)
+stop_decision_multiple_experiments(samples, nhst_details)
 # -
-
-6 % step
-
-
 
 plot_decision_rates_nhst(experiments, nhst_iteration_stopping_on_or_prior)
 
