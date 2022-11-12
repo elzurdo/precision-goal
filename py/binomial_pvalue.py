@@ -113,13 +113,17 @@ all_n_samples = [n_samples // 16, n_samples]
 # +
 all_p_values = np.zeros((len(all_n_samples), n_experiments)) - 1
 
+all_success_values = np.zeros((len(all_n_samples), n_experiments)) - 1 # this variable is for debugging purposes
+
 for idx_experiment, sample in enumerate(samples):
     for idx_n_sample, this_n_sample in enumerate(all_n_samples):
         this_sample = sample[:this_n_sample]
         
         this_p_value = binom_test(sum(this_sample), n=this_n_sample, p=theta_null, alternative=alternative)        
         all_p_values[idx_n_sample, idx_experiment] = this_p_value
-    
+        
+        all_success_values[idx_n_sample, idx_experiment] = this_sample.sum() # this variable is for debugging purposes
+
 
 # +
 plt.figure(figsize=(FIG_WIDTH * 2, FIG_HEIGHT))
@@ -148,6 +152,52 @@ plt.xlabel("p-value")
 plt.ylabel("%")
 
 plt.title(f"{theta_true_label}: {theta_true:0.2}, {theta_null_label}: {theta_null:0.2}, NHST: {alternative}")
+# -
+
+# # Testing
+
+# +
+idx_n_sample = 0
+
+floored = pd.Series(np.floor(all_p_values[idx_n_sample] * 10), index=all_p_values[idx_n_sample])
+
+floored.index.value_counts()
+# -
+
+pd.Series(all_success_values[idx_n_sample]).value_counts()
+
+# +
+idx_n_sample = 0
+
+
+floored = np.floor(all_p_values[idx_n_sample] * 10)
+sr_floored = pd.Series(floored).value_counts(normalize=True).sort_index() * 100.
+idx_mode = 0
+plt.bar(sr_floored.index - 0.5 *(width*(n_ntosses - 1)) + idx_mode * width, sr_floored.values, alpha=0.6, width=width, hatch=hatches[idx_n_sample], label="floored")
+
+
+# ceiled = np.ceil(all_p_values[idx_n_sample] * 10)
+# sr_ceiled = pd.Series(ceiled).value_counts(normalize=True).sort_index() * 100.
+# idx_mode = 1
+# plt.bar(sr_ceiled.index - 0.5 *(width*(n_ntosses - 1)) + idx_mode * width, sr_ceiled.values, alpha=0.6, width=width, hatch=hatches[idx_n_sample], label="ceiled")
+
+rounded = np.round(all_p_values[idx_n_sample] * 10)
+sr_rounded = pd.Series(rounded).value_counts(normalize=True).sort_index() * 100.
+idx_mode = 1
+plt.bar(sr_rounded.index - 0.5 *(width*(n_ntosses - 1)) + idx_mode * width, sr_rounded.values, alpha=0.6, width=width, hatch=hatches[idx_n_sample], label="rounded")
+
+
+plt.legend()
+# -
+
+sr_floored
+
+sr_floored[3:5].mean()
+
+# +
+test_ = np.array([0.44, 0.45, 0.46])
+
+np.round(test_ * 10)
 # -
 
 
