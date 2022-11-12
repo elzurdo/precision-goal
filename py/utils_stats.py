@@ -157,3 +157,72 @@ def stop_decision_multiple_experiments_bayesian(samples, bayes_details=None):
     return experiment_stop_results, df_decision_counts
 
 
+def stop_decision_multiple_experiments_pitg(samples, precision_goal, bayes_details=None):
+    n_experiments = samples.shape[0]
+    n_samples = samples.shape[1]
+
+    experiment_stop_results = {'successes': [], 'trials': [], 'ci_min': [], 'ci_max': []}
+    iteration_stopping_on_or_prior_accept = {iteration: 0 for iteration in range(1, n_samples + 1)}
+    iteration_stopping_on_or_prior_reject_below = iteration_stopping_on_or_prior_accept.copy()
+    iteration_stopping_on_or_prior_reject_above = iteration_stopping_on_or_prior_accept.copy()
+
+    for sample in samples:
+        successes = 0
+        this_iteration = 0
+        for toss in sample:
+            successes += toss
+            this_iteration += 1
+            
+            failures = this_iteration - successes
+            
+            aa = int(successes)
+            bb = int(failures)
+            
+            if not failures:
+                aa += 1
+                bb += 1
+                
+            if not successes:
+                aa += 1
+                bb += 1
+                
+            ci_min, ci_max = successes_failures_to_hdi_ci_limits(aa, bb)
+            
+            this_precision_goal_achieved = (ci_max - ci_min) < precision_goal
+        
+            if this_precision_goal_achieved:
+                break
+                
+        this_accept_within = (ci_min >= bayes_details['rope_min']) & (ci_max <= bayes_details['rope_max'])
+
+        if this_accept_within & this_precision_goal_achieved:
+            for iteration in range(this_iteration, n_samples+1):
+                iteration_stopping_on_or_prior_accept[iteration] += 1
+
+        if (ci_max < bayes_details['rope_min']) & this_precision_goal_achieved: 
+            for iteration in range(this_iteration, n_samples+1):
+                iteration_stopping_on_or_prior_reject_below[iteration] += 1
+
+        if (ci_min > bayes_details['rope_max']) & this_precision_goal_achieved:
+            for iteration in range(this_iteration, n_samples+1):
+                iteration_stopping_on_or_prior_reject_above[iteration] += 1
+
+        experiment_stop_results['successes'].append(successes)
+        experiment_stop_results['trials'].append(this_iteration)
+        experiment_stop_results['ci_min'].append(ci_min)
+        experiment_stop_results['ci_max'].append(ci_max)
+
+    
+    df_decision_counts = pd.DataFrame({'accept': iteration_stopping_on_or_prior_accept,
+                'reject_below': iteration_stopping_on_or_prior_reject_below, 
+                'reject_above': iteration_stopping_on_or_prior_reject_above,
+                })
+
+    df_decision_counts.index.name = "iteration_number"
+    df_decision_counts['reject'] = df_decision_counts['reject_above'] + df_decision_counts['reject_below']
+    df_decision_counts['inconclusive'] = n_experiments - df_decision_counts['accept'] - df_decision_counts['reject']
+
+    return experiment_stop_results, df_decision_counts
+
+
+

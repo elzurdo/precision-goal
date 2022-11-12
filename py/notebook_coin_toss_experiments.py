@@ -101,7 +101,6 @@ def sequence_to_ci_details(sequence):
             successes += 1
              
         ci_min, ci_max = successes_failures_to_hdi_ci_limits(successes, failures)
-        # print(successes, failures, ci_min, ci_max)
 
         ci_mins.append(ci_min)
         ci_maxs.append(ci_max)
@@ -112,36 +111,7 @@ def sequence_to_ci_details(sequence):
     return ci_mins, ci_maxs
 
 
-"""
-def sequence_to_hdi_within_rope(sequence, rope_min, rope_max):
-    within_rope = []
-    ci_mins = []
-    ci_maxs = []
-    
-    for idx, successes in enumerate(sequence.cumsum()):
-        failures = (idx + 1) - successes
-        
-        if not successes:
-            successes += 0.01
-            
-        if not failures:
-            failures += 0.01
-        
-        ci_min, ci_max = successes_failures_to_hdi_ci_limits(successes, failures)
-        this_within_rope = (ci_min >= rope_min) & (ci_max <= rope_max)
-        #this_within_rope, ci_min, ci_max = successes_failures_to_hdi_within_rope(successes, failures, rope_min, rope_max)
-        #print(idx, successes, failures, ci_min, ci_max)
-        within_rope.append(this_within_rope)
-        ci_mins.append(ci_min)
-        ci_maxs.append(ci_max)
-    
-    within_rope = np.array(within_rope)
-    ci_mins = np.array(ci_mins)
-    ci_maxs = np.array(ci_maxs)
-    
-    return within_rope, ci_mins, ci_maxs
-"""
-None
+ci_mins, ci_maxs = sequence_to_ci_details(sequence)
 
 # +
 #success_rate_null = 0.5
@@ -151,15 +121,21 @@ rope_width = 0.1 #success_rate * 0.1
 
 rope_min = success_rate_null - rope_width / 2
 rope_max = success_rate_null + rope_width / 2
-# -
 
-within_rope, ci_mins, ci_maxs = sequence_to_hdi_within_rope(sequence, rope_min, rope_max)
-hdi_widths = ci_maxs - ci_mins
+# +
+within_rope = (ci_mins >= rope_min) & (ci_maxs <= rope_max)
+
+reject_lower = np.where(ci_maxs < rope_min, True, False)
+reject_higher = np.where(ci_mins > rope_max, True, False)
+accept_within = (ci_mins >= rope_min) & (ci_maxs <= rope_max)
+reject_outside = reject_lower | reject_higher
+inconclusive_hdi_plus_rope = ~(accept_within | reject_outside)
 
 # +
 plt.figure(figsize=(FIG_WIDTH, FIG_HEIGHT))
 
-plot_sequence_experiment_hdi_rope_combo_results(sequence, success_rate, success_rate_null, ci_mins, ci_maxs, within_rope, rope_min, rope_max, xlabel="iteration", msize=5)
+plot_sequence_experiment_hdi_rope_combo_results(sequence, success_rate, success_rate_null, 
+                                                ci_mins, ci_maxs, accept_within, rope_min, rope_max, xlabel="trial no.", msize=5)
 
 # +
 from utils_viz import _get_sequence_idx
@@ -175,8 +151,6 @@ plt.tight_layout()
 
 from utils_viz import plot_sequence_experiment_pitg_combo_results
 
-
-
 # +
 rope_precision_fraction = 0.8
 precision_goal = rope_width * rope_precision_fraction
@@ -188,16 +162,10 @@ print("-" * 20)
 print(f"{precision_goal:0.2}: Precision Goal")
 print("-" * 20)
 print(f"{success_rate:0.2}: true")
-# -
-
-ci_mins, ci_maxs = sequence_to_ci_details(sequence)
 
 # +
-reject_lower = np.where(ci_maxs < rope_min, True, False)
-reject_higher = np.where(ci_mins > rope_max, True, False)
-accept_within = (ci_mins >= rope_min) & (ci_maxs <= rope_max)
-reject_outside = reject_lower | reject_higher
-inconclusive_hdi_plus_rope = ~(accept_within | reject_outside)
+#ci_mins, ci_maxs = sequence_to_ci_details(sequence)
+# -
 
 precision_goal_achieved = np.where(ci_maxs - ci_mins <= precision_goal, True, False)
 
@@ -228,23 +196,16 @@ plot_sequence_experiment_pitg_combo_results(sequence, setup_pitg, results_pitg, 
 from utils_stats import stop_decision_multiple_experiments
 from utils_viz import plot_decision_rates_nhst
 
-# ## NHST
-
 # +
-# NHST stop criterion:
-# For every new flip of the coin, stop and reject the null hypothesis, that θ=0.50, if p < .05 (two-tailed, conditionalizing on the current N), otherwise flip again.
-
 # used for to show that success_rate = 0.5 can go higher than 50%
 #experiments = 50 # 200
 #n_samples = 30000
 
-experiments = 1000 #200
-n_samples = 350 #1500
+experiments = 100 #1000 #200
+n_samples = 1500
 success_rate = 0.65
 success_rate_null = 0.5
 
-alternative = 'two-sided' # 'greater'
-p_value_thresh = 0.05 # alpha
 # +
 samples = generate_biomial_sequence(success_rate=success_rate,
                                      n_samples=n_samples,
@@ -255,12 +216,37 @@ samples = generate_biomial_sequence(success_rate=success_rate,
 samples.shape
 
 # +
-nhst_details = {'success_rate_null': success_rate_null,'p_value_thresh': p_value_thresh, 'alternative': alternative}
+for isample, sample in enumerate(samples[::1]):
+    None
+    
+isample
+# -
 
+
+
+
+
+# ## NHST
+
+# +
+# NHST stop criterion:
+# For every new flip of the coin, stop and reject the null hypothesis, that θ=0.50, if p < .05 (two-tailed, conditionalizing on the current N), otherwise flip again.
+
+alternative = 'two-sided' # 'greater'
+p_value_thresh = 0.05 # alpha
+# +
+nhst_details = {'success_rate_null': success_rate_null,'p_value_thresh': p_value_thresh, 'alternative': alternative}
+step = 5
 
 nhst_experiment_stop_results, nhst_iteration_stopping_on_or_prior = \
-stop_decision_multiple_experiments(samples, nhst_details=nhst_details)
+stop_decision_multiple_experiments(samples, nhst_details=nhst_details, step=step)
 # -
+
+6 % step
+
+
+
+plot_decision_rates_nhst(experiments, nhst_iteration_stopping_on_or_prior)
 
 plot_decision_rates_nhst(experiments, nhst_iteration_stopping_on_or_prior)
 
@@ -319,16 +305,39 @@ bayes_details = {}
 bayes_details['rope_min'] = rope_min
 bayes_details['rope_max'] = rope_max
 
+bayes_details
+
+# +
 hidrope_experiment_stop_results, df_decision_counts_hdirope = \
 stop_decision_multiple_experiments_bayesian(samples, bayes_details=bayes_details)
 
 
 print(df_decision_counts_hdirope.shape)
 df_decision_counts_hdirope.head(4)
-# -
+
+# +
+plt.figure(figsize=(FIG_WIDTH, FIG_HEIGHT))
 
 plot_decision_rates(experiments, df_decision_counts_hdirope.rename(columns={'within':'accept'}))
+# -
 
 # ## Precision Is The Goal
 
+from utils_stats import stop_decision_multiple_experiments_pitg
 
+# +
+precision_goal
+
+bayes_details
+# -
+
+pitg_experiment_stop_results, df_decision_counts_pitg = \
+stop_decision_multiple_experiments_pitg(samples, precision_goal, bayes_details=bayes_details)
+
+print(df_decision_counts_pitg.sum().sum())
+print(df_decision_counts_pitg.shape)
+df_decision_counts_pitg.head(4)
+
+plot_decision_rates(experiments, df_decision_counts_pitg)
+
+plot_decision_rates(experiments, df_decision_counts_hdirope.rename(columns={'within':'accept'}))
