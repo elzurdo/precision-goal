@@ -557,6 +557,7 @@ precision_goal_achieved = np.where(ci_maxs - ci_mins <= precision_goal, True, Fa
 
 # +
 title = f"true success rate = {success_rate:0.2f}"
+xlabel = "iteration"
 
 sequence_idx = np.arange(n_samples)+ 1
 sequence_average = sequence.cumsum() / sequence_idx
@@ -749,7 +750,7 @@ dsuccess_rate = 0.05 #success_rate * 0.1
 rope_precision_fraction = 0.8
 
 
-success_rate = 0.55
+success_rate = 0.65
 # --------
 
 rope_min = success_rate_null - dsuccess_rate
