@@ -126,6 +126,14 @@ for idx_experiment, sample in enumerate(samples):
 
 
 # +
+plt.hist(all_p_values[0,:], bins=10, histtype="step")
+plt.hist(all_p_values[1,:], bins=10, histtype="step")
+
+# plt.legend(title='tosses', loc='right')
+plt.xlabel("p-value")
+plt.ylabel("counts")
+
+# +
 plt.figure(figsize=(FIG_WIDTH * 2, FIG_HEIGHT))
 hatches = ["/", "\\", "-", ".", "*"]
 
