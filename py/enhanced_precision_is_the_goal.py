@@ -21,7 +21,6 @@
 # %%
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
 from scipy.stats import beta
 
@@ -36,6 +35,29 @@ from utils_viz import (
 )
 
 seed = 7
+
+# %%
+
+import matplotlib.pyplot as plt
+SMALL_SIZE = 12
+MEDIUM_SIZE = 16
+BIGGER_SIZE = 20
+
+FIG_WIDTH, FIG_HEIGHT = 8, 6
+
+plt.rc("font", size=SMALL_SIZE)  # controls default text sizes
+plt.rc("axes", titlesize=SMALL_SIZE)  # fontsize of the axes title
+plt.rc("axes", labelsize=MEDIUM_SIZE)  # fontsize of the x and y labels
+plt.rc("xtick", labelsize=SMALL_SIZE)  # fontsize of the tick labels
+plt.rc("ytick", labelsize=SMALL_SIZE)  # fontsize of the tick labels
+plt.rc("legend", fontsize=SMALL_SIZE)  # legend fontsize
+plt.rc("axes", titlesize=BIGGER_SIZE)  # fontsize of the figure title
+
+plt.rcParams["figure.figsize"] = FIG_WIDTH, FIG_HEIGHT
+# plt.rcParams["hatch.linewidth"] = 0.2
+
+plt.rcParams['axes.spines.right'] = False
+plt.rcParams['axes.spines.top'] = False
 
 # %%
 success_rate_null = 0.5   # this is the null hypothesis, not necessarilly true
@@ -59,8 +81,8 @@ print("-" * 20)
 print(f"{success_rate:0.2}: true")
 
 # %%
-experiments = 50 # number of experiments 500 #200 #300 #200
-n_samples = 1000 #2500 # max number of samples in each experiement #2500 #1000 #1500
+experiments = 100 # number of experiments 500 #200 #300 #200
+n_samples = 1500 #2500 # max number of samples in each experiement #2500 #1000 #1500
 
 np.random.seed(seed)
 samples = np.random.binomial(1, success_rate, [experiments, n_samples])
@@ -116,7 +138,7 @@ for isample, sample in enumerate(samples):
             decision_reject_below = hdi_max < rope_min  
             decision_reject_above = rope_max < hdi_min
 
-            conclusive = decision_accept | decision_reject_above | decision_reject_above
+            conclusive = decision_accept | decision_reject_above | decision_reject_below
 
             # update Precision Is The Goal Stop
             if pitg_stopped is False:
@@ -149,7 +171,9 @@ for isample, sample in enumerate(samples):
             elif decision_reject_above:
                 _update_iteration_tally(iteration_epitg_above, iteration)
 
-            if conclusive:
+            final_iteration = iteration == iteration_number[-1]
+            
+            if conclusive | final_iteration:
                 method_stats["epitg"][isample] = {"decision_iteration": iteration,
                                                                 "accept": decision_accept,
                                                                     "reject_below": decision_reject_below,
@@ -161,6 +185,9 @@ for isample, sample in enumerate(samples):
                                                                     "hdi_min": hdi_min,
                                                                     "hdi_max": hdi_max,
                                                                 }  
+                if final_iteration:
+                    print(f"Sample {isample} at final iteration")
+                    print(method_stats["epitg"][isample])
                 break
 
 
@@ -169,15 +196,16 @@ def stats_dict_to_df(method_stats):
     df = pd.DataFrame(method_stats).T
     df.index.name = "experiment_number"
     df["precision"] = df["hdi_max"] - df["hdi_min"]
+    df["success_rate"] = df["successes"] / (df["successes"] + df["failures"])
     return df
 
 
 df_stats_epitg = stats_dict_to_df(method_stats["epitg"])
-df_stats_epitg
+df_stats_epitg.head(4)
 
 # %%
 df_stats_pitg = stats_dict_to_df(method_stats["pitg"])
-df_stats_pitg
+df_stats_pitg.head(4)
 
 # %%
 df_stats_pitg.equals(df_stats_epitg)
@@ -249,31 +277,97 @@ plt.legend()
 pass
 
 # %%
-#decision_iteration = df_stats_pitg["decision_iteration"].value_counts().idxmax()
-#sr_experiment_stats = df_stats_pitg.query("decision_iteration == @decision_iteration").iloc[0]
+df_stats_pitg.astype(float).describe()
 
-idx = list(sorted(set(df_stats_pitg.index) - set(df_stats_epitg.index)))[1]
-sr_experiment_stats = df_stats_pitg.loc[idx]
+# %%
+df_stats_epitg.astype(float).describe()
 
-pp = np.linspace(0, 1, 1000)
-pp_hdi = np.linspace(sr_experiment_stats["hdi_min"], sr_experiment_stats["hdi_max"], 1000)
 
-successes = sr_experiment_stats["successes"]
-failures = sr_experiment_stats["failures"]
-rate = successes / (successes + failures)
-n_ = successes + failures
+# %%
+# TODO: rope_min, rope_max are not defined
+def plot_pdf(sr_experiment_stats):
+    pp = np.linspace(0, 1, 1000)
+    pp_hdi = np.linspace(sr_experiment_stats["hdi_min"], sr_experiment_stats["hdi_max"], 1000)
 
-pdf = beta.pdf(pp, successes, failures)
-pdf_hdi = beta.pdf(pp_hdi, successes, failures)
+    successes = sr_experiment_stats["successes"]
+    failures = sr_experiment_stats["failures"]
+    rate = successes / (successes + failures)
+    n_ = successes + failures
 
-plt.plot(pp, pdf, color="purple", label=f"pdf p={rate:0.2f}; n={n_:,}")
-plt.fill_between(pp_hdi, pdf_hdi, color="purple", alpha=0.2, label="HDI")
+    pdf = beta.pdf(pp, successes, failures)
+    pdf_hdi = beta.pdf(pp_hdi, successes, failures)
+
+    plt.plot(pp, pdf, color="purple", label=f"pdf p={rate:0.2f}; n={n_:,}")
+    plt.fill_between(pp_hdi, pdf_hdi, color="purple", alpha=0.2, label="HDI")
+    plot_vhlines_lines(vertical=rope_min, label='ROPE', horizontal=None)
+    plot_vhlines_lines(vertical=rope_max, horizontal=None)
+    plt.legend()
+    plt.xlabel("success rate")
+    plt.ylabel("probability density")
+
+    plt.xlim([rope_min - 0.1, rope_max + 0.1])
+
+
+# %%
+# experiment with the latest iteration
+#idx = df_stats_epitg["decision_iteration"].astype(float).argmax()
+
+
+# pitg inconclusive
+idx = df_stats_pitg.query("inconclusive").index[0]
+
+# ---
+sr_experiment_stats_pitg = df_stats_pitg.loc[idx]
+sr_experiment_stats_epitg = df_stats_epitg.loc[idx]
+
+fig, axs = plt.subplots(2, 1, figsize=(FIG_WIDTH, FIG_HEIGHT))
+
+plt.subplot(2, 1, 1)
+plot_pdf(sr_experiment_stats_pitg)
+plt.title("Precision is the Goal")
+
+plt.subplot(2, 1, 2)
+plt.title("Enhanced Precision is the Goal")
+plot_pdf(sr_experiment_stats_epitg)
+plt.tight_layout()
+
+# %%
+_, bins = np.histogram(np.concatenate([df_stats_epitg["success_rate"], df_stats_pitg["success_rate"]]))
+
+plt.hist(df_stats_pitg["success_rate"], bins=bins, histtype='step', label="PitG", color="orange")
+plt.hist(df_stats_epitg["success_rate"], bins=bins, histtype='step', label="ePitG", color="purple")
+
+
+marker_style = dict(color='black', linestyle=':', marker='^',
+                    markersize=30, markerfacecoloralt='tab:black')
+plt.plot([success_rate], [0], fillstyle='none' , **marker_style)
+
+# marker of truth
 plot_vhlines_lines(vertical=rope_min, label='ROPE', horizontal=None)
 plot_vhlines_lines(vertical=rope_max, horizontal=None)
-plt.legend()
-plt.xlabel("success rate")
-plt.ylabel("probability density")
 
-plt.xlim([rope_min - 0.1, rope_max + 0.1])
+# marker of pitg
+marker_style = dict(color='orange', linestyle=':', marker='^',
+                    markersize=30, markerfacecoloralt='tab:orange')
+plt.plot([df_stats_pitg["success_rate"].mean()], [0], **marker_style, fillstyle='none')
+
+# marker of epitg
+marker_style = dict(color='purple', linestyle=':', marker='^',
+                    markersize=30, markerfacecoloralt='tab:purple')
+plt.plot([df_stats_epitg["success_rate"].mean()], [0], **marker_style, fillstyle='none')
+
+plt.legend()
+
+
+
+plt.xlim([rope_min - 0.02, rope_max + 0.02])
+
+
+
+# %%
+df_stats_pitg["success_rate"].mean(), df_stats_pitg["success_rate"].std()
+
+# %%
+df_stats_epitg["success_rate"].mean(), df_stats_epitg["success_rate"].std()
 
 # %%
