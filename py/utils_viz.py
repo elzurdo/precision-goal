@@ -258,5 +258,12 @@ def plot_decision_rates(n_experiments, df_decision_counts):
     plt.ylabel(ylabel)
     plt.title(title)
 
+def plot_vhlines_lines(vertical=None, horizontal=0, color="black", ax=None, alpha=0.2, linestyle=None, linewidth=1, label=None):
+    if ax is None:
+        ax = plt.gca()
 
-    
+    if horizontal is not None:
+	    ax.axhline(horizontal, color=color, linewidth=linewidth, alpha=alpha, linestyle=linestyle, label=label)
+        
+    if vertical is not None:
+        ax.axvline(vertical, color=color, linewidth=linewidth, alpha=alpha,linestyle=linestyle, label=label)
