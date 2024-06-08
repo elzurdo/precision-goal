@@ -97,6 +97,46 @@ def _update_iteration_tally(iteration_dict, iteration):
 
 
 # %%
+use_dict_counter = 0
+calculate_hdi_counter = 0
+
+# %%
+pd.DataFrame(dict_successes_failures_hdi_limits).T
+
+# %%
+dict_successes_failures_hdi_limits = {}
+
+dict_successes_failures_counter = {}
+
+def successes_failures_to_hdi_limits(successes, failures):
+
+    pair = (successes, failures)
+    if pair not in dict_successes_failures_hdi_limits:
+        dict_successes_failures_hdi_limits[pair] =\
+            successes_failures_caculate_hdi_limits(successes, failures)
+        dict_successes_failures_counter[pair] = 1
+    else:
+        dict_successes_failures_counter[pair] += 1
+
+    return dict_successes_failures_hdi_limits[pair]
+
+
+def successes_failures_caculate_hdi_limits(successes, failures):
+    aa = int(successes)
+    bb = int(failures)
+    
+    if not failures:
+        aa += 1
+        bb += 1
+        
+    if not successes:
+        aa += 1
+        bb += 1
+
+    hdi_min, hdi_max = successes_failures_to_hdi_ci_limits(aa, bb)
+
+    return hdi_min, hdi_max
+
 iteration_number = np.arange(1, n_samples + 1)
 
 iteration_pitg_accept = {iteration: 0 for iteration in range(1, n_samples + 1)}
@@ -117,6 +157,7 @@ for isample, sample in enumerate(samples):
     iteration_failures = iteration_number - iteration_successes
 
     for iteration, successes, failures in zip(iteration_number, iteration_successes, iteration_failures):
+        """
         aa = int(successes)
         bb = int(failures)
         
@@ -129,6 +170,10 @@ for isample, sample in enumerate(samples):
             bb += 1
 
         hdi_min, hdi_max = successes_failures_to_hdi_ci_limits(aa, bb)
+        """
+        final_iteration = iteration == iteration_number[-1]
+        hdi_min, hdi_max = successes_failures_to_hdi_limits(successes, failures)
+        #hdi_min, hdi_max = successes_failures_caculate_hdi_limits(successes, failures)
 
         # has the precision goal been achieved?
         precision_goal_achieved = (hdi_max - hdi_min) < precision_goal
@@ -171,7 +216,7 @@ for isample, sample in enumerate(samples):
             elif decision_reject_above:
                 _update_iteration_tally(iteration_epitg_above, iteration)
 
-            final_iteration = iteration == iteration_number[-1]
+            
             
             if conclusive | final_iteration:
                 method_stats["epitg"][isample] = {"decision_iteration": iteration,
@@ -189,6 +234,40 @@ for isample, sample in enumerate(samples):
                     print(f"Sample {isample} at final iteration")
                     print(method_stats["epitg"][isample])
                 break
+        elif final_iteration:
+            decision_accept = False
+            decision_reject_below = False
+            decision_reject_above = False
+            conclusive = False
+            if isample not in method_stats["pitg"]:
+                method_stats["pitg"][isample] = {"decision_iteration": iteration,
+                                                                "accept": decision_accept,
+                                                                    "reject_below": decision_reject_below,
+                                                                    "reject_above": decision_reject_above,
+                                                                    "conclusive": conclusive,
+                                                                    "inconclusive": not conclusive,
+                                                                    "successes": successes,
+                                                                    "failures": failures,
+                                                                    "hdi_min": hdi_min,
+                                                                    "hdi_max": hdi_max,
+                                                                }   
+            if isample not in method_stats["epitg"]:
+                method_stats["epitg"][isample] = {"decision_iteration": iteration,
+                                                                "accept": decision_accept,
+                                                                    "reject_below": decision_reject_below,
+                                                                    "reject_above": decision_reject_above,
+                                                                    "conclusive": conclusive,
+                                                                    "inconclusive": not conclusive,
+                                                                    "successes": successes,
+                                                                    "failures": failures,
+                                                                    "hdi_min": hdi_min,
+                                                                    "hdi_max": hdi_max,
+                                                                }
+            break
+
+
+# %%
+pd.Series(dict_successes_failures_counter).value_counts(normalize=True).sort_index()
 
 
 # %%
@@ -269,18 +348,12 @@ plt.title(title)
 # %%
 _, bins = np.histogram(np.concatenate([df_stats_epitg["decision_iteration"], df_stats_pitg["decision_iteration"]]), bins=100)
 
-plt.hist(df_stats_epitg["decision_iteration"], bins=bins, histtype='step', label="PitG")
-plt.hist(df_stats_pitg["decision_iteration"], bins=bins, histtype='step', label="ePitG")   
+plt.hist(df_stats_pitg["decision_iteration"], bins=bins, histtype='step', label="PitG", color="orange")
+plt.hist(df_stats_epitg["decision_iteration"], bins=bins, histtype='step', label="ePitG", color="purple")   
 plt.xlabel("stop iteration")
 plt.ylabel("number of experiments")
 plt.legend()
 pass
-
-# %%
-df_stats_pitg.astype(float).describe()
-
-# %%
-df_stats_epitg.astype(float).describe()
 
 
 # %%
