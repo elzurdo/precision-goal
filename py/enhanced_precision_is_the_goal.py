@@ -64,7 +64,7 @@ success_rate_null = 0.5   # this is the null hypothesis, not necessarilly true
 dsuccess_rate = 0.05 #success_rate * 0.1
 rope_precision_fraction = 0.8
 
-success_rate = 0.9 #0.5 + 0.5 * dsuccess_rate  # the true value
+success_rate = 0.5  #0.5 + 0.5 * dsuccess_rate  # the true value
 # --------
 
 rope_min = success_rate_null - dsuccess_rate
@@ -81,8 +81,8 @@ print("-" * 20)
 print(f"{success_rate:0.3}: true")
 
 # %%
-experiments = 100 # number of experiments 500 #200 #300 #200
-n_samples = 500 #1500 #2500 # max number of samples in each experiement #2500 #1000 #1500
+experiments = 200 # number of experiments 500 #200 #300 #200
+n_samples = 1500  #2500 # max number of samples in each experiement #2500 #1000 #1500
 
 np.random.seed(seed)
 samples = np.random.binomial(1, success_rate, [experiments, n_samples])
@@ -140,7 +140,7 @@ def successes_failures_caculate_hdi_limits(successes, failures):
 iteration_number = np.arange(1, n_samples + 1)
 
 method_roperesult_iteration = {}
-methods = ["pitg", "epitg"]
+methods = ["pitg", "epitg", "hdi_rope"]
 rope_results = ["within", "below", "above"]
 for method in methods:
     method_roperesult_iteration[method] = {}
@@ -156,10 +156,11 @@ for method in methods:
 # iteration_epitg_below = iteration_epitg_accept.copy()
 # iteration_epitg_above = iteration_epitg_accept.copy()
 
-method_stats = {"pitg": {}, "epitg": {}}
+method_stats = {"pitg": {}, "epitg": {}, "hdi_rope": {}}
 
 for isample, sample in enumerate(samples):
     pitg_stopped = False
+    hdi_rope_stopped = False
 
     iteration_successes = sample.cumsum()
     iteration_failures = iteration_number - iteration_successes
@@ -172,26 +173,13 @@ for isample, sample in enumerate(samples):
         # has the precision goal been achieved?
         precision_goal_achieved = (hdi_max - hdi_min) < precision_goal
 
-        if precision_goal_achieved:
-            decision_accept = (hdi_min >= rope_min) & (hdi_max <= rope_max)
-            decision_reject_below = hdi_max < rope_min  
-            decision_reject_above = rope_max < hdi_min
+        # is the HDI conclusively within or outside the ROPE?
+        decision_accept = (hdi_min >= rope_min) & (hdi_max <= rope_max)
+        decision_reject_below = hdi_max < rope_min  
+        decision_reject_above = rope_max < hdi_min
+        conclusive = decision_accept | decision_reject_above | decision_reject_below
 
-            conclusive = decision_accept | decision_reject_above | decision_reject_below
-
-            # update Precision Is The Goal Stop
-            if pitg_stopped is False:
-                # not applying `break` because we continue for ePiTG
-                rope_result = booleans_to_rope_result(decision_accept, decision_reject_below, decision_reject_above)
-                # if decision_accept:
-                #     rope_result = "within"
-                # elif decision_reject_below:
-                #     rope_result = "below"
-                # elif decision_reject_above:
-                #     rope_result = "above"
-                _update_iteration_tally(method_roperesult_iteration["pitg"][rope_result], iteration)
-
-                method_stats["pitg"][isample] = {"decision_iteration": iteration,
+        iteration_results = {"decision_iteration": iteration,
                                                  "accept": decision_accept,
                                                     "reject_below": decision_reject_below,
                                                     "reject_above": decision_reject_above,
@@ -202,65 +190,55 @@ for isample, sample in enumerate(samples):
                                                     "hdi_min": hdi_min,
                                                     "hdi_max": hdi_max,
                                                  }   
+
+        if precision_goal_achieved:
+
+            # update Precision Is The Goal Stop
+            if pitg_stopped is False:
+                # not applying `break` because we continue for ePiTG
+                if conclusive:
+                    rope_result = booleans_to_rope_result(decision_accept, decision_reject_below, decision_reject_above)
+                    _update_iteration_tally(method_roperesult_iteration["pitg"][rope_result], iteration)
+                method_stats["pitg"][isample] = iteration_results
                 pitg_stopped = True  # sample does not continue with PITG (only ePiTG) 
 
             # continue with Enhance Precision Is The Goal
-            rope_result = booleans_to_rope_result(decision_accept, decision_reject_below, decision_reject_above)
-            # if decision_accept:
-            #     _update_iteration_tally(iteration_epitg_accept, iteration)
-            # elif decision_reject_below:
-            #     _update_iteration_tally(iteration_epitg_below, iteration)
-            # elif decision_reject_above:
-            #     _update_iteration_tally(iteration_epitg_above, iteration)
-            _update_iteration_tally(method_roperesult_iteration["epitg"][rope_result], iteration)
+            if conclusive:
+                rope_result = booleans_to_rope_result(decision_accept, decision_reject_below, decision_reject_above)
+                _update_iteration_tally(method_roperesult_iteration["epitg"][rope_result], iteration)
 
-            
-            
             if conclusive | final_iteration:
-                method_stats["epitg"][isample] = {"decision_iteration": iteration,
-                                                                "accept": decision_accept,
-                                                                    "reject_below": decision_reject_below,
-                                                                    "reject_above": decision_reject_above,
-                                                                    "conclusive": conclusive,
-                                                                    "inconclusive": not conclusive,
-                                                                    "successes": successes,
-                                                                    "failures": failures,
-                                                                    "hdi_min": hdi_min,
-                                                                    "hdi_max": hdi_max,
-                                                                }  
+                method_stats["epitg"][isample] = iteration_results
                 if final_iteration:
                     print(f"Sample {isample} at final iteration")
                     print(method_stats["epitg"][isample])
                 break
+        
+        elif conclusive & (hdi_rope_stopped is False):
+            # case in which precision not achieved yet but conclusive.
+            # this is the HDI+ROPE approach which disregards precision
+            rope_result = booleans_to_rope_result(decision_accept, decision_reject_below, decision_reject_above)
+            _update_iteration_tally(method_roperesult_iteration["hdi_rope"][rope_result], iteration)
+            method_stats["hdi_rope"][isample] = iteration_results
+
+            hdi_rope_stopped = True
+
         elif final_iteration:
+            # ensures that if reached final iteration and not conclusive that
+            # results are still recorded as inconclusive
+            
+            """
             decision_accept = False
             decision_reject_below = False
             decision_reject_above = False
             conclusive = False
+            """
+            if isample not in method_stats["hdi_rope"]:
+               method_stats["hdi_rope"][isample] = iteration_results
             if isample not in method_stats["pitg"]:
-                method_stats["pitg"][isample] = {"decision_iteration": iteration,
-                                                                "accept": decision_accept,
-                                                                    "reject_below": decision_reject_below,
-                                                                    "reject_above": decision_reject_above,
-                                                                    "conclusive": conclusive,
-                                                                    "inconclusive": not conclusive,
-                                                                    "successes": successes,
-                                                                    "failures": failures,
-                                                                    "hdi_min": hdi_min,
-                                                                    "hdi_max": hdi_max,
-                                                                }   
+                method_stats["pitg"][isample] = iteration_results
             if isample not in method_stats["epitg"]:
-                method_stats["epitg"][isample] = {"decision_iteration": iteration,
-                                                                "accept": decision_accept,
-                                                                    "reject_below": decision_reject_below,
-                                                                    "reject_above": decision_reject_above,
-                                                                    "conclusive": conclusive,
-                                                                    "inconclusive": not conclusive,
-                                                                    "successes": successes,
-                                                                    "failures": failures,
-                                                                    "hdi_min": hdi_min,
-                                                                    "hdi_max": hdi_max,
-                                                                }
+                method_stats["epitg"][isample] = iteration_results
             break
 
 
@@ -285,6 +263,10 @@ df_stats_pitg = stats_dict_to_df(method_stats["pitg"])
 df_stats_pitg.head(4)
 
 # %%
+df_stats_hdirope = stats_dict_to_df(method_stats["hdi_rope"])
+df_stats_hdirope.head(4)
+
+# %%
 df_stats_pitg.equals(df_stats_epitg)
 
 
@@ -304,6 +286,8 @@ def iteration_counts_to_df(roperesult_iteration, experiments):
 
 df_pitg_counts = iteration_counts_to_df(method_roperesult_iteration["pitg"], experiments)
 df_epitg_counts = iteration_counts_to_df(method_roperesult_iteration["epitg"], experiments)
+df_hdirope_counts = iteration_counts_to_df(method_roperesult_iteration["hdi_rope"], experiments)
+
 
 df_epitg_counts.head(4)
 
@@ -322,6 +306,14 @@ title = f"true success rate = {success_rate:0.3f}"
 xlabel = "iteration"
 
 iteration_values = df_pitg_counts["iteration"]
+
+
+# plotting HDI+ROPE
+alpha, linewidth, linestyle = 0.2, 1, "-."
+plt.plot(iteration_values, df_hdirope_counts['accept'] / experiments, color="green", linewidth=linewidth, alpha=alpha, linestyle=linestyle)
+plt.plot(iteration_values, df_hdirope_counts['reject'] / experiments, color="red", linewidth=linewidth, alpha=alpha, linestyle=linestyle)
+plt.plot(iteration_values, df_hdirope_counts['inconclusive'] / experiments, color="gray", linewidth=linewidth, alpha=alpha, linestyle=linestyle)
+
 
 # plotting pitg
 alpha, linewidth = 0.4, 5
@@ -344,10 +336,13 @@ plt.title(title)
 
 
 # %%
-_, bins = np.histogram(np.concatenate([df_stats_epitg["decision_iteration"], df_stats_pitg["decision_iteration"]]), bins=100)
+all_values = np.concatenate([df_stats_epitg["decision_iteration"], df_stats_pitg["decision_iteration"], df_stats_hdirope["decision_iteration"] ])
+
+_, bins = np.histogram(all_values, bins=100)
 
 plt.hist(df_stats_pitg["decision_iteration"], bins=bins, histtype='step', label="PitG", color="orange")
 plt.hist(df_stats_epitg["decision_iteration"], bins=bins, histtype='step', label="ePitG", color="purple")   
+plt.hist(df_stats_hdirope["decision_iteration"], bins=bins, histtype='step', label="HDI+ROPE", color="blue")   
 plt.xlabel("stop iteration")
 plt.ylabel("number of experiments")
 plt.legend()
@@ -407,11 +402,12 @@ plt.tight_layout()
 df_stats_pitg.astype(float).describe()
 
 # %%
-all_values = np.concatenate([df_stats_epitg["success_rate"], df_stats_pitg["success_rate"]])
-_, bins = np.histogram(all_values)
+all_values = np.concatenate([df_stats_epitg["success_rate"], df_stats_pitg["success_rate"], df_stats_hdirope["success_rate"]])
+_, bins = np.histogram(all_values, bins=50)
 
 plt.hist(df_stats_pitg["success_rate"], bins=bins, histtype='step', label="PitG", color="orange")
 plt.hist(df_stats_epitg["success_rate"], bins=bins, histtype='step', label="ePitG", color="purple")
+plt.hist(df_stats_hdirope["success_rate"], bins=bins, histtype='step', label="HDI + ROPE", color="blue")
 
 
 marker_style = dict(color='black', linestyle=':', marker='^',
@@ -432,10 +428,16 @@ marker_style = dict(color='purple', linestyle=':', marker='^',
                     markersize=30, markerfacecoloralt='tab:purple')
 plt.plot([df_stats_epitg["success_rate"].mean()], [0], **marker_style, fillstyle='none')
 
+# marker of epitg
+marker_style = dict(color='blue', linestyle=':', marker='^',
+                    markersize=30, markerfacecoloralt='tab:blue')
+plt.plot([df_stats_hdirope["success_rate"].mean()], [0], **marker_style, fillstyle='none')
+
 plt.legend()
 
 xlim = [np.min([rope_min, all_values.min()]), np.max([rope_max, all_values.max()])]
 plt.xlim([xlim[0] - 0.02, xlim[1] + 0.02])
+plt.title(title)
 
 
 
