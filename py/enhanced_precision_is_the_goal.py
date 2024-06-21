@@ -70,9 +70,14 @@ success_rate = 0.5  #0.5 + 0.5 * dsuccess_rate  # the true value
 rope_min = success_rate_null - dsuccess_rate
 rope_max = success_rate_null + dsuccess_rate
 
+# hypothesis: if precision_goal is lower, then PitG has less of
+# an inconclusiveness problem but at the expense of more trials.
 precision_goal = (2 * dsuccess_rate) * rope_precision_fraction
+#precision_goal = (dsuccess_rate) * rope_precision_fraction # 1500 was not enough for 0.04
+#precision_goal = (1.5 * dsuccess_rate) * rope_precision_fraction # 1500 was not enough for 0.04
 
-print(f"{success_rate_null:0.2}: null")
+
+print(f"{success_rate_null:0.5}: null")
 print(f"{rope_min:0.2}: ROPE min")
 print(f"{rope_max:0.2}: ROPE max")
 print("-" * 20)
@@ -81,7 +86,7 @@ print("-" * 20)
 print(f"{success_rate:0.3}: true")
 
 # %%
-experiments = 200 # number of experiments 500 #200 #300 #200
+experiments = 500 # number of experiments 500 #200 #300 #200
 n_samples = 1500  #2500 # max number of samples in each experiement #2500 #1000 #1500
 
 np.random.seed(seed)
@@ -309,10 +314,10 @@ iteration_values = df_pitg_counts["iteration"]
 
 
 # plotting HDI+ROPE
-alpha, linewidth, linestyle = 0.2, 1, "-."
-plt.plot(iteration_values, df_hdirope_counts['accept'] / experiments, color="green", linewidth=linewidth, alpha=alpha, linestyle=linestyle)
-plt.plot(iteration_values, df_hdirope_counts['reject'] / experiments, color="red", linewidth=linewidth, alpha=alpha, linestyle=linestyle)
-plt.plot(iteration_values, df_hdirope_counts['inconclusive'] / experiments, color="gray", linewidth=linewidth, alpha=alpha, linestyle=linestyle)
+# alpha, linewidth, linestyle = 0.2, 1, "-."
+# plt.plot(iteration_values, df_hdirope_counts['accept'] / experiments, color="green", linewidth=linewidth, alpha=alpha, linestyle=linestyle)
+# plt.plot(iteration_values, df_hdirope_counts['reject'] / experiments, color="red", linewidth=linewidth, alpha=alpha, linestyle=linestyle)
+# plt.plot(iteration_values, df_hdirope_counts['inconclusive'] / experiments, color="gray", linewidth=linewidth, alpha=alpha, linestyle=linestyle)
 
 
 # plotting pitg
@@ -336,6 +341,8 @@ plt.title(title)
 
 
 # %%
+plt.figure(figsize=(FIG_WIDTH, 0.5 * FIG_HEIGHT))
+
 all_values = np.concatenate([df_stats_epitg["decision_iteration"], df_stats_pitg["decision_iteration"], df_stats_hdirope["decision_iteration"] ])
 
 _, bins = np.histogram(all_values, bins=100)
@@ -352,7 +359,7 @@ pass
 
 # %%
 # TODO: rope_min, rope_max are not defined
-def plot_pdf(sr_experiment_stats):
+def plot_pdf(sr_experiment_stats, xlim=None):
     pp = np.linspace(0, 1, 1000)
     pp_hdi = np.linspace(sr_experiment_stats["hdi_min"], sr_experiment_stats["hdi_max"], 1000)
 
@@ -372,7 +379,10 @@ def plot_pdf(sr_experiment_stats):
     plt.xlabel("success rate")
     plt.ylabel("probability density")
 
-    plt.xlim([rope_min - 0.1, rope_max + 0.1])
+    if xlim:
+        plt.xlim(xlim)
+    else:
+        plt.xlim([rope_min - 0.1, rope_max + 0.1])
 
 
 # %%
@@ -381,7 +391,8 @@ def plot_pdf(sr_experiment_stats):
 
 
 # pitg inconclusive
-idx = df_stats_pitg.query("inconclusive").index[0]
+#idx = df_stats_pitg.query("inconclusive").index[0]
+idx = df_stats_pitg.index[0]
 
 # ---
 sr_experiment_stats_pitg = df_stats_pitg.loc[idx]
@@ -390,18 +401,20 @@ sr_experiment_stats_epitg = df_stats_epitg.loc[idx]
 fig, axs = plt.subplots(2, 1, figsize=(FIG_WIDTH, FIG_HEIGHT))
 
 plt.subplot(2, 1, 1)
-plot_pdf(sr_experiment_stats_pitg)
+plot_pdf(sr_experiment_stats_pitg) #, xlim=(0.4,1))
 plt.title("Precision is the Goal")
 
 plt.subplot(2, 1, 2)
 plt.title("Enhanced Precision is the Goal")
-plot_pdf(sr_experiment_stats_epitg)
+plot_pdf(sr_experiment_stats_epitg) #, xlim=(0.4,1))
 plt.tight_layout()
 
 # %%
 df_stats_pitg.astype(float).describe()
 
 # %%
+plt.figure(figsize=(FIG_WIDTH, 0.5 * FIG_HEIGHT))
+
 all_values = np.concatenate([df_stats_epitg["success_rate"], df_stats_pitg["success_rate"], df_stats_hdirope["success_rate"]])
 _, bins = np.histogram(all_values, bins=50)
 
@@ -410,25 +423,25 @@ plt.hist(df_stats_epitg["success_rate"], bins=bins, histtype='step', label="ePit
 plt.hist(df_stats_hdirope["success_rate"], bins=bins, histtype='step', label="HDI + ROPE", color="blue")
 
 
+# marker of truth
 marker_style = dict(color='black', linestyle=':', marker='^',
-                    markersize=30, markerfacecoloralt='tab:black')
+                    markersize=20, markerfacecoloralt='tab:black')
 plt.plot([success_rate], [0], fillstyle='none' , **marker_style)
 
-# marker of truth
 plot_vhlines_lines(vertical=rope_min, label='ROPE', horizontal=None)
 plot_vhlines_lines(vertical=rope_max, horizontal=None)
 
 # marker of pitg
-marker_style = dict(color='orange', linestyle=':', marker='^',
+marker_style = dict(color='orange', linestyle='--', marker='^',
                     markersize=30, markerfacecoloralt='tab:orange')
 plt.plot([df_stats_pitg["success_rate"].mean()], [0], **marker_style, fillstyle='none')
 
 # marker of epitg
 marker_style = dict(color='purple', linestyle=':', marker='^',
-                    markersize=30, markerfacecoloralt='tab:purple')
+                   markersize=30, markerfacecoloralt='tab:purple')
 plt.plot([df_stats_epitg["success_rate"].mean()], [0], **marker_style, fillstyle='none')
 
-# marker of epitg
+# marker of hdi+rope
 marker_style = dict(color='blue', linestyle=':', marker='^',
                     markersize=30, markerfacecoloralt='tab:blue')
 plt.plot([df_stats_hdirope["success_rate"].mean()], [0], **marker_style, fillstyle='none')
@@ -438,13 +451,94 @@ plt.legend()
 xlim = [np.min([rope_min, all_values.min()]), np.max([rope_max, all_values.max()])]
 plt.xlim([xlim[0] - 0.02, xlim[1] + 0.02])
 plt.title(title)
+plt.xlabel("success rate at stop")
+# %%
+plt.scatter(df_stats_pitg["decision_iteration"], df_stats_pitg["success_rate"], alpha=0.3, color="orange", label="PitG", marker=".")
+plt.scatter(df_stats_epitg["decision_iteration"], df_stats_epitg["success_rate"], alpha=0.3, color="purple", label="ePitG", marker=".")
+plt.scatter(df_stats_hdirope["decision_iteration"], df_stats_hdirope["success_rate"], alpha=0.3, color="blue", label="HDI+ROPE", marker=".")
 
 
+plt.scatter(df_stats_pitg["decision_iteration"].mean(), df_stats_pitg["success_rate"].mean(), color="orange", label="PitG mean", s=200, marker="$\u25EF$")
+plt.scatter(df_stats_epitg["decision_iteration"].mean(), df_stats_epitg["success_rate"].mean(), color="purple", label="ePitG mean", s=200, marker="$\u25EF$")
+plt.scatter(df_stats_hdirope["decision_iteration"].mean(), df_stats_hdirope["success_rate"].mean(), color="blue", label="HDI+ROPE mean", s=200, marker="$\u25EF$")
+
+
+plot_vhlines_lines(vertical=None, label='true success rate', horizontal=success_rate, alpha=0.7)
+
+plot_vhlines_lines(vertical=None, label='ROPE', horizontal=rope_min)
+plot_vhlines_lines(vertical=None, horizontal=rope_max)
+plt.xlabel("stop iteration")
+plt.ylabel("success rate at stop")
+
+plt.legend(title=f"{len(df_stats_pitg):,} experiments", loc="lower center", fontsize=10)
+plt.title(title)
+
+# %%
+(df_stats_hdirope["reject_above"] | df_stats_hdirope["reject_below"]).sum() / len(df_stats_hdirope)
+
+# %%
+(df_stats_pitg["reject_above"] | df_stats_pitg["reject_below"]).sum() / len(df_stats_pitg)
+
+# %%
+(df_stats_epitg["reject_above"] | df_stats_epitg["reject_below"]).sum() / len(df_stats_epitg)
+
+# %%
+df_stats_pitg["decision_iteration"].min(), df_stats_pitg["decision_iteration"].max()
+
+# %%
+df_stats_pitg["inconclusive"].value_counts(normalize=True, dropna=False)  
+
+# %%
+df_stats_epitg["inconclusive"].value_counts(normalize=True, dropna=False)  
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+
+# %%
 
 # %%
 df_stats_pitg["success_rate"].mean(), df_stats_pitg["success_rate"].std()
 
 # %%
 df_stats_epitg["success_rate"].mean(), df_stats_epitg["success_rate"].std()
+
+# %%
+dict_successes_failures_hdi_limits.keys()
+
+# %%
+variances = []
+hdi_widths = []
+ns_ = []
+
+for a_, b_ in dict_successes_failures_hdi_limits.keys():
+    if a_ >= 10 and b_ >= 10:
+        variances.append(beta.var(a_, b_))
+        hdi_min, hdi_max = dict_successes_failures_hdi_limits[(a_, b_)]
+        hdi_widths.append(hdi_max - hdi_min)
+        ns_.append(a_ + b_)
+
+# %%
+variances = np.array(variances)
+hdi_widths = np.array(hdi_widths)
+ns_ = np.array(ns_)
+
+# %%
+plt.plot(variances, hdi_widths, marker="o", linestyle="none")
+
+# %%
+plt.scatter(hdi_widths, hdi_widths/variances)
+
+# %%
+plt.scatter(ns_, variances)
+plt.scatter(ns_, hdi_widths)
 
 # %%
