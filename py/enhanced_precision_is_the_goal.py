@@ -18,6 +18,9 @@
 # * Comparing the stop criterion of precision is the goal with the enhanced version
 # * Describing the risk version
 
+# %% [markdown]
+# # Setup
+
 # %%
 import numpy as np
 import pandas as pd
@@ -32,6 +35,7 @@ from utils_stats import (
 from utils_viz import (
     #plot_success_rates
     plot_vhlines_lines,
+    #plot_parity_line,
 )
 
 seed = 7
@@ -58,6 +62,11 @@ plt.rcParams["figure.figsize"] = FIG_WIDTH, FIG_HEIGHT
 
 plt.rcParams['axes.spines.right'] = False
 plt.rcParams['axes.spines.top'] = False
+
+# %% [markdown]
+# # Data
+#
+# Experiments each containing many Bernoulli trials
 
 # %%
 success_rate_null = 0.5   # this is the null hypothesis, not necessarilly true
@@ -94,6 +103,11 @@ samples = np.random.binomial(1, success_rate, [experiments, n_samples])
 
 samples.shape  # (experiments, n_samples)
 
+
+# %% [markdown]
+# # Enhanced Precision is the Goal
+#
+# As compared to "Precision is the Goal" and HDI+ROPE.
 
 # %%
 def _update_iteration_tally(iteration_dict, iteration):
@@ -492,27 +506,10 @@ df_stats_pitg["inconclusive"].value_counts(normalize=True, dropna=False)
 df_stats_epitg["inconclusive"].value_counts(normalize=True, dropna=False)  
 
 # %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
 df_stats_pitg["success_rate"].mean(), df_stats_pitg["success_rate"].std()
 
 # %%
 df_stats_epitg["success_rate"].mean(), df_stats_epitg["success_rate"].std()
-
-# %%
-dict_successes_failures_hdi_limits.keys()
 
 # %%
 variances = []
@@ -540,5 +537,180 @@ plt.scatter(hdi_widths, hdi_widths/variances)
 # %%
 plt.scatter(ns_, variances)
 plt.scatter(ns_, hdi_widths)
+
+# %%
+
+# %% [markdown]
+# # Precision and Risk as Goals
+
+# %%
+idx = df_stats_pitg.index[0]
+
+# ---
+sr_experiment_stats_pitg = df_stats_pitg.loc[idx]
+sr_experiment_stats_epitg = df_stats_epitg.loc[idx]
+
+fig, axs = plt.subplots(2, 1, figsize=(FIG_WIDTH, FIG_HEIGHT))
+
+plt.subplot(2, 1, 1)
+plot_pdf(sr_experiment_stats_pitg) #, xlim=(0.4,1))
+plt.title("Precision is the Goal")
+
+plt.subplot(2, 1, 2)
+plt.title("Enhanced Precision is the Goal")
+plot_pdf(sr_experiment_stats_epitg) #, xlim=(0.4,1))
+plt.tight_layout()
+
+# %%
+sr_experiment_stats_pitg
+
+
+# %%
+def pdf_area(pdf, dpp):
+    return np.sum(pdf) * dpp
+
+sr_experiment_stats = sr_experiment_stats_pitg.copy()
+
+dpp = 0.0001
+npp = int(1./dpp)
+pp = np.linspace(0., 1., npp)
+
+successes = sr_experiment_stats["successes"]
+failures = sr_experiment_stats["failures"]
+#rate = successes / (successes + failures)
+#n_ = successes + failures
+
+bool_in_rope = (rope_min <= pp) & (pp <= rope_max)
+p_in_rope = pdf_area(pdf[bool_in_rope], dpp)
+
+pdf = beta.pdf(pp, successes, failures)
+
+plt.plot(pp,pdf, color="purple")
+plt.fill_between(pp, pdf, where=bool_in_rope, alpha=0.2, color="orange")
+plot_vhlines_lines(vertical=rope_min, label='ROPE', horizontal=None)
+plot_vhlines_lines(vertical=rope_max, horizontal=None)
+
+plt.xlim([rope_min - 0.1, rope_max + 0.1])
+
+    
+
+# %%
+pdf_area(pdf, dpp)
+
+# %%
+df_stats_pitg.head(2)
+
+# %%
+df_stats_pitg["in_rope"] = df_stats_pitg.apply(lambda x: pdf_area(beta.pdf(pp, x["successes"], x["failures"])[bool_in_rope], dpp) , axis=1)
+
+# %%
+df_stats_epitg["in_rope"] = df_stats_epitg.apply(lambda x: pdf_area(beta.pdf(pp, x["successes"], x["failures"])[bool_in_rope], dpp) , axis=1)
+
+# %%
+df_stats_pitg["in_rope"].describe()
+
+# %%
+df_stats_pitg.query("inconclusive").shape
+
+# %%
+(df_pitg_plot["in_rope"] > 1- fpr).sum() / len(df_pitg_plot)
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+fpr = 0.05
+
+df_pitg_plot = df_stats_pitg.query("inconclusive")
+
+df_epitg_plot = df_stats_epitg.loc[df_pitg_plot.index]
+
+plt.scatter(df_pitg_plot["decision_iteration"], df_pitg_plot["in_rope"], alpha=0.5, color="orange", label="PitG", marker=".")
+#plt.scatter(df_epitg_plot["decision_iteration"], df_epitg_plot["in_rope"], alpha=0.5, color="purple", label="ePitG", marker=".")
+plt.xlabel("stop iteration")
+plt.ylabel("probability in ROPE")
+plot_vhlines_lines(vertical=None, label=None, horizontal=1. - fpr, alpha=0.7, linestyle="--")
+
+
+# %%
+plt.scatter(df_pitg_plot["decision_iteration"], df_epitg_plot["decision_iteration"], alpha=0.5, color="orange", label="PitG", marker=".")
+
+frac_ = len(df_pitg_plot) / len(df_stats_pitg)
+plt.title(f"{len(df_pitg_plot):,} inconclusive experiments ({frac_:0.1%})")
+plot_vhlines_lines(vertical=None, label=None, horizontal=df_pitg_plot["decision_iteration"].min(), alpha=0.7, linestyle="--")
+plot_vhlines_lines(vertical=None, label=None, horizontal=df_pitg_plot["decision_iteration"].max(), alpha=0.7, linestyle="--")
+
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+def plot_parity_line(ax=None):
+    if ax is None:
+        ax = plt.gca()
+
+    xlims = ax.get_xlim()
+    ylims = ax.get_ylim()
+    lims = [np.min([xlims[0], ylims[0]]), np.max([xlims[1], ylims[1]])]
+
+    ax.plot(lims, lims, "k--", linewidth=1)
+
+
+# %%
+plt.scatter(df_stats_pitg["decision_iteration"], df_stats_pitg["in_rope"], alpha=0.05, color="orange", label="PitG", marker=".")
+plt.scatter(df_stats_epitg["decision_iteration"], df_stats_epitg["in_rope"], alpha=0.05, color="purple", label="ePitG", marker=".")
+plt.xlabel("stop iteration")
+plt.ylabel("probability in ROPE")
+
+# %%
+
+# %%
+plt.hist(df_stats_pitg["in_rope"])
+plt.hist(df_stats_epitg["in_rope"])
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+df_stats_pitg.head(4).apply(lambda x: pdf_area(beta.pdf(pp, x["successes"], x["failures"]), dpp))
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+
+
+
+# %%
+pdf.sum() *dpp
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+pdf
 
 # %%

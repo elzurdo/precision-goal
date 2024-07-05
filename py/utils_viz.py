@@ -267,3 +267,14 @@ def plot_vhlines_lines(vertical=None, horizontal=0, color="black", ax=None, alph
         
     if vertical is not None:
         ax.axvline(vertical, color=color, linewidth=linewidth, alpha=alpha,linestyle=linestyle, label=label)
+
+
+def plot_parity_line(ax=None):
+    if ax is None:
+        ax = plt.gca()
+
+    xlims = ax.get_xlim()
+    ylims = ax.get_ylim()
+    lims = [np.min([xlims[0], ylims[0]]), np.max([xlims[1], ylims[1]])]
+
+    ax.plot(lims, lims, "k--", linewidth=1)
