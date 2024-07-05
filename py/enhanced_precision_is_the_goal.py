@@ -9,9 +9,9 @@
 #       format_version: '1.3'
 #       jupytext_version: 1.11.2
 #   kernelspec:
-#     display_name: Python 3.8.11 (scrappy)
+#     display_name: scrappy-3.8.11
 #     language: python
-#     name: scrappy-3.8.11
+#     name: python3
 # ---
 
 # %% [markdown]
@@ -103,21 +103,18 @@ samples = np.random.binomial(1, success_rate, [experiments, n_samples])
 
 samples.shape  # (experiments, n_samples)
 
-
 # %% [markdown]
 # # Enhanced Precision is the Goal
 #
 # As compared to "Precision is the Goal" and HDI+ROPE.
 
 # %%
+dict_successes_failures_hdi_limits = {}
+dict_successes_failures_counter = {}
+
 def _update_iteration_tally(iteration_dict, iteration):
     for this_iteration in range(iteration, len(iteration_dict)+1):
         iteration_dict[this_iteration] += 1
-
-
-# %%
-dict_successes_failures_hdi_limits = {}
-dict_successes_failures_counter = {}
 
 def booleans_to_rope_result(decision_accept, decision_reject_below, decision_reject_above):
     if decision_accept:
@@ -156,7 +153,9 @@ def successes_failures_caculate_hdi_limits(successes, failures):
 
     return hdi_min, hdi_max
 
-iteration_number = np.arange(1, n_samples + 1)
+
+# %%
+# For each method and rope result type creating tally of outcomes
 
 method_roperesult_iteration = {}
 methods = ["pitg", "epitg", "hdi_rope"]
@@ -166,14 +165,11 @@ for method in methods:
     for rope_result in rope_results:
         method_roperesult_iteration[method][rope_result] = {iteration: 0 for iteration in range(1, n_samples + 1)}
 
-#iteration_pitg_accept = {iteration: 0 for iteration in range(1, n_samples + 1)}
-# iteration_pitg_below = iteration_pitg_accept.copy()
-# iteration_pitg_above = iteration_pitg_accept.copy()
+print(method, rope_result)
+len(method_roperesult_iteration[method][rope_result])
 
-
-# iteration_epitg_accept = iteration_pitg_accept.copy()
-# iteration_epitg_below = iteration_epitg_accept.copy()
-# iteration_epitg_above = iteration_epitg_accept.copy()
+# %%
+iteration_number = np.arange(1, n_samples + 1)
 
 method_stats = {"pitg": {}, "epitg": {}, "hdi_rope": {}}
 
@@ -486,6 +482,147 @@ plt.ylabel("success rate at stop")
 
 plt.legend(title=f"{len(df_stats_pitg):,} experiments", loc="lower center", fontsize=10)
 plt.title(title)
+
+# %%
+df_stats_hdirope.query("reject_above").head(20)
+
+# %%
+isample = 179 #8 # 13
+
+sample = samples[isample]
+iteration_successes = sample.cumsum()
+iteration_failures = iteration_number - iteration_successes
+
+sample_results = {}
+for iteration, successes, failures in zip(iteration_number, iteration_successes, iteration_failures):
+    final_iteration = iteration == iteration_number[-1]
+    hdi_min, hdi_max = successes_failures_to_hdi_limits(successes, failures)
+    #hdi_min, hdi_max = successes_failures_caculate_hdi_limits(successes, failures)
+
+    # has the precision goal been achieved?
+    precision_goal_achieved = (hdi_max - hdi_min) < precision_goal
+
+    # is the HDI conclusively within or outside the ROPE?
+    decision_accept = (hdi_min >= rope_min) & (hdi_max <= rope_max)
+    decision_reject_below = hdi_max < rope_min  
+    decision_reject_above = rope_max < hdi_min
+    conclusive = decision_accept | decision_reject_above | decision_reject_below
+
+
+    iteration_results = {"decision_iteration": iteration,
+                                                "accept": decision_accept,
+                                                "reject_below": decision_reject_below,
+                                                "reject_above": decision_reject_above,
+                                                "conclusive": conclusive,
+                                                "inconclusive": not conclusive,
+                                                "successes": successes,
+                                                "failures": failures,
+                                                "hdi_min": hdi_min,
+                                                "hdi_max": hdi_max,
+                                                "goal_achieved": precision_goal_achieved,
+                                                }   
+
+    sample_results[iteration] = iteration_results
+
+# %%
+df_sample_results = pd.DataFrame(sample_results).T
+df_sample_results["hdi_max"] = df_sample_results["hdi_max"].astype(float)
+df_sample_results["hdi_min"] = df_sample_results["hdi_min"].astype(float)
+df_sample_results["decision_iteration"] = df_sample_results["decision_iteration"].astype(float)
+
+df_sample_conclusive = df_sample_results.query("conclusive")
+display(df_sample_conclusive.head(4))
+
+df_sample_goal = df_sample_results.query("goal_achieved")
+display(df_sample_goal.head(4))
+
+# %%
+plt.figure(figsize=(FIG_WIDTH, FIG_HEIGHT))
+
+plt.plot(df_sample_results["decision_iteration"], df_sample_results["hdi_min"], color="gray", label=None)
+plt.plot(df_sample_results["decision_iteration"], df_sample_results["hdi_max"], color="gray", label=None)
+plt.fill_between(df_sample_results["decision_iteration"], df_sample_results["hdi_max"], df_sample_results["hdi_min"], color='gray', alpha=0.2, label="HDI")
+
+for idx, (iteration, row) in enumerate(df_sample_conclusive.iterrows()):
+    if idx == 0:
+        label = "conclusive"
+    else:
+        label = None
+    plt.plot([iteration, iteration], [row['hdi_min'], row['hdi_max']], color='red', alpha=0.7, linewidth=1, label=label)
+
+#for iteration, row in df_sample_goal.iterrows():
+#    plt.plot([iteration, iteration], [row['hdi_min'], row['hdi_max']], color='blue', alpha=0.1, linewidth=1)
+plt.scatter(df_sample_goal["decision_iteration"], df_sample_goal["hdi_min"], color="green", label="goal achieved", marker="o", s=20)
+plt.scatter(df_sample_goal["decision_iteration"], df_sample_goal["hdi_max"], color="green", label=None, marker="o", s=20)
+
+
+plot_vhlines_lines(vertical=None, label='ROPE', horizontal=rope_min, linestyle="--", color="purple")
+plot_vhlines_lines(vertical=None, horizontal=rope_max, linestyle="--", color="purple")
+
+plt.legend()
+plt.xlabel("iteration")
+plt.ylabel("iteration success rate")
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+help(plt.fill)
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+"""
+    iteration_successes = sample.cumsum()
+    iteration_failures = iteration_number - iteration_successes
+
+    for iteration, successes, failures in zip(iteration_number, iteration_successes, iteration_failures):
+        final_iteration = iteration == iteration_number[-1]
+        hdi_min, hdi_max = successes_failures_to_hdi_limits(successes, failures)
+        #hdi_min, hdi_max = successes_failures_caculate_hdi_limits(successes, failures)
+
+        # has the precision goal been achieved?
+        precision_goal_achieved = (hdi_max - hdi_min) < precision_goal
+
+        # is the HDI conclusively within or outside the ROPE?
+        decision_accept = (hdi_min >= rope_min) & (hdi_max <= rope_max)
+        decision_reject_below = hdi_max < rope_min  
+        decision_reject_above = rope_max < hdi_min
+        conclusive = decision_accept | decision_reject_above | decision_reject_below
+"""
+
+# %%
+
+# %%
+
+# %%
 
 # %%
 (df_stats_hdirope["reject_above"] | df_stats_hdirope["reject_below"]).sum() / len(df_stats_hdirope)
