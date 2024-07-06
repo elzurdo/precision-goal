@@ -324,10 +324,10 @@ iteration_values = df_pitg_counts["iteration"]
 
 
 # plotting HDI+ROPE
-# alpha, linewidth, linestyle = 0.2, 1, "-."
-# plt.plot(iteration_values, df_hdirope_counts['accept'] / experiments, color="green", linewidth=linewidth, alpha=alpha, linestyle=linestyle)
-# plt.plot(iteration_values, df_hdirope_counts['reject'] / experiments, color="red", linewidth=linewidth, alpha=alpha, linestyle=linestyle)
-# plt.plot(iteration_values, df_hdirope_counts['inconclusive'] / experiments, color="gray", linewidth=linewidth, alpha=alpha, linestyle=linestyle)
+alpha, linewidth, linestyle = 0.2, 1, "-."
+plt.plot(iteration_values, df_hdirope_counts['accept'] / experiments, color="green", linewidth=linewidth, alpha=alpha, linestyle=linestyle)
+plt.plot(iteration_values, df_hdirope_counts['reject'] / experiments, color="red", linewidth=linewidth, alpha=alpha, linestyle=linestyle)
+plt.plot(iteration_values, df_hdirope_counts['inconclusive'] / experiments, color="gray", linewidth=linewidth, alpha=alpha, linestyle=linestyle)
 
 
 # plotting pitg
@@ -525,6 +525,11 @@ for iteration, successes, failures in zip(iteration_number, iteration_successes,
     sample_results[iteration] = iteration_results
 
 # %%
+df_sample_conclusive.head(4)
+
+# %%
+
+# %%
 df_sample_results = pd.DataFrame(sample_results).T
 df_sample_results["hdi_max"] = df_sample_results["hdi_max"].astype(float)
 df_sample_results["hdi_min"] = df_sample_results["hdi_min"].astype(float)
@@ -535,6 +540,15 @@ display(df_sample_conclusive.head(4))
 
 df_sample_goal = df_sample_results.query("goal_achieved")
 display(df_sample_goal.head(4))
+
+# %%
+df_sample_goal.query("conclusive").head(4)
+
+# %%
+4
+
+# %%
+4
 
 # %%
 plt.figure(figsize=(FIG_WIDTH, FIG_HEIGHT))
@@ -552,16 +566,20 @@ for idx, (iteration, row) in enumerate(df_sample_conclusive.iterrows()):
 
 #for iteration, row in df_sample_goal.iterrows():
 #    plt.plot([iteration, iteration], [row['hdi_min'], row['hdi_max']], color='blue', alpha=0.1, linewidth=1)
-plt.scatter(df_sample_goal["decision_iteration"], df_sample_goal["hdi_min"], color="green", label="goal achieved", marker="o", s=20)
+plt.scatter(df_sample_goal["decision_iteration"], df_sample_goal["hdi_min"], color="green", label=f"{precision_goal:0.3} goal achieved", marker="o", s=20)
 plt.scatter(df_sample_goal["decision_iteration"], df_sample_goal["hdi_max"], color="green", label=None, marker="o", s=20)
-
 
 plot_vhlines_lines(vertical=None, label='ROPE', horizontal=rope_min, linestyle="--", color="purple")
 plot_vhlines_lines(vertical=None, horizontal=rope_max, linestyle="--", color="purple")
 
 plt.legend()
 plt.xlabel("iteration")
-plt.ylabel("iteration success rate")
+plt.ylabel("sample success rate")
+plt.title(f"true success rate = {success_rate:0.3f}")
+
+# %%
+
+# %%
 
 # %%
 
