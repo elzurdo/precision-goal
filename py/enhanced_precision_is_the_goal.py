@@ -278,6 +278,9 @@ df_stats_pitg = stats_dict_to_df(method_stats["pitg"])
 df_stats_pitg.head(4)
 
 # %%
+len(method_stats["hdi_rope"])
+
+# %%
 df_stats_hdirope = stats_dict_to_df(method_stats["hdi_rope"])
 df_stats_hdirope.head(4)
 
@@ -413,10 +416,12 @@ df_hdirope_counts[""]
 experiments
 
 # %%
+import seaborn as sns
+
+# df_stats_hdirope["decision_iteration"], df_stats_hdirope["success_rate"]
 
 # %%
-
-# %%
+sns.jointplot(x=df_stats_hdirope["decision_iteration"], y=df_stats_hdirope["success_rate"], kind="hex", color="#4CB391")
 
 # %%
 plt.figure(figsize=(FIG_WIDTH, 0.5 * FIG_HEIGHT))
@@ -552,6 +557,26 @@ plt.legend(title=f"{len(df_stats_pitg):,} experiments", loc="lower center", font
 plt.title(title)
 
 # %%
+df_stats_hdirope.query("decision_iteration < 200").shape[0]/experiments
+
+# %%
+df_stats_hdirope.shape
+
+# %%
+df_stats_epitg.shape
+
+# %%
+df_stats_pitg.shape
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+
+# %%
 (df_stats_hdirope.query("conclusive")["reject_below"] + df_stats_hdirope.query("conclusive")["reject_above"]).astype(float).sum() / len(df_stats_hdirope.query("conclusive"))
 
 # %%
@@ -576,9 +601,9 @@ df_stats_pitg["inconclusive"].value_counts()/ len(df_stats_pitg)
 df_stats_epitg["inconclusive"].value_counts()/ len(df_stats_pitg)
 
 # %%
-#isample = 179 #8 # found via df_stats_hdirope.query("reject_above").head(20)
-isample = 250 # found via df_stats_epitg.sort_values("decision_iteration", ascending=False)
-isample = 353
+isample = 179 #8 # found via df_stats_hdirope.query("reject_above").head(20)
+#isample = 250 # found via df_stats_epitg.sort_values("decision_iteration", ascending=False)
+#isample = 353
 
 sample = samples[isample]
 iteration_successes = sample.cumsum()
@@ -661,45 +686,6 @@ plt.ylabel("sample success rate")
 plt.title(f"true success rate = {success_rate:0.3f}")
 
 # %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-help(plt.fill)
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
 """
     iteration_successes = sample.cumsum()
     iteration_failures = iteration_number - iteration_successes
@@ -718,12 +704,6 @@ help(plt.fill)
         decision_reject_above = rope_max < hdi_min
         conclusive = decision_accept | decision_reject_above | decision_reject_below
 """
-
-# %%
-
-# %%
-
-# %%
 
 # %%
 (df_stats_hdirope["reject_above"] | df_stats_hdirope["reject_below"]).sum() / len(df_stats_hdirope)
@@ -830,8 +810,6 @@ plot_vhlines_lines(vertical=rope_max, horizontal=None)
 
 plt.xlim([rope_min - 0.1, rope_max + 0.1])
 
-    
-
 # %%
 pdf_area(pdf, dpp)
 
@@ -880,8 +858,6 @@ frac_ = len(df_pitg_plot) / len(df_stats_pitg)
 plt.title(f"{len(df_pitg_plot):,} inconclusive experiments ({frac_:0.1%})")
 plot_vhlines_lines(vertical=None, label=None, horizontal=df_pitg_plot["decision_iteration"].min(), alpha=0.7, linestyle="--")
 plot_vhlines_lines(vertical=None, label=None, horizontal=df_pitg_plot["decision_iteration"].max(), alpha=0.7, linestyle="--")
-
-
 # %%
 
 # %%
@@ -893,6 +869,7 @@ plot_vhlines_lines(vertical=None, label=None, horizontal=df_pitg_plot["decision_
 # %%
 
 # %%
+
 
 # %%
 def plot_parity_line(ax=None):
@@ -936,7 +913,6 @@ df_stats_pitg.head(4).apply(lambda x: pdf_area(beta.pdf(pp, x["successes"], x["f
 # %%
 
 # %%
-
 
 
 # %%
