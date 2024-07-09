@@ -73,7 +73,7 @@ success_rate_null = 0.5   # this is the null hypothesis, not necessarilly true
 dsuccess_rate = 0.05 #success_rate * 0.1
 rope_precision_fraction = 0.8
 
-success_rate = 0.5  #0.5 + 0.5 * dsuccess_rate  # the true value
+success_rate = 0.5  #0.65  #0.5 + 0.5 * dsuccess_rate  # the true value
 # --------
 
 rope_min = success_rate_null - dsuccess_rate
@@ -322,7 +322,6 @@ xlabel = "iteration"
 
 iteration_values = df_pitg_counts["iteration"]
 
-
 # plotting HDI+ROPE
 alpha, linewidth, linestyle = 0.2, 1, "-."
 plt.plot(iteration_values, df_hdirope_counts['accept'] / experiments, color="green", linewidth=linewidth, alpha=alpha, linestyle=linestyle)
@@ -349,6 +348,75 @@ plt.xlabel(xlabel)
 plt.ylabel(f"proportion of {experiments:,} experiments")
 plt.title(title)
 
+
+# %%
+plt.figure(figsize=(FIG_WIDTH * 2, FIG_HEIGHT))
+
+viz_epitg = True
+
+suptitle = f"true success rate = {success_rate:0.3f}"
+alpha=0.7
+
+linestyle_accept, linewidth_accept = None, 5
+linestyle_reject, linewidth_reject = "--", 3
+linestyle_inconclusive, linewidth_inconclusive = "-.", 1
+
+
+plt.subplot(1, 2, 1)
+
+# plotting HDI+ROPE
+plt.plot(iteration_values, df_hdirope_counts['accept'] / experiments, color="green", linewidth=linewidth_accept, alpha=alpha, linestyle=linestyle_accept, label="accept")
+plt.plot(iteration_values, df_hdirope_counts['reject'] / experiments, color="red", linewidth=linewidth_reject, alpha=alpha, linestyle=linestyle_reject, label="reject")
+plt.plot(iteration_values, df_hdirope_counts['inconclusive'] / experiments, color="gray", linewidth=linewidth_inconclusive, alpha=alpha, linestyle=linestyle_inconclusive, label="inconclusive/\ncollect more")
+
+plt.legend(title="decision")
+plt.xlabel(xlabel)
+plt.ylabel(f"proportion of {experiments:,} experiments")
+plt.title("HDI + ROPE")
+
+
+plt.subplot(1, 2, 2)
+
+# plotting PitG
+plt.plot(iteration_values, df_pitg_counts['accept'] / experiments, color="green", linewidth=linewidth_accept, alpha=alpha, linestyle=linestyle_accept, label="accept")
+plt.plot(iteration_values, df_pitg_counts['reject'] / experiments, color="red", linewidth=linewidth_reject, alpha=alpha, linestyle=linestyle_reject, label="reject")
+plt.plot(iteration_values, df_pitg_counts['inconclusive'] / experiments, color="gray", linewidth=linewidth_inconclusive, alpha=alpha, linestyle=linestyle_inconclusive, label="inconclusive/\ncollect more")
+
+if viz_epitg:
+    linewidth_epitg, alpha_epitg = 6, 0.3
+    plt.plot(iteration_values, df_epitg_counts['accept'] / experiments, color="green", linewidth=linewidth_epitg, alpha=alpha_epitg, linestyle=linestyle_accept, label=None)
+    plt.plot(iteration_values, df_epitg_counts['reject'] / experiments, color="red", linewidth=linewidth_epitg, alpha=alpha_epitg, linestyle=linestyle_reject, label=None)
+    plt.plot(iteration_values, df_epitg_counts['inconclusive'] / experiments, color="gray", linewidth=linewidth_epitg, alpha=alpha_epitg, linestyle=linestyle_inconclusive, label=None)
+    plt.title("Precision is the Goal (thin), Enhanced (thick)")
+else:
+    plt.title("Precision is the Goal")
+
+
+plt.legend(title="decision")
+plt.xlabel(xlabel)
+plt.ylabel(f"proportion of {experiments:,} experiments")
+
+
+plt.suptitle(suptitle, fontsize=20)
+plt.tight_layout()
+
+# %%
+df_hdirope_counts[""]
+
+# %%
+(207)/500.
+
+# %%
+207./1500
+
+# %%
+experiments
+
+# %%
+
+# %%
+
+# %%
 
 # %%
 plt.figure(figsize=(FIG_WIDTH, 0.5 * FIG_HEIGHT))
@@ -475,8 +543,8 @@ plt.scatter(df_stats_hdirope["decision_iteration"].mean(), df_stats_hdirope["suc
 
 plot_vhlines_lines(vertical=None, label='true success rate', horizontal=success_rate, alpha=0.7)
 
-plot_vhlines_lines(vertical=None, label='ROPE', horizontal=rope_min)
-plot_vhlines_lines(vertical=None, horizontal=rope_max)
+plot_vhlines_lines(vertical=None, label='ROPE', horizontal=rope_min, linestyle="--")
+plot_vhlines_lines(vertical=None, horizontal=rope_max, linestyle="--")
 plt.xlabel("stop iteration")
 plt.ylabel("success rate at stop")
 
@@ -484,10 +552,33 @@ plt.legend(title=f"{len(df_stats_pitg):,} experiments", loc="lower center", font
 plt.title(title)
 
 # %%
+(df_stats_hdirope.query("conclusive")["reject_below"] + df_stats_hdirope.query("conclusive")["reject_above"]).astype(float).sum() / len(df_stats_hdirope.query("conclusive"))
+
+# %%
+df_stats_hdirope.query(f"hdi_min > {success_rate-0.1}").sort_values("hdi_min")
+
+# %%
+df_stats_hdirope["stop_success_rate"] = df_stats_hdirope["successes"] / df_stats_hdirope["decision_iteration"]
+
+# %%
+df_stats_hdirope.sort_values("stop_success_rate", ascending=False).head(20)
+
+# %%
 df_stats_hdirope.query("reject_above").head(20)
 
 # %%
-isample = 179 #8 # 13
+df_stats_epitg.sort_values("decision_iteration", ascending=False)
+
+# %%
+df_stats_pitg["inconclusive"].value_counts()/ len(df_stats_pitg)
+
+# %%
+df_stats_epitg["inconclusive"].value_counts()/ len(df_stats_pitg)
+
+# %%
+#isample = 179 #8 # found via df_stats_hdirope.query("reject_above").head(20)
+isample = 250 # found via df_stats_epitg.sort_values("decision_iteration", ascending=False)
+isample = 353
 
 sample = samples[isample]
 iteration_successes = sample.cumsum()
@@ -525,11 +616,6 @@ for iteration, successes, failures in zip(iteration_number, iteration_successes,
     sample_results[iteration] = iteration_results
 
 # %%
-df_sample_conclusive.head(4)
-
-# %%
-
-# %%
 df_sample_results = pd.DataFrame(sample_results).T
 df_sample_results["hdi_max"] = df_sample_results["hdi_max"].astype(float)
 df_sample_results["hdi_min"] = df_sample_results["hdi_min"].astype(float)
@@ -545,10 +631,7 @@ display(df_sample_goal.head(4))
 df_sample_goal.query("conclusive").head(4)
 
 # %%
-4
-
-# %%
-4
+440./852
 
 # %%
 plt.figure(figsize=(FIG_WIDTH, FIG_HEIGHT))
