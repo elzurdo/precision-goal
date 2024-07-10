@@ -222,8 +222,16 @@ for isample, sample in enumerate(samples):
                 rope_result = booleans_to_rope_result(decision_accept, decision_reject_below, decision_reject_above)
                 _update_iteration_tally(method_roperesult_iteration["epitg"][rope_result], iteration)
 
+                if hdi_rope_stopped is False:
+                    _update_iteration_tally(method_roperesult_iteration["hdi_rope"][rope_result], iteration)
+                    
             if conclusive | final_iteration:
                 method_stats["epitg"][isample] = iteration_results
+
+                if hdi_rope_stopped is False:
+                    method_stats["hdi_rope"][isample] = iteration_results
+                    hdi_rope_stopped = True
+
                 if final_iteration:
                     print(f"Sample {isample} at final iteration")
                     print(method_stats["epitg"][isample])
@@ -258,6 +266,7 @@ for isample, sample in enumerate(samples):
 
 
 # %%
+# examining uniqueness distributions of success and failure pairs
 pd.Series(dict_successes_failures_counter).value_counts(normalize=True).sort_index()
 
 
@@ -271,17 +280,17 @@ def stats_dict_to_df(method_stats):
 
 
 df_stats_epitg = stats_dict_to_df(method_stats["epitg"])
+print(df_stats_epitg.shape)
 df_stats_epitg.head(4)
 
 # %%
 df_stats_pitg = stats_dict_to_df(method_stats["pitg"])
+print(df_stats_pitg.shape)
 df_stats_pitg.head(4)
 
 # %%
-len(method_stats["hdi_rope"])
-
-# %%
 df_stats_hdirope = stats_dict_to_df(method_stats["hdi_rope"])
+print(df_stats_hdirope.shape)
 df_stats_hdirope.head(4)
 
 # %%
@@ -315,6 +324,9 @@ df_epitg_counts.describe()
 
 # %%
 df_pitg_counts.describe()
+
+# %%
+df_hdirope_counts.describe()
 
 # %%
 df_pitg_counts.equals(df_epitg_counts)
@@ -404,24 +416,22 @@ plt.suptitle(suptitle, fontsize=20)
 plt.tight_layout()
 
 # %%
-df_hdirope_counts[""]
-
-# %%
-(207)/500.
-
-# %%
-207./1500
-
-# %%
-experiments
+df_hdirope_counts.drop(["iteration", "reject"], axis=1).sum(axis=1).value_counts()
 
 # %%
 import seaborn as sns
 
-# df_stats_hdirope["decision_iteration"], df_stats_hdirope["success_rate"]
+df_plot = df_stats_hdirope[["decision_iteration", "success_rate"]]
+df_plot["method"] = "HDI + ROPE"
+df_append = df_stats_pitg[["decision_iteration", "success_rate"]]
+df_append["method"] = "PitG"
+df_plot = pd.concat([df_plot, df_append])
+df_append = df_stats_epitg[["decision_iteration", "success_rate"]]
+df_append["method"] = "ePiTG"
+df_plot = pd.concat([df_plot, df_append])
 
 # %%
-sns.jointplot(x=df_stats_hdirope["decision_iteration"], y=df_stats_hdirope["success_rate"], kind="hex", color="#4CB391")
+sns.jointplot(x=df_plot["decision_iteration"], y=df_plot["success_rate"], color="#4CB391", hue=df_plot["method"])
 
 # %%
 plt.figure(figsize=(FIG_WIDTH, 0.5 * FIG_HEIGHT))
@@ -536,14 +546,15 @@ plt.xlim([xlim[0] - 0.02, xlim[1] + 0.02])
 plt.title(title)
 plt.xlabel("success rate at stop")
 # %%
-plt.scatter(df_stats_pitg["decision_iteration"], df_stats_pitg["success_rate"], alpha=0.3, color="orange", label="PitG", marker=".")
-plt.scatter(df_stats_epitg["decision_iteration"], df_stats_epitg["success_rate"], alpha=0.3, color="purple", label="ePitG", marker=".")
-plt.scatter(df_stats_hdirope["decision_iteration"], df_stats_hdirope["success_rate"], alpha=0.3, color="blue", label="HDI+ROPE", marker=".")
+plt.scatter(df_stats_hdirope["decision_iteration"], df_stats_hdirope["success_rate"], alpha=0.3, color="red", label="HDI+ROPE", marker="s", s=20)
+plt.scatter(df_stats_pitg["decision_iteration"], df_stats_pitg["success_rate"], alpha=0.03, color="blue", label="PitG", marker=".")
+plt.scatter(df_stats_epitg["decision_iteration"], df_stats_epitg["success_rate"], alpha=0.3, color="lightgreen", label="ePitG", marker="o", s=10)
 
 
-plt.scatter(df_stats_pitg["decision_iteration"].mean(), df_stats_pitg["success_rate"].mean(), color="orange", label="PitG mean", s=200, marker="$\u25EF$")
-plt.scatter(df_stats_epitg["decision_iteration"].mean(), df_stats_epitg["success_rate"].mean(), color="purple", label="ePitG mean", s=200, marker="$\u25EF$")
-plt.scatter(df_stats_hdirope["decision_iteration"].mean(), df_stats_hdirope["success_rate"].mean(), color="blue", label="HDI+ROPE mean", s=200, marker="$\u25EF$")
+plt.scatter(df_stats_hdirope["decision_iteration"].mean(), df_stats_hdirope["success_rate"].mean(), color="red", label="HDI+ROPE mean", s=200, marker="$\u25EF$")
+plt.scatter(df_stats_pitg["decision_iteration"].mean(), df_stats_pitg["success_rate"].mean(), color="blue", label="PitG mean", s=200, marker="$\u25EF$")
+plt.scatter(df_stats_epitg["decision_iteration"].mean(), df_stats_epitg["success_rate"].mean(), color="lightgreen", label="ePitG mean", s=200, marker="$\u25EF$")
+
 
 
 plot_vhlines_lines(vertical=None, label='true success rate', horizontal=success_rate, alpha=0.7)
@@ -555,26 +566,6 @@ plt.ylabel("success rate at stop")
 
 plt.legend(title=f"{len(df_stats_pitg):,} experiments", loc="lower center", fontsize=10)
 plt.title(title)
-
-# %%
-df_stats_hdirope.query("decision_iteration < 200").shape[0]/experiments
-
-# %%
-df_stats_hdirope.shape
-
-# %%
-df_stats_epitg.shape
-
-# %%
-df_stats_pitg.shape
-
-# %%
-
-# %%
-
-# %%
-
-# %%
 
 # %%
 (df_stats_hdirope.query("conclusive")["reject_below"] + df_stats_hdirope.query("conclusive")["reject_above"]).astype(float).sum() / len(df_stats_hdirope.query("conclusive"))
@@ -601,7 +592,8 @@ df_stats_pitg["inconclusive"].value_counts()/ len(df_stats_pitg)
 df_stats_epitg["inconclusive"].value_counts()/ len(df_stats_pitg)
 
 # %%
-isample = 179 #8 # found via df_stats_hdirope.query("reject_above").head(20)
+isample = 2
+#isample = 179 #8 # found via df_stats_hdirope.query("reject_above").head(20)
 #isample = 250 # found via df_stats_epitg.sort_values("decision_iteration", ascending=False)
 #isample = 353
 
