@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # ---
 # jupyter:
 #   jupytext:
@@ -460,12 +461,14 @@ def plot_pdf(sr_experiment_stats, xlim=None):
     failures = sr_experiment_stats["failures"]
     rate = successes / (successes + failures)
     n_ = successes + failures
+    hdi_min, hdi_max = successes_failures_to_hdi_limits(successes, failures)
 
     pdf = beta.pdf(pp, successes, failures)
     pdf_hdi = beta.pdf(pp_hdi, successes, failures)
 
-    plt.plot(pp, pdf, color="purple", label=f"pdf p={rate:0.2f}; n={n_:,}")
-    plt.fill_between(pp_hdi, pdf_hdi, color="purple", alpha=0.2, label="HDI")
+    plt.plot(pp, pdf, color="purple", label=f"pdf p={rate:0.3f}; n={n_:,}")
+    label_hdi = f"HDI Δ={hdi_max - hdi_min:0.3f}"
+    plt.fill_between(pp_hdi, pdf_hdi, color="purple", alpha=0.2, label=label_hdi)
     plot_vhlines_lines(vertical=rope_min, label='ROPE', horizontal=None)
     plot_vhlines_lines(vertical=rope_max, horizontal=None)
     plt.legend()
@@ -551,7 +554,7 @@ plt.scatter(df_stats_pitg["decision_iteration"], df_stats_pitg["success_rate"], 
 plt.scatter(df_stats_epitg["decision_iteration"], df_stats_epitg["success_rate"], alpha=0.3, color="lightgreen", label="ePitG", marker="o", s=10)
 
 
-plt.scatter(df_stats_hdirope["decision_iteration"].mean(), df_stats_hdirope["success_rate"].mean(), color="red", label="HDI+ROPE mean", s=200, marker="$\u25EF$")
+plt.scatter(df_stats_hdirope["decision_iteration"].mean(), df_stats_hdirope["success_rate"].mean(), color="red", label="HDI+ROPE mean", s=200, marker="$\u25A1$")
 plt.scatter(df_stats_pitg["decision_iteration"].mean(), df_stats_pitg["success_rate"].mean(), color="blue", label="PitG mean", s=200, marker="$\u25EF$")
 plt.scatter(df_stats_epitg["decision_iteration"].mean(), df_stats_epitg["success_rate"].mean(), color="lightgreen", label="ePitG mean", s=200, marker="$\u25EF$")
 
@@ -564,8 +567,10 @@ plot_vhlines_lines(vertical=None, horizontal=rope_max, linestyle="--")
 plt.xlabel("stop iteration")
 plt.ylabel("success rate at stop")
 
-plt.legend(title=f"{len(df_stats_pitg):,} experiments", loc="lower center", fontsize=10)
+plt.legend(title=f"{len(df_stats_pitg):,} experiments", loc="upper right", fontsize=10)
 plt.title(title)
+plt.xlim(400, 800)
+plt.ylim(0.4, 0.6)
 
 # %%
 (df_stats_hdirope.query("conclusive")["reject_below"] + df_stats_hdirope.query("conclusive")["reject_above"]).astype(float).sum() / len(df_stats_hdirope.query("conclusive"))
@@ -592,10 +597,27 @@ df_stats_pitg["inconclusive"].value_counts()/ len(df_stats_pitg)
 df_stats_epitg["inconclusive"].value_counts()/ len(df_stats_pitg)
 
 # %%
-isample = 2
-#isample = 179 #8 # found via df_stats_hdirope.query("reject_above").head(20)
+df_stats_hdirope
+
+# %%
+# In draft using isample= 179 of success_rate = 0.5
+# potential isample=203 - hdi+rope 99 , epitg >1,300
+# potential isample=221  - hdi+rope 31, epitg 886
+# potential isample=294
+# potential isample=333
+
+#isample = 2
+#isample=44
+#isample = 179 # found via df_stats_hdirope.query("reject_above").head(20) #8 
+#isample = df_stats_hdirope.query("(reject_above) | (reject_below) ").query("decision_iteration > 50").index[3]
 #isample = 250 # found via df_stats_epitg.sort_values("decision_iteration", ascending=False)
 #isample = 353
+
+
+isamples_subset = list(sorted(set(df_stats_hdirope.query("(reject_above) | (reject_below) ").query("decision_iteration > 20").index) & set(df_stats_pitg.query("inconclusive").index) & set(df_stats_epitg.query("conclusive").index)))
+isample = isamples_subset[8]
+
+print(isample)
 
 sample = samples[isample]
 iteration_successes = sample.cumsum()
@@ -648,9 +670,7 @@ display(df_sample_goal.head(4))
 df_sample_goal.query("conclusive").head(4)
 
 # %%
-440./852
-
-# %%
+# In draft using isample= 179 of success_rate = 0.5
 plt.figure(figsize=(FIG_WIDTH, FIG_HEIGHT))
 
 plt.plot(df_sample_results["decision_iteration"], df_sample_results["hdi_min"], color="gray", label=None)
@@ -676,6 +696,31 @@ plt.legend()
 plt.xlabel("iteration")
 plt.ylabel("sample success rate")
 plt.title(f"true success rate = {success_rate:0.3f}")
+
+# %%
+
+sr_experiment_stats_hdirope = df_stats_hdirope.loc[isample]
+sr_experiment_stats_pitg = df_stats_pitg.loc[isample]
+sr_experiment_stats_epitg = df_stats_epitg.loc[isample]
+
+fig, axs = plt.subplots(3, 1, figsize=(FIG_WIDTH, 1.2* FIG_HEIGHT))
+xlim = (0.2, 0.6)
+#xlim = (0.4,0.8)
+
+
+plt.subplot(3, 1, 1)
+plot_pdf(sr_experiment_stats_hdirope, xlim=xlim)
+plt.title("HDI + ROPE")
+
+plt.subplot(3, 1, 2)
+plot_pdf(sr_experiment_stats_pitg, xlim=xlim)
+plt.title("Precision is the Goal")
+
+plt.subplot(3, 1, 3)
+plt.title("Enhanced Precision is the Goal")
+plot_pdf(sr_experiment_stats_epitg, xlim=xlim)
+plt.suptitle(f"Outcomes depending on Stop Criterion", fontsize=18)
+plt.tight_layout()
 
 # %%
 """
