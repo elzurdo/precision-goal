@@ -9,7 +9,11 @@ from utils_stats import (CI_FRACTION,
                          test_value
                          )
 
-theta_null_str = r"$\theta_{null}$"
+FIG_WIDTH = 8
+FIG_HEIGHT = 6
+
+theta_null_str = r"$\theta_{\rm null}$"
+theta_true_str = r"$\theta_{\rm true}$"
 
 def plot_success_rates(success, failure, ci_fraction=CI_FRACTION,
                        min_psuccess=0.85, max_psucess=1.,d_psuccess=0.0001,
@@ -257,6 +261,122 @@ def plot_decision_rates(n_experiments, df_decision_counts):
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.title(title)
+
+
+def plot_multiple_decision_rates_jammed(method_df_iteration_counts, success_rate, experiments, iteration_values=None):
+    title = f"true success rate = {success_rate:0.3f}"
+    xlabel = "iteration"
+
+    method_alpha = {"pitg": 0.4, "epitg": 0.7, "hdi_rope": 0.2}
+    method_linewidth = {"pitg": 5, "epitg": 3, "hdi_rope": 1}
+    method_linestyle = {"pitg": "-", "epitg": "--", "hdi_rope": "-."}
+
+    for method_name, df_counts in method_df_iteration_counts.items():
+        if iteration_values is None:
+            iteration_values = df_counts["iteration"]
+
+        linewidth = method_linewidth[method_name]
+        alpha = method_alpha[method_name]
+        linestyle = method_linestyle[method_name]
+
+        plt.plot(iteration_values, df_counts['accept'] / experiments, color="green", linewidth=linewidth, alpha=alpha, linestyle=linestyle)
+        plt.plot(iteration_values, df_counts['reject'] / experiments, color="red", linewidth=linewidth, alpha=alpha, linestyle=linestyle)
+        plt.plot(iteration_values, df_counts['inconclusive'] / experiments, color="gray", linewidth=linewidth, alpha=alpha, linestyle=linestyle)
+
+    plt.xlabel(xlabel)
+    plt.ylabel(f"proportion of {experiments:,} experiments")
+    plt.title(title)
+
+def plot_multiple_decision_rates_separate(method_df_iteration_counts, success_rate, experiments, viz_epitg=True, iteration_values=None):
+
+    plt.figure(figsize=(FIG_WIDTH * 2, FIG_HEIGHT))
+    xlabel = "iteration"
+
+    suptitle = f"{theta_true_str} = {success_rate:0.3f}"
+
+    for method_name, df_counts in method_df_iteration_counts.items():
+        if iteration_values is None:
+            iteration_values = df_counts["iteration"]
+
+        linestyle_accept, linewidth_accept = None, 5
+        linestyle_reject, linewidth_reject = "--", 3
+        linestyle_inconclusive, linewidth_inconclusive = "-.", 1
+        alpha=0.7
+        label_accept = "accept"
+        label_reject = "reject"
+        label_inconclusive = "inconclusive/\ncollect more"
+        
+        if "hdi_rope" == method_name:
+            plt.subplot(1, 2, 1)
+            title = "HDI + ROPE"
+        else:
+            if viz_epitg:
+                plt.subplot(1, 2, 2)
+                if "pitg" == method_name:
+                    title = "Precision is the Goal (thin), Enhanced (thick)"
+                if "epitg" == method_name:
+                    linewidth_accept, linewidth_reject, linewidth_inconclusive = 6, 6, 6
+                    alpha = 0.3
+                    label_accept, label_reject, label_inconclusive = None, None, None
+            else:
+                if "pitg" == method_name:
+                    plt.subplot(1, 2, 1)
+                    title = "Precision is the Goal"
+
+        # plotting HDI+ROPE
+        plt.plot(iteration_values, df_counts['accept'] / experiments, color="green", linewidth=linewidth_accept, alpha=alpha, linestyle=linestyle_accept, label=label_accept)
+        plt.plot(iteration_values, df_counts['reject'] / experiments, color="red", linewidth=linewidth_reject, alpha=alpha, linestyle=linestyle_reject, label=label_reject)
+        plt.plot(iteration_values, df_counts['inconclusive'] / experiments, color="gray", linewidth=linewidth_inconclusive, alpha=alpha, linestyle=linestyle_inconclusive, label=label_inconclusive)
+
+        plt.legend(title="decision")
+        plt.xlabel(xlabel)
+        plt.ylabel(f"proportion of {experiments:,} experiments")
+        plt.title(title)
+
+
+    plt.suptitle(suptitle, fontsize=20)
+    plt.tight_layout()
+
+def scatter_stop_iter_sample_rate(method_df_stats, rope_min=None, rope_max=None, success_rate=None, title=None):
+    method_colors = {"pitg": "blue", "epitg": "lightgreen", "hdi_rope": "red"}
+    method_markers = {"pitg": "o", "epitg": "x", "hdi_rope": "s"}
+    method_mean_markers = {"pitg": "$\u25EF$", "epitg": "$\u25EF$", "hdi_rope": "$\u25A1$"}
+
+    for method_name, df_stats in method_df_stats.items():
+        color, marker = method_colors[method_name], method_markers[method_name]
+        mean_marker = method_mean_markers[method_name]
+        label = method_name
+        label_mean = f"{method_name} mean"
+
+        plt.scatter(df_stats["decision_iteration"], df_stats["success_rate"], alpha=0.3, color=color, label=label, marker=marker, s=20)
+        plt.scatter(df_stats["decision_iteration"].mean(), df_stats["success_rate"].mean(), color=color, label=label_mean, s=200, marker=mean_marker)
+
+    
+    
+    #plt.scatter(df_stats_pitg["decision_iteration"], df_stats_pitg["success_rate"], alpha=0.03, color="blue", label="PitG", marker=".")
+    #plt.scatter(df_stats_epitg["decision_iteration"], df_stats_epitg["success_rate"], alpha=0.3, color="lightgreen", label="ePitG", marker="o", s=10)
+
+    #plt.scatter(df_stats_pitg["decision_iteration"].mean(), df_stats_pitg["success_rate"].mean(), color="blue", label="PitG mean", s=200, marker="$\u25EF$")
+    #plt.scatter(df_stats_epitg["decision_iteration"].mean(), df_stats_epitg["success_rate"].mean(), color="lightgreen", label="ePitG mean", s=200, marker="$\u25EF$")
+
+
+
+    if success_rate is not None:
+        plot_vhlines_lines(vertical=None, label='true success rate', horizontal=success_rate, alpha=0.7)
+
+    if rope_min is not None:
+        plot_vhlines_lines(vertical=None, label='ROPE', horizontal=rope_min, linestyle="--")
+    if rope_max is not None:
+        plot_vhlines_lines(vertical=None, horizontal=rope_max, linestyle="--")
+    plt.xlabel("stop iteration")
+    plt.ylabel("success rate at stop")
+
+    plt.legend(title=f"{len(df_stats):,} experiments", loc="upper right", fontsize=10)
+    if title is not None:
+        plt.title(title)
+
+    #plt.xlim(400, 800)
+    #plt.ylim(0.4, 0.6)
 
 def plot_vhlines_lines(vertical=None, horizontal=0, color="black", ax=None, alpha=0.2, linestyle=None, linewidth=1, label=None):
     if ax is None:

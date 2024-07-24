@@ -23,6 +23,12 @@
 # # Setup
 
 # %%
+# IPython extension to reload modules before executing user code.
+# useful to see immediate results in notebook when modifying imported scripts
+# %load_ext autoreload
+# %autoreload 2
+
+# %%
 import numpy as np
 import pandas as pd
 
@@ -37,7 +43,18 @@ from utils_viz import (
     #plot_success_rates
     plot_vhlines_lines,
     #plot_parity_line,
+    plot_multiple_decision_rates_jammed,
+    plot_multiple_decision_rates_separate,
+    scatter_stop_iter_sample_rate,
 )
+
+from utils_experiments import (
+    BinaryAccounting,
+    stop_decision_multiple_experiments_multiple_methods,
+    stats_dict_to_df,
+    iteration_counts_to_df,
+)
+    
 
 seed = 7
 
@@ -108,6 +125,40 @@ samples.shape  # (experiments, n_samples)
 # # Enhanced Precision is the Goal
 #
 # As compared to "Precision is the Goal" and HDI+ROPE.
+
+# %%
+# binary_accounting = BinaryAccounting()
+
+# %%
+method_stats, method_roperesult_iteration = stop_decision_multiple_experiments_multiple_methods(samples, rope_min, rope_max, precision_goal, binary_accounting=binary_accounting)
+
+# %%
+# examining uniqueness distributions of success and failure pairs
+100. * pd.Series(binary_accounting.dict_successes_failures_counter).value_counts(normalize=True).sort_index()
+
+# %%
+method_df_stats = {method_name: stats_dict_to_df(method_stats[method_name]) for method_name in method_stats}
+
+method_df_stats["hdi_rope"]
+
+# %%
+method_df_iteration_counts = {method_name: iteration_counts_to_df(method_roperesult_iteration[method_name], experiments) for method_name in method_roperesult_iteration}
+
+method_df_iteration_counts["hdi_rope"]
+
+# %%
+plot_multiple_decision_rates_jammed(method_df_iteration_counts, success_rate, experiments, iteration_values=None)
+
+# %%
+viz_epitg = True
+plot_multiple_decision_rates_separate(method_df_iteration_counts, success_rate, experiments, viz_epitg=viz_epitg, iteration_values=None)
+
+# %%
+scatter_stop_iter_sample_rate(method_df_stats, rope_min=rope_min, rope_max=rope_max, success_rate=success_rate, title=None)
+
+# %% [markdown]
+# # Old Scripts
+# Some still useful!
 
 # %%
 dict_successes_failures_hdi_limits = {}
