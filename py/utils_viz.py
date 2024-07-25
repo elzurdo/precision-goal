@@ -264,7 +264,7 @@ def plot_decision_rates(n_experiments, df_decision_counts):
 
 
 def plot_multiple_decision_rates_jammed(method_df_iteration_counts, success_rate, experiments, iteration_values=None):
-    title = f"true success rate = {success_rate:0.3f}"
+    title = f"{theta_true_str} = {success_rate:0.3f}"
     xlabel = "iteration"
 
     method_alpha = {"pitg": 0.4, "epitg": 0.7, "hdi_rope": 0.2}
@@ -328,6 +328,7 @@ def plot_multiple_decision_rates_separate(method_df_iteration_counts, success_ra
         plt.plot(iteration_values, df_counts['reject'] / experiments, color="red", linewidth=linewidth_reject, alpha=alpha, linestyle=linestyle_reject, label=label_reject)
         plt.plot(iteration_values, df_counts['inconclusive'] / experiments, color="gray", linewidth=linewidth_inconclusive, alpha=alpha, linestyle=linestyle_inconclusive, label=label_inconclusive)
 
+        plot_grid(with_y=True, with_x=False, alpha=0.3)
         plt.legend(title="decision")
         plt.xlabel(xlabel)
         plt.ylabel(f"proportion of {experiments:,} experiments")
@@ -337,12 +338,16 @@ def plot_multiple_decision_rates_separate(method_df_iteration_counts, success_ra
     plt.suptitle(suptitle, fontsize=20)
     plt.tight_layout()
 
-def scatter_stop_iter_sample_rate(method_df_stats, rope_min=None, rope_max=None, success_rate=None, title=None):
+def scatter_stop_iter_sample_rate(method_df_stats, rope_min=None, rope_max=None, success_rate=None, title=None, method_names=None):
     method_colors = {"pitg": "blue", "epitg": "lightgreen", "hdi_rope": "red"}
     method_markers = {"pitg": "o", "epitg": "x", "hdi_rope": "s"}
     method_mean_markers = {"pitg": "$\u25EF$", "epitg": "$\u25EF$", "hdi_rope": "$\u25A1$"}
 
-    for method_name, df_stats in method_df_stats.items():
+    if method_names is None:
+        method_names = ["hdi_rope", "pitg", "epitg"]
+
+    for method_name in method_names:
+        df_stats = method_df_stats[method_name].copy()
         color, marker = method_colors[method_name], method_markers[method_name]
         mean_marker = method_mean_markers[method_name]
         label = method_name
@@ -362,7 +367,7 @@ def scatter_stop_iter_sample_rate(method_df_stats, rope_min=None, rope_max=None,
 
 
     if success_rate is not None:
-        plot_vhlines_lines(vertical=None, label='true success rate', horizontal=success_rate, alpha=0.7)
+        plot_vhlines_lines(vertical=None, label=f'{theta_true_str}', horizontal=success_rate, alpha=0.7)
 
     if rope_min is not None:
         plot_vhlines_lines(vertical=None, label='ROPE', horizontal=rope_min, linestyle="--")
@@ -377,6 +382,20 @@ def scatter_stop_iter_sample_rate(method_df_stats, rope_min=None, rope_max=None,
 
     #plt.xlim(400, 800)
     #plt.ylim(0.4, 0.6)
+
+def plot_grid(with_y=True, with_x=False, alpha=0.3):
+    ax = plt.gca()
+
+    if with_y:
+        ax.grid(axis="y", alpha=alpha)
+    else:
+        ax.grid(False, axis="y")
+
+    if with_x:
+        ax.grid(axis="x", alpha=alpha)
+    else:
+        ax.grid(False, axis="x")
+        
 
 def plot_vhlines_lines(vertical=None, horizontal=0, color="black", ax=None, alpha=0.2, linestyle=None, linewidth=1, label=None):
     if ax is None:

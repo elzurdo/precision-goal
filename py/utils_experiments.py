@@ -5,6 +5,34 @@ from utils_stats import (
     successes_failures_to_hdi_ci_limits
 )
 
+class Experiment():
+
+    def __init__(self):
+        success_rate_null = 0.5   # this is the null hypothesis, not necessarilly true
+        dsuccess_rate = 0.05 #success_rate * 0.1
+        rope_precision_fraction = 0.8
+
+        success_rate = 0.65  #0.65  #0.5 + 0.5 * dsuccess_rate  # the true value
+        # --------
+
+        rope_min = success_rate_null - dsuccess_rate
+        rope_max = success_rate_null + dsuccess_rate
+
+        # hypothesis: if precision_goal is lower, then PitG has less of
+        # an inconclusiveness problem but at the expense of more trials.
+        precision_goal = (2 * dsuccess_rate) * rope_precision_fraction
+        #precision_goal = (dsuccess_rate) * rope_precision_fraction # 1500 was not enough for 0.04
+        #precision_goal = (1.5 * dsuccess_rate) * rope_precision_fraction # 1500 was not enough for 0.04
+
+
+        print(f"{success_rate_null:0.5}: null")
+        print(f"{rope_min:0.2}: ROPE min")
+        print(f"{rope_max:0.2}: ROPE max")
+        print("-" * 20)
+        print(f"{precision_goal:0.2}: Precision Goal")
+        print("-" * 20)
+        print(f"{success_rate:0.3}: true")
+
 class BinaryAccounting():
     def __init__(self):
         self.dict_successes_failures_counter = {}
@@ -54,6 +82,7 @@ def successes_failures_caculate_hdi_limits(successes, failures):
 def stats_dict_to_df(method_stats):
     df = pd.DataFrame(method_stats).T
     df.index.name = "experiment_number"
+    df["reject"] = df["reject_below"] + df["reject_above"]
     df["precision"] = df["hdi_max"] - df["hdi_min"]
     df["success_rate"] = df["successes"] / (df["successes"] + df["failures"])
     return df
@@ -73,7 +102,7 @@ def iteration_counts_to_df(roperesult_iteration, experiments):
     return df
 
 
-def stop_decision_multiple_experiments_multiple_methods(samples, rope_min, rope_max, precision_goal, binary_accounting=None):
+def stop_decision_multiple_experiments_multiple_methods(samples, rope_min, rope_max, precision_goal, binary_accounting=None, min_iter=30):
     # For each method and rope result type creating tally of outcomes
     method_names = ["pitg", "epitg", "hdi_rope"]
     n_samples = samples.shape[1]
@@ -120,6 +149,16 @@ def stop_decision_multiple_experiments_multiple_methods(samples, rope_min, rope_
             decision_reject_above = rope_max < hdi_min
             conclusive = decision_accept | decision_reject_above | decision_reject_below
 
+            if min_iter is not None:
+                if iteration < min_iter:
+                    #continue
+                    decision_accept = False
+                    decision_reject_below = False
+                    decision_reject_above = False
+                    conclusive = False
+                    precision_goal_achieved = False
+
+
             iteration_results = {"decision_iteration": iteration,
                                                     "accept": decision_accept,
                                                         "reject_below": decision_reject_below,
@@ -130,6 +169,7 @@ def stop_decision_multiple_experiments_multiple_methods(samples, rope_min, rope_
                                                         "failures": failures,
                                                         "hdi_min": hdi_min,
                                                         "hdi_max": hdi_max,
+                                                        "precision_goal_achieved": precision_goal_achieved,
                                                     }   
 
             if precision_goal_achieved:
@@ -184,3 +224,17 @@ def stop_decision_multiple_experiments_multiple_methods(samples, rope_min, rope_
                 break
 
     return method_stats, method_roperesult_iteration
+
+def print_decision_rates(df_stats):
+    for decision_ in ["accept", "reject", "inconclusive"]:
+        print(f"{100. * df_stats.query(decision_).shape[0] / len(df_stats):06.3f}% {decision_}")
+
+    print(f"\n{df_stats['success_rate'].mean():06.3%} mean success rate")
+    print(f"{df_stats['success_rate'].median():06.3%} median success rate")
+    print(f"{df_stats['success_rate'].std():06.3%} std success rate")
+
+def print_methods_decision_rates(method_df_stats):
+    for method_name in method_df_stats:
+        print(f"{method_name}")
+        print_decision_rates(method_df_stats[method_name])
+        print("-" * 20)

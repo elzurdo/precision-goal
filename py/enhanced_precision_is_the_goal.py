@@ -53,6 +53,7 @@ from utils_experiments import (
     stop_decision_multiple_experiments_multiple_methods,
     stats_dict_to_df,
     iteration_counts_to_df,
+    print_methods_decision_rates,
 )
     
 
@@ -91,7 +92,7 @@ success_rate_null = 0.5   # this is the null hypothesis, not necessarilly true
 dsuccess_rate = 0.05 #success_rate * 0.1
 rope_precision_fraction = 0.8
 
-success_rate = 0.5  #0.65  #0.5 + 0.5 * dsuccess_rate  # the true value
+success_rate = 0.65  #0.65  #0.5 + 0.5 * dsuccess_rate  # the true value
 # --------
 
 rope_min = success_rate_null - dsuccess_rate
@@ -113,8 +114,8 @@ print("-" * 20)
 print(f"{success_rate:0.3}: true")
 
 # %%
-experiments = 500 # number of experiments 500 #200 #300 #200
-n_samples = 1500  #2500 # max number of samples in each experiement #2500 #1000 #1500
+experiments = 3000 # number of experiments 500 #200 #300 #200
+n_samples = 2000  #2500 # max number of samples in each experiement #2500 #1000 #1500
 
 np.random.seed(seed)
 samples = np.random.binomial(1, success_rate, [experiments, n_samples])
@@ -127,34 +128,49 @@ samples.shape  # (experiments, n_samples)
 # As compared to "Precision is the Goal" and HDI+ROPE.
 
 # %%
-# binary_accounting = BinaryAccounting()
+# create object if does not exist
+if not ("binary_accounting" in locals() or "binary_accounting" in globals()):
+    print("Creating a new BinaryAccounting object")
+    binary_accounting = BinaryAccounting()
 
 # %%
+# Running the experiments
+
 method_stats, method_roperesult_iteration = stop_decision_multiple_experiments_multiple_methods(samples, rope_min, rope_max, precision_goal, binary_accounting=binary_accounting)
 
 # %%
 # examining uniqueness distributions of success and failure pairs
-100. * pd.Series(binary_accounting.dict_successes_failures_counter).value_counts(normalize=True).sort_index()
+
+sr_duplicates = pd.Series(binary_accounting.dict_successes_failures_counter).value_counts(normalize=True).sort_index()
+print(f"{len(binary_accounting.dict_successes_failures_counter):,} pairs s/f pairs")
+print(100. * sr_duplicates.head(10))
+print(f"{sr_duplicates[11:].sum():0.1%} 11 duplicates or more")
+
 
 # %%
 method_df_stats = {method_name: stats_dict_to_df(method_stats[method_name]) for method_name in method_stats}
 
-method_df_stats["hdi_rope"]
+method_df_stats["hdi_rope"].head(4)
 
 # %%
 method_df_iteration_counts = {method_name: iteration_counts_to_df(method_roperesult_iteration[method_name], experiments) for method_name in method_roperesult_iteration}
 
-method_df_iteration_counts["hdi_rope"]
+method_df_iteration_counts["hdi_rope"].head(4)
 
 # %%
 plot_multiple_decision_rates_jammed(method_df_iteration_counts, success_rate, experiments, iteration_values=None)
+plot_vhlines_lines(vertical=30, horizontal=None, linestyle=":")
 
 # %%
 viz_epitg = True
 plot_multiple_decision_rates_separate(method_df_iteration_counts, success_rate, experiments, viz_epitg=viz_epitg, iteration_values=None)
 
+
 # %%
 scatter_stop_iter_sample_rate(method_df_stats, rope_min=rope_min, rope_max=rope_max, success_rate=success_rate, title=None)
+
+# %%
+print_methods_decision_rates(method_df_stats)
 
 # %% [markdown]
 # # Old Scripts
