@@ -5,33 +5,74 @@ from utils_stats import (
     successes_failures_to_hdi_ci_limits
 )
 
-class Experiment():
+from utils_viz import (
+    plot_multiple_decision_rates_separate,
+    scatter_stop_iter_sample_rate,
+)
 
-    def __init__(self):
-        success_rate_null = 0.5   # this is the null hypothesis, not necessarilly true
-        dsuccess_rate = 0.05 #success_rate * 0.1
-        rope_precision_fraction = 0.8
+theta_true_str = r"$\theta_{\rm true}$"
+class BinomialHypothesis():
+    def __init__(self, success_rate_null=0.5, dsuccess_rate=0.05, rope_precision_fraction=0.8):
+        self.success_rate_null =  success_rate_null  # null hypothesis
+        self.dsuccess_rate = dsuccess_rate  # - ROPE half width
+        self.rope_precision_fraction = rope_precision_fraction # - precision must past this fractionu of ROPE
 
-        success_rate = 0.65  #0.65  #0.5 + 0.5 * dsuccess_rate  # the true value
-        # --------
+        self.set_hypothesis_params()
 
-        rope_min = success_rate_null - dsuccess_rate
-        rope_max = success_rate_null + dsuccess_rate
+    def set_hypothesis_params(self):
+        self.rope_min = self.success_rate_null - self.dsuccess_rate
+        self.rope_max = self.success_rate_null + self.dsuccess_rate
 
         # hypothesis: if precision_goal is lower, then PitG has less of
         # an inconclusiveness problem but at the expense of more trials.
-        precision_goal = (2 * dsuccess_rate) * rope_precision_fraction
+        self.precision_goal = (2 * self.dsuccess_rate) * self.rope_precision_fraction
         #precision_goal = (dsuccess_rate) * rope_precision_fraction # 1500 was not enough for 0.04
         #precision_goal = (1.5 * dsuccess_rate) * rope_precision_fraction # 1500 was not enough for 0.04
 
 
-        print(f"{success_rate_null:0.5}: null")
-        print(f"{rope_min:0.2}: ROPE min")
-        print(f"{rope_max:0.2}: ROPE max")
+        print(f"{self.success_rate_null:0.5}: null hypothesis")
+        print(f"{self.rope_min:0.2}: ROPE min")
+        print(f"{self.rope_max:0.2}: ROPE max")
         print("-" * 20)
-        print(f"{precision_goal:0.2}: Precision Goal")
-        print("-" * 20)
-        print(f"{success_rate:0.3}: true")
+        print(f"{self.precision_goal:0.2}: Precision Goal")
+
+    def run_hypothesis_on_experiments(self, experiments, binary_accounting):
+        self.experiments = experiments
+        self.n_experiments = experiments.shape[0]
+        self.method_stats, self.method_roperesult_iteration  = stop_decision_multiple_experiments_multiple_methods(experiments, self.rope_min, self.rope_max, self.precision_goal, binary_accounting=binary_accounting)
+
+        self.method_df_stats = {method_name: stats_dict_to_df(self.method_stats[method_name]) for method_name in self.method_stats}
+        self.method_df_iteration_counts = {method_name: iteration_counts_to_df(self.method_roperesult_iteration[method_name], self.n_experiments) for method_name in self.method_roperesult_iteration}
+
+
+
+    def plot_decision_rates(self, success_rate=None, viz_epitg=True):
+        plot_multiple_decision_rates_separate(self.method_df_iteration_counts, success_rate, self.n_experiments, viz_epitg=viz_epitg, iteration_values=None)
+
+    def plot_stop_iter_sample_rates(self, success_rate=None, title=None):
+        scatter_stop_iter_sample_rate(self.method_df_stats, rope_min=self.rope_min, rope_max=self.rope_max, success_rate=success_rate, title=title)
+
+class BinomialSimulation():
+    def __init__(self, success_rate=0.5, n_samples = 1500,  n_experiments = 500, seed=42):
+        self.success_rate = success_rate  #0.65  ## the true value # 0.5 + 0.5 * dsuccess_rate
+        self.n_samples = n_samples
+        self.n_experiments = n_experiments
+        self.seed= seed
+
+        self.generate_experiments()
+
+
+    def generate_experiments(self):
+
+        print("Generating synthetic data with parameter values:")
+        print(f"{self.success_rate:0.3}: true success rate")
+        print(f"{self.n_experiments}: experiments")
+        print(f"{self.n_samples}: sample size per experiment")
+        
+        np.random.seed(self.seed)
+        # `experiments` was called `samples` in the original code
+        self.experiments = np.random.binomial(1, self.success_rate, [self.n_experiments, self.n_samples])
+
 
 class BinaryAccounting():
     def __init__(self):

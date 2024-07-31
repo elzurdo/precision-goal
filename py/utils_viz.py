@@ -292,7 +292,10 @@ def plot_multiple_decision_rates_separate(method_df_iteration_counts, success_ra
     plt.figure(figsize=(FIG_WIDTH * 2, FIG_HEIGHT))
     xlabel = "iteration"
 
-    suptitle = f"{theta_true_str} = {success_rate:0.3f}"
+    if success_rate is not None:
+        suptitle = f"{theta_true_str} = {success_rate:0.3f}"
+    else:
+        suptitle = None
 
     for method_name, df_counts in method_df_iteration_counts.items():
         if iteration_values is None:
@@ -335,7 +338,8 @@ def plot_multiple_decision_rates_separate(method_df_iteration_counts, success_ra
         plt.title(title)
 
 
-    plt.suptitle(suptitle, fontsize=20)
+    if suptitle is not None:
+        plt.suptitle(suptitle, fontsize=20)
     plt.tight_layout()
 
 def scatter_stop_iter_sample_rate(method_df_stats, rope_min=None, rope_max=None, success_rate=None, title=None, method_names=None):

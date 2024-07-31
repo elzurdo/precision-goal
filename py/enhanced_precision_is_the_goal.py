@@ -6,29 +6,26 @@
 #     custom_cell_magics: kql
 #     text_representation:
 #       extension: .py
-#       format_name: percent
-#       format_version: '1.3'
-#       jupytext_version: 1.11.2
+#       format_name: light
+#       format_version: '1.5'
+#       jupytext_version: 1.15.0
 #   kernelspec:
 #     display_name: scrappy-3.8.11
 #     language: python
 #     name: python3
 # ---
 
-# %% [markdown]
 # * Comparing the stop criterion of precision is the goal with the enhanced version
 # * Describing the risk version
 
-# %% [markdown]
 # # Setup
 
-# %%
 # IPython extension to reload modules before executing user code.
 # useful to see immediate results in notebook when modifying imported scripts
 # %load_ext autoreload
 # %autoreload 2
 
-# %%
+# +
 import numpy as np
 import pandas as pd
 
@@ -50,16 +47,17 @@ from utils_viz import (
 
 from utils_experiments import (
     BinaryAccounting,
+    BinomialSimulation,
+    BinomialHypothesis,
     stop_decision_multiple_experiments_multiple_methods,
     stats_dict_to_df,
     iteration_counts_to_df,
-    print_methods_decision_rates,
 )
     
 
 seed = 7
 
-# %%
+# +
 
 import matplotlib.pyplot as plt
 SMALL_SIZE = 12
@@ -81,18 +79,34 @@ plt.rcParams["figure.figsize"] = FIG_WIDTH, FIG_HEIGHT
 
 plt.rcParams['axes.spines.right'] = False
 plt.rcParams['axes.spines.top'] = False
+# -
 
-# %% [markdown]
 # # Data
 #
 # Experiments each containing many Bernoulli trials
 
-# %%
+# +
+# binary_accounting = BinaryAccounting()
+# -
+
+synth_0pt5 = BinomialSimulation()
+
+hypothesis_0pt5 = BinomialHypothesis()
+
+synth_0pt5.experiments.shape
+
+hypothesis_0pt5.run_hypothesis_on_experiments(synth_0pt5.experiments, binary_accounting)
+
+hypothesis_0pt5.plot_decision_rates(synth_0pt5.success_rate)
+
+hypothesis_0pt5.plot_stop_iter_sample_rates(success_rate=synth_0pt5.success_rate, title=None)
+
+# +
 success_rate_null = 0.5   # this is the null hypothesis, not necessarilly true
 dsuccess_rate = 0.05 #success_rate * 0.1
 rope_precision_fraction = 0.8
 
-success_rate = 0.65  #0.65  #0.5 + 0.5 * dsuccess_rate  # the true value
+success_rate = 0.5  #0.65  #0.5 + 0.5 * dsuccess_rate  # the true value
 # --------
 
 rope_min = success_rate_null - dsuccess_rate
@@ -113,70 +127,51 @@ print(f"{precision_goal:0.2}: Precision Goal")
 print("-" * 20)
 print(f"{success_rate:0.3}: true")
 
-# %%
-experiments = 3000 # number of experiments 500 #200 #300 #200
-n_samples = 2000  #2500 # max number of samples in each experiement #2500 #1000 #1500
+# +
+experiments = 500 # number of experiments 500 #200 #300 #200
+n_samples = 1500  #2500 # max number of samples in each experiement #2500 #1000 #1500
 
 np.random.seed(seed)
 samples = np.random.binomial(1, success_rate, [experiments, n_samples])
 
 samples.shape  # (experiments, n_samples)
+# -
 
-# %% [markdown]
 # # Enhanced Precision is the Goal
 #
 # As compared to "Precision is the Goal" and HDI+ROPE.
 
-# %%
-# create object if does not exist
-if not ("binary_accounting" in locals() or "binary_accounting" in globals()):
-    print("Creating a new BinaryAccounting object")
-    binary_accounting = BinaryAccounting()
-
-# %%
-# Running the experiments
+# +
+# binary_accounting = BinaryAccounting()
+# -
 
 method_stats, method_roperesult_iteration = stop_decision_multiple_experiments_multiple_methods(samples, rope_min, rope_max, precision_goal, binary_accounting=binary_accounting)
 
-# %%
 # examining uniqueness distributions of success and failure pairs
+100. * pd.Series(binary_accounting.dict_successes_failures_counter).value_counts(normalize=True).sort_index()
 
-sr_duplicates = pd.Series(binary_accounting.dict_successes_failures_counter).value_counts(normalize=True).sort_index()
-print(f"{len(binary_accounting.dict_successes_failures_counter):,} pairs s/f pairs")
-print(100. * sr_duplicates.head(10))
-print(f"{sr_duplicates[11:].sum():0.1%} 11 duplicates or more")
-
-
-# %%
+# +
 method_df_stats = {method_name: stats_dict_to_df(method_stats[method_name]) for method_name in method_stats}
 
-method_df_stats["hdi_rope"].head(4)
+method_df_stats["hdi_rope"]
 
-# %%
+# +
 method_df_iteration_counts = {method_name: iteration_counts_to_df(method_roperesult_iteration[method_name], experiments) for method_name in method_roperesult_iteration}
 
-method_df_iteration_counts["hdi_rope"].head(4)
+method_df_iteration_counts["hdi_rope"]
+# -
 
-# %%
 plot_multiple_decision_rates_jammed(method_df_iteration_counts, success_rate, experiments, iteration_values=None)
-plot_vhlines_lines(vertical=30, horizontal=None, linestyle=":")
 
-# %%
 viz_epitg = True
 plot_multiple_decision_rates_separate(method_df_iteration_counts, success_rate, experiments, viz_epitg=viz_epitg, iteration_values=None)
 
-
-# %%
 scatter_stop_iter_sample_rate(method_df_stats, rope_min=rope_min, rope_max=rope_max, success_rate=success_rate, title=None)
 
-# %%
-print_methods_decision_rates(method_df_stats)
-
-# %% [markdown]
 # # Old Scripts
 # Some still useful!
 
-# %%
+# +
 dict_successes_failures_hdi_limits = {}
 dict_successes_failures_counter = {}
 
@@ -222,7 +217,7 @@ def successes_failures_caculate_hdi_limits(successes, failures):
     return hdi_min, hdi_max
 
 
-# %%
+# +
 # For each method and rope result type creating tally of outcomes
 
 method_roperesult_iteration = {}
@@ -236,7 +231,7 @@ for method in methods:
 print(method, rope_result)
 len(method_roperesult_iteration[method][rope_result])
 
-# %%
+# +
 iteration_number = np.arange(1, n_samples + 1)
 
 method_stats = {"pitg": {}, "epitg": {}, "hdi_rope": {}}
@@ -331,14 +326,14 @@ for isample, sample in enumerate(samples):
             if isample not in method_stats["epitg"]:
                 method_stats["epitg"][isample] = iteration_results
             break
+# -
 
 
-# %%
 # examining uniqueness distributions of success and failure pairs
 pd.Series(dict_successes_failures_counter).value_counts(normalize=True).sort_index()
 
 
-# %%
+# +
 def stats_dict_to_df(method_stats):
     df = pd.DataFrame(method_stats).T
     df.index.name = "experiment_number"
@@ -350,22 +345,20 @@ def stats_dict_to_df(method_stats):
 df_stats_epitg = stats_dict_to_df(method_stats["epitg"])
 print(df_stats_epitg.shape)
 df_stats_epitg.head(4)
+# -
 
-# %%
 df_stats_pitg = stats_dict_to_df(method_stats["pitg"])
 print(df_stats_pitg.shape)
 df_stats_pitg.head(4)
 
-# %%
 df_stats_hdirope = stats_dict_to_df(method_stats["hdi_rope"])
 print(df_stats_hdirope.shape)
 df_stats_hdirope.head(4)
 
-# %%
 df_stats_pitg.equals(df_stats_epitg)
 
 
-# %%
+# +
 def iteration_counts_to_df(roperesult_iteration, experiments):
     df = pd.DataFrame({
         "iteration": list(roperesult_iteration["within"].keys()),
@@ -385,21 +378,18 @@ df_hdirope_counts = iteration_counts_to_df(method_roperesult_iteration["hdi_rope
 
 
 df_epitg_counts.head(4)
+# -
 
 
-# %%
 df_epitg_counts.describe()
 
-# %%
 df_pitg_counts.describe()
 
-# %%
 df_hdirope_counts.describe()
 
-# %%
 df_pitg_counts.equals(df_epitg_counts)
 
-# %%
+# +
 title = f"true success rate = {success_rate:0.3f}"
 xlabel = "iteration"
 
@@ -432,7 +422,7 @@ plt.ylabel(f"proportion of {experiments:,} experiments")
 plt.title(title)
 
 
-# %%
+# +
 plt.figure(figsize=(FIG_WIDTH * 2, FIG_HEIGHT))
 
 viz_epitg = True
@@ -482,11 +472,11 @@ plt.ylabel(f"proportion of {experiments:,} experiments")
 
 plt.suptitle(suptitle, fontsize=20)
 plt.tight_layout()
+# -
 
-# %%
 df_hdirope_counts.drop(["iteration", "reject"], axis=1).sum(axis=1).value_counts()
 
-# %%
+# +
 import seaborn as sns
 
 df_plot = df_stats_hdirope[["decision_iteration", "success_rate"]]
@@ -497,11 +487,11 @@ df_plot = pd.concat([df_plot, df_append])
 df_append = df_stats_epitg[["decision_iteration", "success_rate"]]
 df_append["method"] = "ePiTG"
 df_plot = pd.concat([df_plot, df_append])
+# -
 
-# %%
 sns.jointplot(x=df_plot["decision_iteration"], y=df_plot["success_rate"], color="#4CB391", hue=df_plot["method"])
 
-# %%
+# +
 plt.figure(figsize=(FIG_WIDTH, 0.5 * FIG_HEIGHT))
 
 all_values = np.concatenate([df_stats_epitg["decision_iteration"], df_stats_pitg["decision_iteration"], df_stats_hdirope["decision_iteration"] ])
@@ -518,7 +508,8 @@ plt.title(title)
 pass
 
 
-# %%
+# -
+
 # TODO: rope_min, rope_max are not defined
 def plot_pdf(sr_experiment_stats, xlim=None):
     pp = np.linspace(0, 1, 1000)
@@ -548,7 +539,7 @@ def plot_pdf(sr_experiment_stats, xlim=None):
         plt.xlim([rope_min - 0.1, rope_max + 0.1])
 
 
-# %%
+# +
 # experiment with the latest iteration
 #idx = df_stats_epitg["decision_iteration"].astype(float).argmax()
 
@@ -571,11 +562,11 @@ plt.subplot(2, 1, 2)
 plt.title("Enhanced Precision is the Goal")
 plot_pdf(sr_experiment_stats_epitg) #, xlim=(0.4,1))
 plt.tight_layout()
+# -
 
-# %%
 df_stats_pitg.astype(float).describe()
 
-# %%
+# +
 plt.figure(figsize=(FIG_WIDTH, 0.5 * FIG_HEIGHT))
 
 all_values = np.concatenate([df_stats_epitg["success_rate"], df_stats_pitg["success_rate"], df_stats_hdirope["success_rate"]])
@@ -615,7 +606,7 @@ xlim = [np.min([rope_min, all_values.min()]), np.max([rope_max, all_values.max()
 plt.xlim([xlim[0] - 0.02, xlim[1] + 0.02])
 plt.title(title)
 plt.xlabel("success rate at stop")
-# %%
+# +
 plt.scatter(df_stats_hdirope["decision_iteration"], df_stats_hdirope["success_rate"], alpha=0.3, color="red", label="HDI+ROPE", marker="s", s=20)
 plt.scatter(df_stats_pitg["decision_iteration"], df_stats_pitg["success_rate"], alpha=0.03, color="blue", label="PitG", marker=".")
 plt.scatter(df_stats_epitg["decision_iteration"], df_stats_epitg["success_rate"], alpha=0.3, color="lightgreen", label="ePitG", marker="o", s=10)
@@ -638,35 +629,27 @@ plt.legend(title=f"{len(df_stats_pitg):,} experiments", loc="upper right", fonts
 plt.title(title)
 plt.xlim(400, 800)
 plt.ylim(0.4, 0.6)
+# -
 
-# %%
 (df_stats_hdirope.query("conclusive")["reject_below"] + df_stats_hdirope.query("conclusive")["reject_above"]).astype(float).sum() / len(df_stats_hdirope.query("conclusive"))
 
-# %%
 df_stats_hdirope.query(f"hdi_min > {success_rate-0.1}").sort_values("hdi_min")
 
-# %%
 df_stats_hdirope["stop_success_rate"] = df_stats_hdirope["successes"] / df_stats_hdirope["decision_iteration"]
 
-# %%
 df_stats_hdirope.sort_values("stop_success_rate", ascending=False).head(20)
 
-# %%
 df_stats_hdirope.query("reject_above").head(20)
 
-# %%
 df_stats_epitg.sort_values("decision_iteration", ascending=False)
 
-# %%
 df_stats_pitg["inconclusive"].value_counts()/ len(df_stats_pitg)
 
-# %%
 df_stats_epitg["inconclusive"].value_counts()/ len(df_stats_pitg)
 
-# %%
 df_stats_hdirope
 
-# %%
+# +
 # In draft using isample= 179 of success_rate = 0.5
 # potential isample=203 - hdi+rope 99 , epitg >1,300
 # potential isample=221  - hdi+rope 31, epitg 886
@@ -721,7 +704,7 @@ for iteration, successes, failures in zip(iteration_number, iteration_successes,
 
     sample_results[iteration] = iteration_results
 
-# %%
+# +
 df_sample_results = pd.DataFrame(sample_results).T
 df_sample_results["hdi_max"] = df_sample_results["hdi_max"].astype(float)
 df_sample_results["hdi_min"] = df_sample_results["hdi_min"].astype(float)
@@ -732,11 +715,11 @@ display(df_sample_conclusive.head(4))
 
 df_sample_goal = df_sample_results.query("goal_achieved")
 display(df_sample_goal.head(4))
+# -
 
-# %%
 df_sample_goal.query("conclusive").head(4)
 
-# %%
+# +
 # In draft using isample= 179 of success_rate = 0.5
 plt.figure(figsize=(FIG_WIDTH, FIG_HEIGHT))
 
@@ -764,7 +747,7 @@ plt.xlabel("iteration")
 plt.ylabel("sample success rate")
 plt.title(f"true success rate = {success_rate:0.3f}")
 
-# %%
+# +
 
 sr_experiment_stats_hdirope = df_stats_hdirope.loc[isample]
 sr_experiment_stats_pitg = df_stats_pitg.loc[isample]
@@ -788,8 +771,8 @@ plt.title("Enhanced Precision is the Goal")
 plot_pdf(sr_experiment_stats_epitg, xlim=xlim)
 plt.suptitle(f"Outcomes depending on Stop Criterion", fontsize=18)
 plt.tight_layout()
+# -
 
-# %%
 """
     iteration_successes = sample.cumsum()
     iteration_failures = iteration_number - iteration_successes
@@ -809,31 +792,23 @@ plt.tight_layout()
         conclusive = decision_accept | decision_reject_above | decision_reject_below
 """
 
-# %%
 (df_stats_hdirope["reject_above"] | df_stats_hdirope["reject_below"]).sum() / len(df_stats_hdirope)
 
-# %%
 (df_stats_pitg["reject_above"] | df_stats_pitg["reject_below"]).sum() / len(df_stats_pitg)
 
-# %%
 (df_stats_epitg["reject_above"] | df_stats_epitg["reject_below"]).sum() / len(df_stats_epitg)
 
-# %%
 df_stats_pitg["decision_iteration"].min(), df_stats_pitg["decision_iteration"].max()
 
-# %%
 df_stats_pitg["inconclusive"].value_counts(normalize=True, dropna=False)  
 
-# %%
 df_stats_epitg["inconclusive"].value_counts(normalize=True, dropna=False)  
 
-# %%
 df_stats_pitg["success_rate"].mean(), df_stats_pitg["success_rate"].std()
 
-# %%
 df_stats_epitg["success_rate"].mean(), df_stats_epitg["success_rate"].std()
 
-# %%
+# +
 variances = []
 hdi_widths = []
 ns_ = []
@@ -844,28 +819,24 @@ for a_, b_ in dict_successes_failures_hdi_limits.keys():
         hdi_min, hdi_max = dict_successes_failures_hdi_limits[(a_, b_)]
         hdi_widths.append(hdi_max - hdi_min)
         ns_.append(a_ + b_)
+# -
 
-# %%
 variances = np.array(variances)
 hdi_widths = np.array(hdi_widths)
 ns_ = np.array(ns_)
 
-# %%
 plt.plot(variances, hdi_widths, marker="o", linestyle="none")
 
-# %%
 plt.scatter(hdi_widths, hdi_widths/variances)
 
-# %%
 plt.scatter(ns_, variances)
 plt.scatter(ns_, hdi_widths)
 
-# %%
 
-# %% [markdown]
+
 # # Precision and Risk as Goals
 
-# %%
+# +
 idx = df_stats_pitg.index[0]
 
 # ---
@@ -882,12 +853,12 @@ plt.subplot(2, 1, 2)
 plt.title("Enhanced Precision is the Goal")
 plot_pdf(sr_experiment_stats_epitg) #, xlim=(0.4,1))
 plt.tight_layout()
+# -
 
-# %%
 sr_experiment_stats_pitg
 
 
-# %%
+# +
 def pdf_area(pdf, dpp):
     return np.sum(pdf) * dpp
 
@@ -913,35 +884,29 @@ plot_vhlines_lines(vertical=rope_min, label='ROPE', horizontal=None)
 plot_vhlines_lines(vertical=rope_max, horizontal=None)
 
 plt.xlim([rope_min - 0.1, rope_max + 0.1])
+# -
 
-# %%
 pdf_area(pdf, dpp)
 
-# %%
 df_stats_pitg.head(2)
 
-# %%
 df_stats_pitg["in_rope"] = df_stats_pitg.apply(lambda x: pdf_area(beta.pdf(pp, x["successes"], x["failures"])[bool_in_rope], dpp) , axis=1)
 
-# %%
 df_stats_epitg["in_rope"] = df_stats_epitg.apply(lambda x: pdf_area(beta.pdf(pp, x["successes"], x["failures"])[bool_in_rope], dpp) , axis=1)
 
-# %%
 df_stats_pitg["in_rope"].describe()
 
-# %%
 df_stats_pitg.query("inconclusive").shape
 
-# %%
 (df_pitg_plot["in_rope"] > 1- fpr).sum() / len(df_pitg_plot)
 
-# %%
 
-# %%
 
-# %%
 
-# %%
+
+
+
+# +
 fpr = 0.05
 
 df_pitg_plot = df_stats_pitg.query("inconclusive")
@@ -955,27 +920,27 @@ plt.ylabel("probability in ROPE")
 plot_vhlines_lines(vertical=None, label=None, horizontal=1. - fpr, alpha=0.7, linestyle="--")
 
 
-# %%
+# +
 plt.scatter(df_pitg_plot["decision_iteration"], df_epitg_plot["decision_iteration"], alpha=0.5, color="orange", label="PitG", marker=".")
 
 frac_ = len(df_pitg_plot) / len(df_stats_pitg)
 plt.title(f"{len(df_pitg_plot):,} inconclusive experiments ({frac_:0.1%})")
 plot_vhlines_lines(vertical=None, label=None, horizontal=df_pitg_plot["decision_iteration"].min(), alpha=0.7, linestyle="--")
 plot_vhlines_lines(vertical=None, label=None, horizontal=df_pitg_plot["decision_iteration"].max(), alpha=0.7, linestyle="--")
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
+# -
 
 
-# %%
+
+
+
+
+
+
+
+
+
+
+
 def plot_parity_line(ax=None):
     if ax is None:
         ax = plt.gca()
@@ -987,48 +952,43 @@ def plot_parity_line(ax=None):
     ax.plot(lims, lims, "k--", linewidth=1)
 
 
-# %%
 plt.scatter(df_stats_pitg["decision_iteration"], df_stats_pitg["in_rope"], alpha=0.05, color="orange", label="PitG", marker=".")
 plt.scatter(df_stats_epitg["decision_iteration"], df_stats_epitg["in_rope"], alpha=0.05, color="purple", label="ePitG", marker=".")
 plt.xlabel("stop iteration")
 plt.ylabel("probability in ROPE")
 
-# %%
 
-# %%
+
 plt.hist(df_stats_pitg["in_rope"])
 plt.hist(df_stats_epitg["in_rope"])
 
-# %%
 
-# %%
 
-# %%
 
-# %%
 
-# %%
+
+
+
+
 df_stats_pitg.head(4).apply(lambda x: pdf_area(beta.pdf(pp, x["successes"], x["failures"]), dpp))
 
-# %%
-
-# %%
-
-# %%
-
-# %%
 
 
-# %%
+
+
+
+
+
+
+
 pdf.sum() *dpp
 
-# %%
 
-# %%
 
-# %%
 
-# %%
+
+
+
 pdf
 
-# %%
+
