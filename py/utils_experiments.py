@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from IPython.display import display
 
 from utils_stats import (
     successes_failures_to_hdi_ci_limits
@@ -8,6 +9,8 @@ from utils_stats import (
 from utils_viz import (
     plot_multiple_decision_rates_separate,
     scatter_stop_iter_sample_rate,
+    viz_one_sample_results,
+    plot_sample_pdf_methods,
 )
 
 theta_true_str = r"$\theta_{\rm true}$"
@@ -44,13 +47,72 @@ class BinomialHypothesis():
         self.method_df_stats = {method_name: stats_dict_to_df(self.method_stats[method_name]) for method_name in self.method_stats}
         self.method_df_iteration_counts = {method_name: iteration_counts_to_df(self.method_roperesult_iteration[method_name], self.n_experiments) for method_name in self.method_roperesult_iteration}
 
+        # creating table to summarize results
+        self.experiments_summary()
 
+    def one_experiment_all_iterations(self, iexperiment, binary_accounting=None, viz=True, success_rate=None, xlim = (0.4,0.8), method_names=None):
+        print(self.experiments[iexperiment, :])
+        df_experiment_results = sample_all_iterations_results(self.experiments[iexperiment, :], self.precision_goal, self.rope_min, self.rope_max, binary_accounting=binary_accounting, iteration_number=None)
+
+        if viz:
+            self.viz_one_experiment_all_iterations(df_experiment_results, success_rate=success_rate)
+            self.plot_experiment_pdf_methods(iexperiment, xlim=xlim, method_names=method_names)
+
+        return df_experiment_results
 
     def plot_decision_rates(self, success_rate=None, viz_epitg=True):
         plot_multiple_decision_rates_separate(self.method_df_iteration_counts, success_rate, self.n_experiments, viz_epitg=viz_epitg, iteration_values=None)
 
     def plot_stop_iter_sample_rates(self, success_rate=None, title=None):
         scatter_stop_iter_sample_rate(self.method_df_stats, rope_min=self.rope_min, rope_max=self.rope_max, success_rate=success_rate, title=title)
+
+    def viz_one_experiment_all_iterations(self, df_sample_results, success_rate=None):
+        viz_one_sample_results(df_sample_results, self.precision_goal, self.rope_min, self.rope_max, success_rate=success_rate)
+
+    def plot_experiment_pdf_methods(self, iexperiment, xlim=(0.4,0.8), method_names=None):
+        plot_sample_pdf_methods(self.method_df_stats, iexperiment, self.rope_min, self.rope_max, xlim=xlim, method_names=method_names)
+
+    def experiments_summary(self, verbose=1):
+        method_names = ["hdi_rope", "pitg", "epitg"]
+
+        stat_queries = { "accept": "accept",
+                        "reject": "reject",
+                        "conclusive": "conclusive",
+                        "inconclusive": "inconclusive",
+                        "stop_iter_mean": None,
+                        "stop_iter_std": None,
+                        "success_rate_mean": None,
+                        "success_rate_std": None,
+                        }
+
+        stat_results = {}
+
+        for method_name in method_names:
+            stat_results[method_name] = {}
+
+            sr_stop_iter = self.method_df_stats[method_name]["decision_iteration"].copy()
+            sr_success_rate = self.method_df_stats[method_name]["success_rate"].copy()
+            for stat_name, stat_query in stat_queries.items():
+                if ("_mean" not in stat_name) & ("_std" not in stat_name):
+                    value_ = self.method_df_stats[method_name].query(stat_query).shape[0]
+                    stat_results[method_name][stat_name] = value_ / self.n_experiments
+                else:
+                    if "stop_iter" in stat_name:
+                        sr_aux = sr_stop_iter.copy()
+                    elif "success_rate" in stat_name:
+                        sr_aux = sr_success_rate.copy()
+                    else:
+                        sr_aux = None
+                    
+                    if "_mean" in stat_name:
+                        stat_results[method_name][stat_name]  = sr_aux.mean()
+                    elif "_std" in stat_name:
+                        stat_results[method_name][stat_name]  = sr_aux.std()
+
+        self.df_experiments_summary = pd.DataFrame(stat_results).T
+
+        if verbose:
+            display(self.df_experiments_summary)
 
 class BinomialSimulation():
     def __init__(self, success_rate=0.5, n_samples = 1500,  n_experiments = 500, seed=42):
@@ -123,6 +185,9 @@ def successes_failures_caculate_hdi_limits(successes, failures):
 def stats_dict_to_df(method_stats):
     df = pd.DataFrame(method_stats).T
     df.index.name = "experiment_number"
+    df["hdi_max"] = df["hdi_max"].astype(float)
+    df["hdi_min"] = df["hdi_min"].astype(float)
+    df["decision_iteration"] = df["decision_iteration"].astype(float)
     df["reject"] = df["reject_below"] + df["reject_above"]
     df["precision"] = df["hdi_max"] - df["hdi_min"]
     df["success_rate"] = df["successes"] / (df["successes"] + df["failures"])
@@ -279,3 +344,52 @@ def print_methods_decision_rates(method_df_stats):
         print(f"{method_name}")
         print_decision_rates(method_df_stats[method_name])
         print("-" * 20)
+
+def sample_all_iterations_results(sample, precision_goal, rope_min, rope_max, iteration_number=None, binary_accounting=None):
+    # By all iterations it means that it doesn't stop, but does flag
+    # when objectives are met: conclusiveness, percision goal
+    if iteration_number is None:
+        iteration_number = np.arange(1, sample.shape[0] + 1)
+
+    iteration_successes = sample.cumsum()
+    iteration_failures = iteration_number - iteration_successes
+
+    sample_results = {}
+    for iteration, successes, failures in zip(iteration_number, iteration_successes, iteration_failures):
+        # final_iteration = iteration == iteration_number[-1]
+        
+        # TODO: turn this part into a function (if works out well with other part)
+        if binary_accounting is not None:
+            hdi_min, hdi_max = binary_accounting.successes_failures_to_hdi_limits(successes, failures)
+        else:
+            hdi_min, hdi_max = successes_failures_to_hdi_ci_limits(successes, failures)
+        # has the precision goal been achieved?
+        precision_goal_achieved = (hdi_max - hdi_min) < precision_goal
+
+        # is the HDI conclusively within or outside the ROPE?
+        decision_accept = (hdi_min >= rope_min) & (hdi_max <= rope_max)
+        decision_reject_below = hdi_max < rope_min  
+        decision_reject_above = rope_max < hdi_min
+        conclusive = decision_accept | decision_reject_above | decision_reject_below
+
+
+        iteration_results = {"decision_iteration": iteration,
+                                                    "accept": decision_accept,
+                                                    "reject_below": decision_reject_below,
+                                                    "reject_above": decision_reject_above,
+                                                    "conclusive": conclusive,
+                                                    "inconclusive": not conclusive,
+                                                    "successes": successes,
+                                                    "failures": failures,
+                                                    "hdi_min": hdi_min,
+                                                    "hdi_max": hdi_max,
+                                                    "goal_achieved": precision_goal_achieved,
+                                                    }  
+        # END TODO 
+
+        sample_results[iteration] = iteration_results
+
+    df_sample_results = stats_dict_to_df(sample_results)    
+
+    return df_sample_results
+
