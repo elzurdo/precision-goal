@@ -106,7 +106,7 @@ def plot_sequence_experiment_nhst_combo_results(sequence, success_rate_true, suc
     plt.xlabel(xlabel)
     plt.annotate(f"decision criterion p-value={p_value_thresh:0.2f}", xy=(sequence_idx[-500], p_value_thresh + 0.02), color="black", alpha=0.7)
     
-    idx_reject = sequence_idx[p_values < p_value_thresh][0] # zurda
+    idx_reject = sequence_idx[p_values < p_value_thresh][0]
     print(sequence_idx[p_values < p_value_thresh])
     sequence_average = sequence.cumsum() / sequence_idx
     value_reject = sequence_average[p_values < p_value_thresh][0]
@@ -345,6 +345,13 @@ def plot_multiple_decision_rates_separate(method_df_iteration_counts, success_ra
         plt.suptitle(suptitle, fontsize=20)
     plt.tight_layout()
 
+
+method_pretty_short_name = {
+    "pitg": "PitG",
+    "epitg": "EPitG",
+    "hdi_rope": "HDI+ROPE"
+}
+
 def scatter_stop_iter_sample_rate(method_df_stats, rope_min=None, rope_max=None, success_rate=None, title=None, method_names=None):
     method_colors = {"pitg": "blue", "epitg": "lightgreen", "hdi_rope": "red"}
     method_markers = {"pitg": "o", "epitg": "x", "hdi_rope": "s"}
@@ -357,8 +364,8 @@ def scatter_stop_iter_sample_rate(method_df_stats, rope_min=None, rope_max=None,
         df_stats = method_df_stats[method_name].copy()
         color, marker = method_colors[method_name], method_markers[method_name]
         mean_marker = method_mean_markers[method_name]
-        label = method_name
-        label_mean = f"{method_name} mean"
+        label = method_pretty_short_name[method_name]
+        label_mean = f"{method_pretty_short_name[method_name]} mean"
 
         plt.scatter(df_stats["decision_iteration"], df_stats["success_rate"], alpha=0.3, color=color, label=label, marker=marker, s=20)
         plt.scatter(df_stats["decision_iteration"].mean(), df_stats["success_rate"].mean(), color=color, label=label_mean, s=200, marker=mean_marker)
@@ -466,15 +473,17 @@ def plot_pdf(sr_experiment_stats, rope_min, rope_max, xlim=None, xtitle=r"succes
         plt.xlim([rope_min - 0.1, rope_max + 0.1])
 
 METHOD_FULL = {
+    "hdi_rope": "HDI + ROPE",
     "pitg": "Precision is the Goal",
     "epitg": "Enhance Precision is the Goal",
-    "hdi_rope": "HDI + ROPE"
+
 }
 
 METHOD_SHORT = {
+    "hdi_rope": "HDI+ROPE",
     "pitg": "PitG",
     "epitg": "ePitG",
-    "hdi_rope": "HDI+ROPE"
+
 }
 
 def plot_sample_pdf_methods(method_df_stats, isample, rope_min, rope_max, xlim = (0.2, 0.6), method_names=None):
