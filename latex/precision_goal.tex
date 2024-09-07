@@ -1,18 +1,15 @@
 \documentclass{article}
 % bibliography setup
-\usepackage{biblatex}
-\addbibresource{references.bib}
+\usepackage{natbib}
+\bibliographystyle{apalike}  % abbrvnat
+\setcitestyle{authoryear,open={(},close={)}} %Citation-related commands
+% makes color citations
+\usepackage[colorlinks=true,urlcolor=blue,citecolor=red,linkcolor=red,bookmarks=true]{hyperref}
+
 
 % hypter parameter setup
 \usepackage{hyperref}
-% \hypersetup{
-%     colorlinks=true,
-%     linkcolor=blue,
-%     filecolor=magenta,      
-%     urlcolor=cyan,
-%     pdftitle={Overleaf Example},
-%     pdfpagemode=FullScreen,
-%     }
+
 
 \title{Improved Sequential Hypothesis Testing with
 ``Enhanced Precision Is The Goal"}
@@ -29,5 +26,8 @@
 
 \href{https://academic.oup.com/rssdat/pages/general-instructions}{RSS Instructions} 
 
-\printbibliography
+\href{https://academic.oup.com/pages/authoring/books/preparing-your-manuscript/working-in-latex}{RSS Working in \LaTeX}.
+
+\bibliography{references.bib}
+
 \end{document}
