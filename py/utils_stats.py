@@ -56,7 +56,7 @@ def get_success_rates(d_success = 0.00001, min_range=0., max_range=1., including
 
     return d_success, success_rates
 
-
+# TODO: move to utils_experiments and update
 def sequence_to_sequential_pvalues(sequence, success_rate_null=0.5):
     p_values = []
     
@@ -69,6 +69,7 @@ def sequence_to_sequential_pvalues(sequence, success_rate_null=0.5):
     return p_values
 
 
+# TODO: move to utils_experiments and update
 def stop_decision_multiple_experiments(samples, nhst_details=None):
     n_samples = samples.shape[1]
 
@@ -98,6 +99,7 @@ def stop_decision_multiple_experiments(samples, nhst_details=None):
     return experiment_stop_results, iteration_stopping_on_or_prior
 
 
+# TODO: move to utils_experiments and update
 def stop_decision_multiple_experiments_bayesian(samples, bayes_details=None):
 
     n_experiments = samples.shape[0]
@@ -156,7 +158,7 @@ def stop_decision_multiple_experiments_bayesian(samples, bayes_details=None):
     
     return experiment_stop_results, df_decision_counts
 
-
+# TODO: move to utils_experiments and update
 def stop_decision_multiple_experiments_pitg(samples, precision_goal, bayes_details=None):
     n_experiments = samples.shape[0]
     n_samples = samples.shape[1]

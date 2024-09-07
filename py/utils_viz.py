@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+# import display
+from IPython.display import display
 
 from utils_stats import (CI_FRACTION,
                          successes_failures_to_hdi_ci_limits,
@@ -9,7 +11,12 @@ from utils_stats import (CI_FRACTION,
                          test_value
                          )
 
-theta_null_str = r"$\theta_{null}$"
+FIG_WIDTH = 8
+FIG_HEIGHT = 6
+
+theta_str = r"$\theta$"
+theta_null_str = r"$\theta_{\rm null}$"
+theta_true_str = r"$\theta_{\rm true}$"
 
 def plot_success_rates(success, failure, ci_fraction=CI_FRACTION,
                        min_psuccess=0.85, max_psucess=1.,d_psuccess=0.0001,
@@ -99,7 +106,7 @@ def plot_sequence_experiment_nhst_combo_results(sequence, success_rate_true, suc
     plt.xlabel(xlabel)
     plt.annotate(f"decision criterion p-value={p_value_thresh:0.2f}", xy=(sequence_idx[-500], p_value_thresh + 0.02), color="black", alpha=0.7)
     
-    idx_reject = sequence_idx[p_values < p_value_thresh][0] # zurda
+    idx_reject = sequence_idx[p_values < p_value_thresh][0]
     print(sequence_idx[p_values < p_value_thresh])
     sequence_average = sequence.cumsum() / sequence_idx
     value_reject = sequence_average[p_values < p_value_thresh][0]
@@ -259,4 +266,282 @@ def plot_decision_rates(n_experiments, df_decision_counts):
     plt.title(title)
 
 
+def plot_multiple_decision_rates_jammed(method_df_iteration_counts, success_rate, experiments, iteration_values=None):
+    title = f"{theta_true_str} = {success_rate:0.3f}"
+    xlabel = "iteration"
+
+    method_alpha = {"pitg": 0.4, "epitg": 0.7, "hdi_rope": 0.2}
+    method_linewidth = {"pitg": 5, "epitg": 3, "hdi_rope": 1}
+    method_linestyle = {"pitg": "-", "epitg": "--", "hdi_rope": "-."}
+
+    for method_name, df_counts in method_df_iteration_counts.items():
+        if iteration_values is None:
+            iteration_values = df_counts["iteration"]
+
+        linewidth = method_linewidth[method_name]
+        alpha = method_alpha[method_name]
+        linestyle = method_linestyle[method_name]
+
+        plt.plot(iteration_values, df_counts['accept'] / experiments, color="green", linewidth=linewidth, alpha=alpha, linestyle=linestyle)
+        plt.plot(iteration_values, df_counts['reject'] / experiments, color="red", linewidth=linewidth, alpha=alpha, linestyle=linestyle)
+        plt.plot(iteration_values, df_counts['inconclusive'] / experiments, color="gray", linewidth=linewidth, alpha=alpha, linestyle=linestyle)
+
+    plt.xlabel(xlabel)
+    plt.ylabel(f"proportion of {experiments:,} experiments")
+    plt.title(title)
+
+def plot_multiple_decision_rates_separate(method_df_iteration_counts, success_rate, experiments, viz_epitg=True, iteration_values=None):
+
+    plt.figure(figsize=(FIG_WIDTH * 2, FIG_HEIGHT))
+    xlabel = "iteration"
+
+    if success_rate is not None:
+        suptitle = f"{theta_true_str} = {success_rate:0.3f}"
+    else:
+        suptitle = None
+
+    for method_name, df_counts in method_df_iteration_counts.items():
+        if iteration_values is None:
+            iteration_values = df_counts["iteration"]
+
+        linestyle_accept, linewidth_accept = None, 5
+        linestyle_reject, linewidth_reject = "--", 3
+        linestyle_inconclusive, linewidth_inconclusive = "-.", 1
+        alpha=0.7
+        label_accept = "accept"
+        label_reject = "reject"
+        label_inconclusive = "inconclusive/\ncollect more"
+        
+        if "hdi_rope" == method_name:
+            plt.subplot(1, 2, 1)
+            title = "HDI + ROPE"
+        else:
+            if viz_epitg:
+                plt.subplot(1, 2, 2)
+                if "pitg" == method_name:
+                    title = "Precision is the Goal (thin), Enhanced (thick)"
+                if "epitg" == method_name:
+                    linewidth_accept, linewidth_reject, linewidth_inconclusive = 6, 6, 6
+                    alpha = 0.3
+                    label_accept, label_reject, label_inconclusive = None, None, None
+            else:
+                if "pitg" == method_name:
+                    plt.subplot(1, 2, 1)
+                    title = "Precision is the Goal"
+
+        # plotting HDI+ROPE
+        plt.plot(iteration_values, df_counts['accept'] / experiments, color="green", linewidth=linewidth_accept, alpha=alpha, linestyle=linestyle_accept, label=label_accept)
+        plt.plot(iteration_values, df_counts['reject'] / experiments, color="red", linewidth=linewidth_reject, alpha=alpha, linestyle=linestyle_reject, label=label_reject)
+        plt.plot(iteration_values, df_counts['inconclusive'] / experiments, color="gray", linewidth=linewidth_inconclusive, alpha=alpha, linestyle=linestyle_inconclusive, label=label_inconclusive)
+
+        plot_grid(with_y=True, with_x=False, alpha=0.3)
+        plt.legend(title="decision")
+        plt.xlabel(xlabel)
+        plt.ylabel(f"proportion of {experiments:,} experiments")
+        plt.title(title)
+
+
+    if suptitle is not None:
+        plt.suptitle(suptitle, fontsize=20)
+    plt.tight_layout()
+
+
+method_pretty_short_name = {
+    "pitg": "PitG",
+    "epitg": "EPitG",
+    "hdi_rope": "HDI+ROPE"
+}
+
+def scatter_stop_iter_sample_rate(method_df_stats, rope_min=None, rope_max=None, success_rate=None, title=None, method_names=None):
+    method_colors = {"pitg": "blue", "epitg": "lightgreen", "hdi_rope": "red"}
+    method_markers = {"pitg": "o", "epitg": "x", "hdi_rope": "s"}
+    method_mean_markers = {"pitg": "$\u25EF$", "epitg": "x", "hdi_rope": "$\u25A1$"}
+
+    if method_names is None:
+        method_names = ["hdi_rope", "pitg", "epitg"]
+
+    for method_name in method_names:
+        df_stats = method_df_stats[method_name].copy()
+        color, marker = method_colors[method_name], method_markers[method_name]
+        mean_marker = method_mean_markers[method_name]
+        label = method_pretty_short_name[method_name]
+        label_mean = f"{method_pretty_short_name[method_name]} mean"
+
+        plt.scatter(df_stats["decision_iteration"], df_stats["success_rate"], alpha=0.3, color=color, label=label, marker=marker, s=20)
+        plt.scatter(df_stats["decision_iteration"].mean(), df_stats["success_rate"].mean(), color=color, label=label_mean, s=200, marker=mean_marker)
+
     
+    
+    #plt.scatter(df_stats_pitg["decision_iteration"], df_stats_pitg["success_rate"], alpha=0.03, color="blue", label="PitG", marker=".")
+    #plt.scatter(df_stats_epitg["decision_iteration"], df_stats_epitg["success_rate"], alpha=0.3, color="lightgreen", label="ePitG", marker="o", s=10)
+
+    #plt.scatter(df_stats_pitg["decision_iteration"].mean(), df_stats_pitg["success_rate"].mean(), color="blue", label="PitG mean", s=200, marker="$\u25EF$")
+    #plt.scatter(df_stats_epitg["decision_iteration"].mean(), df_stats_epitg["success_rate"].mean(), color="lightgreen", label="ePitG mean", s=200, marker="$\u25EF$")
+
+
+
+    if success_rate is not None:
+        plot_vhlines_lines(vertical=None, label=f'{theta_true_str}', horizontal=success_rate, alpha=0.7)
+
+    if rope_min is not None:
+        plot_vhlines_lines(vertical=None, label='ROPE', horizontal=rope_min, linestyle="--")
+    if rope_max is not None:
+        plot_vhlines_lines(vertical=None, horizontal=rope_max, linestyle="--")
+    plt.xlabel("stop iteration")
+    theta_hat_str = r"$\hat{\theta}$"
+    plt.ylabel(f"success rate at stop {theta_hat_str}")
+
+    plt.legend(title=f"{len(df_stats):,} experiments", loc="upper right", fontsize=10)
+    if title is not None:
+        plt.title(title)
+
+    #plt.xlim(400, 800)
+    #plt.ylim(0.4, 0.6)
+
+def viz_one_sample_results(df_sample_results, precision_goal, rope_min, rope_max, success_rate=None):
+    df_conclusive_accept = df_sample_results.query("conclusive").query("accept")
+    df_conclusive_reject = df_sample_results.query("conclusive").query("reject")
+    df_sample_goal = df_sample_results.query("goal_achieved")
+
+    plt.figure(figsize=(FIG_WIDTH, FIG_HEIGHT))
+
+    plt.plot(df_sample_results["decision_iteration"], df_sample_results["hdi_min"], color="gray", label=None)
+    plt.plot(df_sample_results["decision_iteration"], df_sample_results["hdi_max"], color="gray", label=None)
+    plt.fill_between(df_sample_results["decision_iteration"], df_sample_results["hdi_max"], df_sample_results["hdi_min"], color='gray', alpha=0.2, label="HDI")
+
+    # experiments which are conclusive to accept null hypothesis
+    for idx, (iteration, row) in enumerate(df_conclusive_accept.iterrows()):
+        if idx == 0:
+            label = "conclusive: accept"
+        else:
+            label = None
+        plt.plot([iteration, iteration], [row['hdi_min'], row['hdi_max']], color='lightgreen', alpha=0.7, linewidth=1, label=label)
+
+    # experiments which are conclusive to reject null hypothesis
+    for idx, (iteration, row) in enumerate(df_conclusive_reject.iterrows()):
+        if idx == 0:
+            label = "conclusive: reject"
+        else:
+            label = None
+        plt.plot([iteration, iteration], [row['hdi_min'], row['hdi_max']], color='red', alpha=0.7, linewidth=1, label=label, linestyle=":")
+
+    #for iteration, row in df_sample_goal.iterrows():
+    #    plt.plot([iteration, iteration], [row['hdi_min'], row['hdi_max']], color='blue', alpha=0.1, linewidth=1)
+    plt.scatter(df_sample_goal["decision_iteration"], df_sample_goal["hdi_min"], color="purple", label=f"{precision_goal:0.3} goal achieved", marker="o", s=20)
+    plt.scatter(df_sample_goal["decision_iteration"], df_sample_goal["hdi_max"], color="purple", label=None, marker="o", s=20)
+
+    plot_vhlines_lines(vertical=None, label='ROPE', horizontal=rope_min, linestyle="--", color="purple")
+    plot_vhlines_lines(vertical=None, horizontal=rope_max, linestyle="--", color="purple")
+
+    plt.legend()
+    plt.xlabel("iteration")
+    plt.ylabel(f"success rate {theta_str}")
+
+    if success_rate is not None:
+        plt.title(f"{theta_true_str}={success_rate:0.3f}")
+
+
+def plot_pdf(sr_experiment_stats, rope_min, rope_max, xlim=None, xtitle=r"success rate $\theta$"):
+    pp = np.linspace(0, 1, 1000)
+    pp_hdi = np.linspace(sr_experiment_stats["hdi_min"], sr_experiment_stats["hdi_max"], 1000)
+
+    successes = sr_experiment_stats["successes"]
+    failures = sr_experiment_stats["failures"]
+    rate = successes / (successes + failures)
+    n_ = successes + failures
+
+    hdi_min, hdi_max = successes_failures_to_hdi_ci_limits(successes, failures)
+
+    pdf = beta.pdf(pp, successes, failures)
+    pdf_hdi = beta.pdf(pp_hdi, successes, failures)
+
+    theta_hat_str = r"$\hat{\theta}$"
+    plt.plot(pp, pdf, color="purple", label=f"pdf {theta_hat_str}={rate:0.3f}; n={n_:,}")
+    label_hdi = f"95% HDI: {hdi_max - hdi_min:0.3f}"
+    plt.fill_between(pp_hdi, pdf_hdi, color="purple", alpha=0.2, label=label_hdi)
+    plot_vhlines_lines(vertical=rope_min, label='ROPE', horizontal=None, linestyle="--")
+    plot_vhlines_lines(vertical=rope_max, horizontal=None, linestyle="--")
+    plt.legend()
+
+    if xtitle is not None:
+        plt.xlabel(xtitle)
+    plt.ylabel(r"$p(\theta$)")
+
+    if xlim:
+        plt.xlim(xlim)
+    else:
+        plt.xlim([rope_min - 0.1, rope_max + 0.1])
+
+METHOD_FULL = {
+    "hdi_rope": "HDI + ROPE",
+    "pitg": "Precision is the Goal",
+    "epitg": "Enhance Precision is the Goal",
+
+}
+
+METHOD_SHORT = {
+    "hdi_rope": "HDI+ROPE",
+    "pitg": "PitG",
+    "epitg": "ePitG",
+
+}
+
+def plot_sample_pdf_methods(method_df_stats, isample, rope_min, rope_max, xlim = (0.2, 0.6), method_names=None):
+
+    if method_names is None:
+        method_names = list(method_df_stats.keys())
+
+    ncols, nrows = 1, len(method_names)
+
+    plt.subplots(nrows, ncols, figsize=(FIG_WIDTH, 1.2* FIG_HEIGHT))
+
+    for imethod, method_name in enumerate(method_names):
+        experiment_stats = method_df_stats[method_name].loc[isample]
+
+        plt.subplot(nrows, ncols, imethod + 1)
+
+        if imethod == len(method_names) - 1:
+            xtitle = r"success rate $\theta$"
+        else:
+            xtitle = None
+        plot_pdf(experiment_stats, rope_min, rope_max, xlim=xlim, xtitle=xtitle)
+        plt.title(f"{METHOD_FULL[method_name]}")
+
+    plt.suptitle(f"Outcomes depending on Stop Criterion", fontsize=18)
+    plt.tight_layout()
+
+
+def plot_grid(with_y=True, with_x=False, alpha=0.3):
+    ax = plt.gca()
+
+    if with_y:
+        ax.grid(axis="y", alpha=alpha)
+    else:
+        ax.grid(False, axis="y")
+
+    if with_x:
+        ax.grid(axis="x", alpha=alpha)
+    else:
+        ax.grid(False, axis="x")
+        
+
+def plot_vhlines_lines(vertical=None, horizontal=0, color="black", ax=None, alpha=0.2, linestyle=None, linewidth=1, label=None):
+    if ax is None:
+        ax = plt.gca()
+
+    if horizontal is not None:
+	    ax.axhline(horizontal, color=color, linewidth=linewidth, alpha=alpha, linestyle=linestyle, label=label)
+        
+    if vertical is not None:
+        ax.axvline(vertical, color=color, linewidth=linewidth, alpha=alpha,linestyle=linestyle, label=label)
+
+
+def plot_parity_line(ax=None):
+    if ax is None:
+        ax = plt.gca()
+
+    xlims = ax.get_xlim()
+    ylims = ax.get_ylim()
+    lims = [np.min([xlims[0], ylims[0]]), np.max([xlims[1], ylims[1]])]
+
+    ax.plot(lims, lims, "k--", linewidth=1)
