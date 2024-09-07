@@ -1,0 +1,27 @@
+Sequential hypothesis testing is a process in which a practitioner does not predefine a
+sample size but relies on assumptions about incoming data to indicate that enough has
+been collected to make a decision about a hypothesis. Most commonly used approaches
+apply an accept/reject decision criterion as a stopping criterion which makes results
+prone to biases, such as confirmation bias due to the possibility of obtaining extreme
+results. Although known as a problem with the frequentist {\it p-value} mechanism, it is not
+magically resolved with Bayesian approaches. To resolve this issue, a predetermined
+accuracy in parameter estimation has been advocated as a stopping criterion.
+In particular Kruschke (2015) \cite{kruschke2015doing} showed that defining in advance an objective precision as
+a stopping criterion, a method called {\it Precision is the Goal}, eliminates bias in the
+case of dichotomous outcomes sampling. Whereas we find this to be true, we highlight
+important practical details, in particular when the posterior doesn’t clearly indicate
+if the null hypothesis may neither be rejected or accepted, i.e, a situation of
+“inconclusiveness”. In cases where the null hypothesis is true, when applying
+“Precision is the Goal” we find that even though the null hypothesis is never
+incorrectly rejected (free from False positives), the majority of the decisions may
+be inconclusive. 
+To address this problem we introduce a conservative variant of this method which we call
+{\it Enhanced Precision Is The Goal} in which the stopping criterion simultaneously
+requires fulfilling the precision objective as well as the
+reject/accept decision criterions. We apply to synthetic  data and show that it may
+substantially reduce inconclusiveness at the cost of larger sample sizes. In one
+reasonable setting we find this to reduce from 61\% inconclusiveness to sub 2\%
+requiring a sample size on average 22\% larger. 
+We also provide an online calculator with source code which aims to make usage of
+“Precision is the Goal'' more commonplace in planning of data collection as well as
+experiment interpretation.
