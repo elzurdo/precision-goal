@@ -1,3 +1,44 @@
+Sequential hypothesis testing allows practitioners to continuously collect data and stop
+when there's enough evidence to make a decision, rather than predetermining a sample
+size.
+Commonly used approaches rely on accept/reject decision criteria as stopping rules,
+which can introduce biases, such as confirmation bias,
+particularly when extreme results are observed due to small sample sizes.
+While this issue is often associated with the Frequentist p-value mechanism,
+it is not fully resolved by popular Bayesian methods.
+To address this, a predetermined accuracy in parameter estimation has been proposed
+as a stopping criterion.
+In particular \cite{kruschke2015doing} showed that defining in advance the
+posterior precision as a stopping criterion eliminates bias in the
+case of dichotomous outcomes sampling.
+While this {\it Precision is the Goal} method successfully reduces bias,
+practical challenges arise when the posterior distribution does not clearly indicate
+whether the null hypothesis should be accepted or rejected—leading to an "inconclusive"
+outcome.
+To mitigate this, we propose a conservative variant called
+{\it Enhanced Precision Is The Goal} which requires meeting simultaneously both the
+precision objective and the reject/accept decision criteria.
+We tested this approach on synthetic data and found it significantly reduces
+inconclusiveness— from 61\% to under 2\%—at the cost of a moderate increase in sample
+size (approximately 22\% larger).
+We also provide an online calculator and source code to facilitate the adoption of the
+approach in data collection planning and experimental analysis.
+
+
+\
+\
+
+\cite{kruschke2015doing} introduced the "Precision is the Goal" method,
+which eliminates bias in dichotomous outcome sampling by setting an objective precision threshold as the stopping rule.
+
+We find in cases where the null hypothesis is true,
+applying the "Precision is the Goal" method avoids false positives but results in a high rate of inconclusive decisions.
+
+
+\
+\
+
+
 Sequential hypothesis testing is a process in which a practitioner does not predefine a
 sample size but relies on assumptions about incoming data to indicate that enough has
 been collected to make a decision about a hypothesis. Most commonly used approaches
@@ -6,7 +47,7 @@ prone to biases, such as confirmation bias due to the possibility of obtaining e
 results. Although known as a problem with the frequentist {\it p-value} mechanism, it is not
 magically resolved with Bayesian approaches. To resolve this issue, a predetermined
 accuracy in parameter estimation has been advocated as a stopping criterion.
-In particular \cite{kruschke2015doing} showed that defining in advance an objective precision as
+In particular \cite{kruschke2015doing} showed that by defining in advance an  posterior precision as
 a stopping criterion, a method called {\it Precision is the Goal}, eliminates bias in the
 case of dichotomous outcomes sampling. Whereas we find this to be true, we highlight
 important practical details, in particular when the posterior doesn’t clearly indicate

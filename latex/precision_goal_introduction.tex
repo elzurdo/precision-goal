@@ -45,3 +45,38 @@ biassed outcomes, which is commonly referred to as {\it confirmation bias} or
 {\it early peaking} which reflects a practitioner’s eagerness for the data to agree with a
 preferred hypothesis and stop collecting data when convenient. For science to make true
 progress practitioners need to avoid such outcomes by using more appropriate methods.
+
+As pointed out by \cite{maxwell1984}, \cite{kruschke2015doing} shows that by
+pre-determining a target precision value such biases are eliminated. The purpose of this
+study is to fill in a subtle gap in their argument.
+In our analysis we focus on simulating sequential dichotomous data and show that their
+method, called “Precision is the Goal”, although works very well when the null
+hypothesis may be strongly ruled out, requires an improvement when the null hypothesis
+should be accepted. In this latter scenario we find that “Precision is the Goal” may
+yield, instead of correctly resulting in acceptance of the null hypothesis,
+yield an unfortunate large fraction of inconclusive outcomes.
+
+To ameliorate this inconclusiveness problem we suggest a variant to their method,
+which we call “Enhanced Precision is the Goal”, which uses a similar but more
+conservative stop criterion. The original “Precision is the Goal” is a two step
+criterion process with a stop criterion and a decision one.
+The stop criterion depends
+on the width of the posterior (i.e, the sample precision). The decision criterion to
+accept/reject the null hypothesis depends on the posterior location information, i.e,
+where most of the mass is in respect to an effective region around the null hypothesis.
+We argue that it is advantageous to require both the width and location requirements
+simultaneously. By doing so the practitioner is effectively combining the stop and
+decision criterion into one step with three possible outcomes: accept/reject/collect
+more. 
+
+As we demonstrate here, this more conservative criterion yields substantially more
+conclusive outcomes without introducing bias at the cost of larger sample sizes.
+In one reasonable setup detailed below, we find that “Precision is the Goal” may yield
+$\sim$61\% as inconclusive and where in the enhanced version this is  reduced to sub 2\%
+at a cost of, on average, a sample size 22\% larger.
+The improvements of this enhanced method are highly effective in cases where the null
+hypothesis is true, but nearly indistinguishable from the original method when the null
+hypothesis may be strongly rejected. By indistinguishable we mean that the enhanced
+version will act in case of strong rejection signals exactly as “Precision is the Goal”
+in all aspects including the sample sizes required (the said larger sample size is only
+when the null hypothesis is true).
