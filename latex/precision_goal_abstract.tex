@@ -2,24 +2,24 @@ Sequential hypothesis testing allows practitioners to continuously collect data 
 when there's enough evidence to make a decision, rather than predetermining a sample
 size.
 Commonly used approaches rely on accept/reject decision criteria as stopping rules,
-which can introduce biases, such as confirmation bias,
-particularly when extreme results are observed due to small sample sizes.
-While this issue is often associated with the Frequentist p-value mechanism,
-it is not fully resolved by popular Bayesian methods.
+which can introduce confirmation bias due to extreme sequence in a small sample.
+While this issue is often associated with the Frequentist {\it p-value} heuristic,
+it also occurs in popular Bayesian metrics.
 To address this, a predetermined accuracy in parameter estimation has been proposed
-as a stopping criterion.
+as a stopping criterion, separate from the decision criterion.
 In particular \cite{kruschke2015doing} showed that defining in advance the
-posterior precision as a stopping criterion eliminates bias in the
+posterior precision as a stopping criterion eliminates the confirmation bias in the
 case of dichotomous outcomes sampling.
-While this {\it Precision is the Goal} method successfully reduces bias,
+While this {\it Precision is the Goal} method is unbiassed,
 practical challenges arise when the posterior distribution does not clearly indicate
 whether the null hypothesis should be accepted or rejected—leading to an "inconclusive"
 outcome.
 To mitigate this, we propose a conservative variant called
-{\it Enhanced Precision Is The Goal} which requires meeting simultaneously both the
-precision objective and the reject/accept decision criteria.
+{\it Enhanced Precision Is The Goal} which requires simultaneously meeting both the
+precision objective and the decision criterion.
 We tested this approach on synthetic data and found it significantly reduces
-inconclusiveness— from 61\% to under 2\%—at the cost of a moderate increase in sample
+inconclusiveness. E.g, when testing for a fair coin the original method may result in 61\%
+inconclusive outcomes where our variant at 1.6\%—at the cost of a moderate increase in sample
 size (approximately 22\% larger).
 We also provide an online calculator and source code to facilitate the adoption of the
 approach in data collection planning and experimental analysis.
