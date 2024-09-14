@@ -27,3 +27,36 @@ $$\frac{1}{\rm{var}} = \frac{4 z_{0.05}^2}{\rm{CI}^2}$$
 
 
 $$n = \frac{4 z_{0.05}^2}{\rm{CI}^2}p(1-p) - 1$$
+
+\subsection{HDI ROPE}
+
+
+$${\rm CI}_{\rm min} = p - 0.5 {\rm CI} \ \ {\rm CI}_{\rm max} = p + 0.5 {\rm CI}$$
+
+$${\rm CI} = 2 z_{0.05} \sqrt{{\rm var}}$$ 
+
+$${\rm var} = \frac{p(1-p)}{(n+1)}$$
+
+$${\rm ROPE}_{\rm h} = \theta_{\rm null} + 0.5 {\rm ROPE}$$
+
+$${\rm ROPE}_{\rm l} = \theta_{\rm null} - 0.5 {\rm ROPE}$$
+
+\subsubsection{Reject On High Side}
+
+$${\rm ROPE}_{\rm h} < {\rm CI}_{\rm min}$$
+
+$${\rm ROPE}_{\rm h} < p - z_{0.05} \sqrt{\frac{p(1-p)}{(n+1)}}$$
+
+
+$$ z_{0.05}^2 \frac{p(1-p)}{(n+1)} < (p - {\rm ROPE}_{\rm h})^2 $$
+
+$$z_{0.05}^2 \frac{p(1-p)}{ ( p - {\rm ROPE}_{\rm h})^2}- 1 < n$$
+
+\subsubsection{Reject On Low Side}
+
+$${\rm CI}_{\rm max} < {\rm ROPE}_{\rm l}$$
+
+
+$$p + z_{0.05} \sqrt{\frac{p(1-p)}{(n+1)}} < {\rm ROPE}_{\rm l}$$
+
+$$z_{0.05}^2 \frac{p(1-p)}{ ( p - {\rm ROPE}_{\rm l})^2}- 1 < n$$

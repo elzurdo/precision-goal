@@ -11,7 +11,8 @@
 
 % hypter parameter setup
 \usepackage{hyperref}
-
+% for table setup
+\usepackage{tabularx}
 
 \title{Improved Sequential Hypothesis Testing with
 ``Enhanced Precision Is The Goal"}
@@ -39,9 +40,75 @@
 \input precision_goal_introduction
 
 \subsection{Contributions}
+
+\subsubsection{Paper Structure}
+The paper is organized as follows.
+In the Methods section we describe three (four if Frequentist?)
+stop criteria as well as the setup to test on synthetic deichotomous data.
+In the Results section we present the results of the synthetic data analysis as well as analytical analysis.
+In the Discussion section we discuss the implications of the results (Reword this).
+In the Conclusion section we summarize the findings and suggest future directions (Reword this).
+
+
 \section{Methods}
 
+Here we describe three stop criteria for sequential hypothesis testing,
+all of which rely on the same decision criterion to determine acceptence
+or rejection of the null hypothesis.
+
+We describe and contrast the algorithms intuitively, as well as in pseudo code.
+We provide also anlaytical useful experessions and conclude by describing a setup
+to test the methods on synthetic dichotomous data.
+Although our belief is that these methods apply to any type of data,
+our focus is on Bernouli trials in order to compare with \cite{kruschke2015doing}
+(somehow experess that: "as it is simple to describe analytically and
+to conduct rapid tests on synthetic data.")
+
 \subsection{One Decision Criterion And Three Stop Criteria}
+
+Table (cite table) provides an intuitive comparison between the three algorithms of interst.
+In order to conduct this comparison we consider:
+\begin{itemize}
+    \item Pre Survey Decisions - the parameters required to decide ahead of data
+    collection
+    \item The stop criterion main characteristic 
+    \item The decision criterion characteristic
+    \item Stop and Decision order - are they simultaneous a two step process?
+\end{itemize}
+By creterion {\it characteristic} we are referring to the property of the posterior of
+importance: its location and/or width
+
+% make a table in latex with four rows and 5 columns
+
+\begin{tabularx}{1.2\textwidth} { 
+    | >{\raggedright\arraybackslash}X 
+    | >{\centering\arraybackslash}X 
+    | >{\raggedright\arraybackslash}X 
+    | >{\centering\arraybackslash}X 
+    | >{\raggedleft\arraybackslash}X | }
+   \hline
+   Algorithm & Pre Survey Decisions & Stop Criterion Characteristic
+
+   & Decision Criterion Characteristic & Sequence\\
+   \hline
+   HDI + ROPE  & \textbf{$N_\mathrm{min}$}, $N_\mathrm{max}$, $\sigma_\mathrm{effect}$  & Location  & Location & Simultaneously \\
+   \hline
+   item 31  & item 32  & item 33  & item 34 \\
+   
+  \hline
+  \end{tabularx}
+\\
+\\
+\\
+Here we use notation
+
+  \begin{itemize}
+        \item $N_\mathrm{min}$ - the minimal sample size to collect (needs further explanation)
+        \item $N_\mathrm{max}$ - the maximum sample size
+        \item $\sigma_\mathrm{effect}$ - The effect size
+         
+  \end{itemize}
+
 \subsubsection{Region of Practical Equivalence and High Density Interval}
 
 \subsubsection{Decision Criterion: Is The HDI In Or Out Of The ROPE?}
