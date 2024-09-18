@@ -1,19 +1,19 @@
-Sequential hypothesis testing enables continuous data collection and stopping
-when there's enough evidence to make a decision, rather than predetermining a sample
-size.
+Sequential hypothesis testing enables to continuously collect data util there is enough
+evidence to make a decision, rather than predetermining a sample
+size, 
 Common approaches rely on accept/reject decision criteria as stopping rules,
 which can introduce {\it confirmation bias} due to an unrepresentative sequence which is
 likely in a small sample.
 While this issue is often associated with the Frequentist {\it p-value} heuristic,
 it also occurs in popular Bayesian metrics.
-To address this, a predetermined parameter accuracy has been proposed
+To address this, a predetermined posterior accuracy has been proposed
 as a stopping criterion, separate from the decision criterion.
 By demonstrating on dichotomous sampling \cite{kruschke2015doing} showed that defining in advance the
 posterior precision as a stopping criterion eliminates the confirmation bias.
 While this {\it Precision is the Goal} method is unbiassed,
 practical challenges arise when the posterior distribution does not clearly indicate
-whether the null hypothesis should be accepted or rejected—leading to an {\it inconclusive}
-outcome.
+whether the null hypothesis should be accepted or rejected—leading to frequent {\it inconclusive}
+outcomes.
 To mitigate this, we propose a conservative variant called
 {\it Enhanced Precision Is The Goal} which requires simultaneously meeting both the
 precision objective and the decision criterion.
@@ -22,7 +22,7 @@ inconclusiveness. E.g, when testing for a fair coin the original method may resu
 inconclusive outcomes where our variant just 1.6\%—at the cost of a moderate increase in sample
 size (approximately 22\% larger).
 We also provide an online calculator and source code to facilitate the adoption of the
-approach in data collection planning and experimental analysis.
+approach in data collection planning and data interpretation.
 
 
 \

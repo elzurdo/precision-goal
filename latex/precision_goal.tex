@@ -24,18 +24,6 @@
 
 \input precision_goal_abstract
 
-\includegraphics[scale=0.5]{cherry_posteriors.png}
-
-%\includegraphics[width=1\textwidth]{cherry_posteriors.png}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=1\textwidth]{cherry_posteriors.png}
-    \caption{Beta function posteriors of subsamples of example sequence from Figure REF. Panels are results of different stop/decision criteria being triggered. Shaded areas are 95\% HDIs. ROPE within vertical dashed lines.
-    Top - HDI+ ROPE triggers when the 95\% HDI is fully outside the ROPE (iteration 126). Incorrectly rejects $\theta_{\rm null}$. Middle - “Precision is the Goal” triggers when 95\% HDI width reaches precision goal of 80\% ROPE width (iteration 598). HDI straddles the ROPE → inconclusive.
-    Bottom - “Enhanced Precision is the Goal” triggers when 95\% HDI fully within ROPE and obtains same precision goal (iteration 804). Correctly accepts $\theta_{\rm null}$}
-\end{figure}
-
 \section{Introduction}
 \input precision_goal_introduction
 
@@ -131,12 +119,110 @@ required, otherwise one should use a lower mass percentage like 94\% (Kruschke, 
 width of the credible interval, where the only noteworthy feature of this value is being
 the highest prime value under the traditional 95\% threshold.  
 
-The ROPE and HDI metrics may be used in various combinations in the stop algorithm.
-The common factor in all three that we discuss here is their decision criterion
-which we discuss next.
-
+The ROPE and HDI metrics may be used in various combinations in the
+test criterion algorithm.
+The three algorithms explored here differ in their stop criterion, which we later
+details, but have the same decision criterion which we discuss next.
 
 \subsubsection{Decision Criterion: Is The HDI In Or Out Of The ROPE?}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=1\textwidth]{cherry_posteriors.png}
+    \caption{Posteriors of subsamples of an example sequence. (For the full sequence see Figure TBD.)
+    In each panels is the posterior for a different stop criteria being triggered as per panel titles.
+    Shaded areas are 95\% HDIs. The ROPE within vertical dashed lines.
+    The outcome is dependent on when the stop criterion is triggered.
+    Top - HDI fully outside of ROPE → rejects $\theta_{\rm null}$.
+    Middle - HDI straddles ROPE → Inconclusive.
+    Bottom - HDI fully within ROPE → Accept $\theta_{\rm null}$.
+    %Top - HDI+ ROPE triggers when the 95\% HDI is fully outside the ROPE (iteration 126). Incorrectly rejects $\theta_{\rm null}$. Middle - “Precision is the Goal” triggers when 95\% HDI width reaches precision goal of 80\% ROPE width (iteration 598). HDI straddles the ROPE → inconclusive.
+    %Bottom - “Enhanced Precision is the Goal” triggers when 95\% HDI fully within ROPE and obtains same precision goal (iteration 804). Correctly accepts $\theta_{\rm null}$
+    }
+    \label{fig:posteriors}
+\end{figure}
+
+Once the stop criterion is triggered (be it manual or automated),
+the decision criterion for all three algorithms discussed is as follows:
+
+\begin{itemize}
+    \item If the HDI is completely outside ofthe ROPE → Reject the Null Hypothesis
+    \item If the HDI is completely inside the ROPE → Accept the Null Hypothesis
+    \item Otherwise → Inconclusive
+\end{itemize}
+
+We emphasise the third option of “inconclusive” as when the HDI straddles the ROPE
+boundaries. Addressing the issue of too many inconclusive outcomes is the main contribution of this study.
+
+In Figure \ref{fig:posteriors} we show three different posteriors of the same experiment of Bernoulli
+trials (i.e, same sample of coin tosses). % of a fair coin ($\theta_\mathrm{true}$=0.5).
+Each panel shows the posterior of a subsample when a different stopping iteration
+%criterion algorithm would have been triggered as mentioned in the title.
+The posterior used is the Beta distribution which quantifies $P(\theta|\hat{\theta})$,
+i.e the probability that a
+success rate $\theta$ (the horizontal axis) to generate this subsample,
+given we observed the subsample mean $\hat\theta$ (no. of successes/no. of tosses)
+as quantified in the legend of each panel.
+
+In the top panel we examine the posterior
+%of the \textit{HDI+ ROPE} algorithm (defined below)
+when stopped at iteration 126 when the 95\% HDI is fully outside the ROPE.
+In this case the algorithm %incorrectly
+rejects the null hypothesis $\theta_{\rm null}$.
+
+In the middle pannel we see the posterior
+%of the \textit{Precision is the Goal} algorithm (defined below).
+when a stop criterion was triggered at iteration 598
+%when the 95\% HDI width achieved the precision goal of 0.08 (80\% of the ROPE width).
+In this case the HDI straddles and the decision is inconclusive.
+
+In the bottom panel we see the result
+%of the \textit{Enhanced Precision is the Goal} algorithm
+when stopping at iteration 804.
+Since the 95\% HDI is fully within the ROPE
+%and achieved the same goal precision.
+%In this case it correctly accepts
+$\theta_{\rm null}$ may be accepted (TBD: J.K's comment about only central value).
+
+The main insight from this Figure \ref{fig:posteriors} (which is based on a 
+cherry picked example) is that the decision outcome may would be differ by iteration.
+More data, obviously is better, but the main question is when is best stop.
+\\
+\\
+Alternative Text that focuses on the main insight and does not mention the algorithms:\\
+
+
+In the top panel we see that in trial 126 the HDI is completely outside of the ROPE.
+If the stop criterion is triggered the user would reject the null hypothesis.
+In the middle panel we see that at trial 598 the posterior straddles the ROPE.
+If the stop criterion has not been triggered the researchers would need to collect more
+data. If it has been triggered, the result is inconclusive and the researcher would have
+to use other mechanisms to assess the risk of accepting or rejecting. In the bottom
+panel at trial 804 the HDI is fully within the ROPE. If the stop criterion is triggered
+here the null hypothesis is correctly accepted. The main insight from this figure is
+that in all three stopping criteria the decision would be different.
+
+
+
+%\includegraphics[scale=0.5]{cherry_posteriors.png}
+
+%\includegraphics[width=1\textwidth]{cherry_posteriors.png}
+
+
+% 𝜃
+\subsubsection{A High Level Comparison Of The Three Algorithems}
+
+As mentioned above, when the stop criteria trigger, all three test algorithms
+apply the same decision criterion but in slightly different manners.
+
+Prior to introducing them to help explain the subtle differences between the
+test algorithms it is useful to understand the main characteristics.
+For this purpose Table Reference
+
+
+
+part of caption:\\
+When the Stop Criterion and Decision Criterion cells are merged this means that both apply simultaneously.
 
 \subsubsection{HDI + ROPE: Location, Location, Location}
 
