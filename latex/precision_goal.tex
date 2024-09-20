@@ -12,7 +12,7 @@
 % hypter parameter setup
 \usepackage{hyperref}
 % for table setup
-\usepackage{tabularx}
+\usepackage{multirow}
 
 \title{Improved Sequential Hypothesis Testing with
 ``Enhanced Precision Is The Goal"}
@@ -219,6 +219,24 @@ Prior to introducing them to help explain the subtle differences between the
 test algorithms it is useful to understand the main characteristics.
 For this purpose Table Reference
 
+\begin{table}[h!]
+    \begin{center}
+      %\caption{Multirow and -column table.}
+      \label{tab:table1}
+      \begin{tabular}{c|c|c|c}
+        \textbf{Test Algorithm } & \textbf{Pre Survey} & \textbf{Stop Criterion} &  \textbf{Stop Criterion}\\
+        \hline
+        HDI + ROPE & $N_\mathrm{min}$  & \multicolumn{2}{c}{\multirow{1}{*}{HDI within/outside ROPE?}}  \\
+        Precision is the Goal & Goal & Precision $<$ Goal? & HDI within/outside ROPE? \\
+        Enhanced Precision is the Goal & Goal& \multicolumn{2}{c}{\multirow{1}{*}{(Precision $<$ Goal?) \& (HDI within/outside ROPE?)}}  \\
+      \end{tabular}
+      \caption{A high level comparison between the test algorithms. The merged cells mean Stop and Decision criteria are simultaneous. Otherwise multi-step.
+      }
+    \end{center}
+  \end{table}
+
+Pre Survey indicates a decision  $N_\mathrm{max}$, $\mathrm{ROPE}$
+
 
 
 part of caption:\\
@@ -248,27 +266,24 @@ importance: its location and/or width
 
 % make a table in latex with four rows and 5 columns
 
-\begin{tabularx}{1.2\textwidth} { 
-    | >{\raggedright\arraybackslash}X 
-    | >{\centering\arraybackslash}X 
-    | >{\raggedright\arraybackslash}X 
-    | >{\centering\arraybackslash}X 
-    | >{\raggedleft\arraybackslash}X | }
-   \hline
-   Algorithm & Pre Survey Decisions & Stop Criterion Characteristic
+% \begin{tabularx}{1.2\textwidth} { 
+%     | >{\raggedright\arraybackslash}X 
+%     | >{\centering\arraybackslash}X 
+%     | >{\raggedright\arraybackslash}X 
+%     | >{\centering\arraybackslash}X 
+%     | >{\raggedleft\arraybackslash}X | }
+%    \hline
+%    Algorithm & Pre Survey Decisions & Stop Criterion Characteristic
 
-   & Decision Criterion Characteristic & Sequence\\
-   \hline
-   HDI + ROPE  & \textbf{$N_\mathrm{min}$}, $N_\mathrm{max}$, $\sigma_\mathrm{effect}$  & Location  & Location & Simultaneously \\
-   \hline
-   item 31  & item 32  & item 33  & item 34 \\
+%    & Decision Criterion Characteristic & Sequence\\
+%    \hline
+%    HDI + ROPE  & \textbf{$N_\mathrm{min}$}, $N_\mathrm{max}$, $\sigma_\mathrm{effect}$  & Location  & Location & Simultaneously \\
+%    \hline
+%    item 31  & item 32  & item 33  & item 34 \\
    
-  \hline
-  \end{tabularx}
-\\
-\\
-\\
-Here we use notation
+%   \hline
+%   \end{tabularx}
+Here e we use notation
 
   \begin{itemize}
         \item $N_\mathrm{min}$ - the minimal sample size to collect (needs further explanation)
