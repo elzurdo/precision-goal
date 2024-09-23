@@ -124,7 +124,7 @@ test criterion algorithm.
 The three algorithms explored here differ in their stop criterion, which we later
 details, but have the same decision criterion which we discuss next.
 
-\subsubsection{Decision Criterion: Is The HDI In Or Out Of The ROPE?}
+\subsubsection{Decision Criterion: Is The HDI In Or Out Of The ROPE?}\label{sec:decision_criterion}
 
 \begin{figure}[h!]
     \centering
@@ -215,32 +215,47 @@ that in all three stopping criteria the decision would be different.
 As mentioned above, when the stop criteria trigger, all three test algorithms
 apply the same decision criterion but in slightly different manners.
 
-Prior to introducing them to help explain the subtle differences between the
-test algorithms it is useful to understand the main characteristics.
-For this purpose Table Reference
+Table \ref{tab:table1} provides a high level comparison between the test algorithms.
 
-\begin{table}[h!]
+\begin{table}[h!]\label{tab:table1}
     \begin{center}
       %\caption{Multirow and -column table.}
-      \label{tab:table1}
       \begin{tabular}{c|c|c|c}
-        \textbf{Test Algorithm } & \textbf{Pre Survey} & \textbf{Stop Criterion} &  \textbf{Stop Criterion}\\
+        \textbf{Test Algorithm } & \textbf{Pre Survey} & \textbf{Stop Criterion} &  \textbf{Decision Criterion}\\
         \hline
         HDI + ROPE & $N_\mathrm{min}$  & \multicolumn{2}{c}{\multirow{1}{*}{HDI within/outside ROPE?}}  \\
         Precision is the Goal & Goal & Precision $<$ Goal? & HDI within/outside ROPE? \\
         Enhanced Precision is the Goal & Goal& \multicolumn{2}{c}{\multirow{1}{*}{(Precision $<$ Goal?) \& (HDI within/outside ROPE?)}}  \\
       \end{tabular}
-      \caption{A high level comparison between the test algorithms. The merged cells mean Stop and Decision criteria are simultaneous. Otherwise multi-step.
+      \caption{A high level comparison between the test algorithms.
+      The merged cells mean Stop and Decision criteria are simultaneous.
+      Otherwise multi-step.
       }
     \end{center}
   \end{table}
 
-Pre Survey indicates a decision  $N_\mathrm{max}$, $\mathrm{ROPE}$
+In the Pre Survey column we highlight the a characteristic parameter required to be
+determined prior to the collection of data. For HDI+ROPE this is the minimal sample size
+to collect $N_\mathrm{min}$, e.g, 30. The reason for this is that this algorithm
+is very sensitive to strong outliers.
 
+For the two precision based algorithms the $\mathrm{GOAL}$ precision is required,
+which should be less than the $\mathrm{ROPE}$ width. For brevity of the table
+readability we excluded two Pre Survey parameters that are required for all three
+algorithms:
+\begin{itemize}
+    \item $N_\mathrm{max}$ - the maximum sample size, i.e, the final budgt size
+    \item $\mathrm{ROPE}$ - The ROPE with which is a statement of minimum effect size considered meaningful
+\end{itemize}
 
+In the Stop and Decision Criteria columns we see that,
+as per \S\ref{sec:decision_criterion}, the decision criterion is the same
+for all three. Note that the Precision is the Goal method is a two step process, 
+i.e, "Stop" then "Decide",
+and the other two activate both Stop and Decision criteria simultaneously
+(i.e, "Stop and Decide"). In the next three secions we explain these in detail,
+followed up with analytic and synthetic examples.
 
-part of caption:\\
-When the Stop Criterion and Decision Criterion cells are merged this means that both apply simultaneously.
 
 \subsubsection{HDI + ROPE: Location, Location, Location}
 
