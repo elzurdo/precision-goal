@@ -167,7 +167,9 @@ that in all three stopping criteria the decision would be different.
 As mentioned above, when the stop criteria trigger, all three test algorithms
 apply the same decision criterion but in slightly different manners.
 
+
 Table \ref{tab:table1} provides a high level comparison between the test algorithms.
+
 
 \begin{table}[h!]\label{tab:table1}
     \begin{center}
@@ -192,20 +194,21 @@ to collect $N_\mathrm{min}$, e.g, 30. The reason for this is that this algorithm
 is very sensitive to strong outliers.
 
 For the two precision based algorithms the $\mathrm{GOAL}$ precision is required,
-which should be less than the $\mathrm{ROPE}$ width. For brevity of the table
+which should be less than the $\mathrm{ROPE}$ width $\Delta_\mathrm{ROPE}$. For brevity of the table
 readability we excluded two Pre Survey parameters that are required for all three
 algorithms:
 \begin{itemize}
-    \item $N_\mathrm{max}$ - the maximum sample size, i.e, the final budgt size
-    \item $\mathrm{ROPE}$ - The ROPE with which is a statement of minimum effect size considered meaningful
+    \item $N_\mathrm{max}$ - the maximum sample size, i.e, the final budget size. In most practical cases one will want an upper bound of how much data to collect
+    \item $\Delta_\mathrm{ROPE}$ - The ROPE width which is a statement of minimum effect size considered meaningful
 \end{itemize}
 
 In the Stop and Decision Criteria columns we see that,
 as per \S\ref{sec:decision_criterion}, the decision criterion is the same
 for all three. That is to say that all three make the decision based on the
-location of the HDI with respect to the ROPE, i.e, the posterior location.
+location of the HDI with respect to the ROPE, i.e, the posterior location in respect
+to the null hypothesis and its effective region.
 Whereas this is the only criterion for the HDI+ROPE algorithm, the other two
-are more conservative as they require the posterior width information in the from
+are more conservative as they require also the posterior width information in the from
 of what is later to be defined as the Precision.
 
 
@@ -217,6 +220,52 @@ followed up with analytic and synthetic examples.
 
 
 \subsubsection{HDI + ROPE: Location, Location, Location}
+
+This popular method serves as a cautionary use case of the "confirmation bias"
+address by the Precision based methods.
+
+Here we provide a pseudo code of the HDI + ROPE algorithm:
+
+Pre Survey Decisions:
+
+\begin{itemize}
+    \item $N_\mathrm{min}$ - the minimal sample size to collect
+    \item $N_\mathrm{max}$ - the maximum sample size
+    \item $\Delta_\mathrm{ROPE}$ - The ROPE width (minimum effect size)
+\end{itemize}
+
+The Stop and Decision criteria are simultaneous:
+
+\begin{algorithm}
+    \caption{HDI + ROM pseudo algorithm}\label{alg:hdi_rom}
+    \begin{algorithmic}
+    \Require $N_\mathrm{min}$, $N_\mathrm{max}$, $\Delta_\mathrm{ROPE}$
+    %\Ensure $y = x^n$
+    \State $\mathrm{ROPE}_\mathrm{min} = \theta_{\rm null} - \frac{1}{2}\Delta_\mathrm{ROPE}$
+    \State $\mathrm{ROPE}_\mathrm{max} = \theta_{\rm null} + \frac{1}{2}\Delta_\mathrm{ROPE}$
+    \State Decision = Inconclusive
+    \State Stop = False
+    \While{(Stop = False \& $N \le N_\mathrm{max}$)}  % perhaps change to while loop
+    \State Update $\hat\theta$, $P(\theta|\hat\theta)$ ; N += 1; \Comment{collect more data and update posterior} 
+    \State $\mathrm{HDI}_\mathrm{min}, \ \mathrm{HDI}_\mathrm{max}  \gets P(\theta|\hat\theta)$
+    \If{$N < N_\mathrm{min}$}
+        \State pass  \Comment{collect more data without checking HDI boundaries}
+    \ElsIf{$(\mathrm{ROPE}_\mathrm{min} < \mathrm{HDI}_\mathrm{min}) \ \& \ (\mathrm{HDI}_\mathrm{max} < \mathrm{ROPE}_\mathrm{max})$}
+        \State Decision = Accept $\theta_{\rm null}$ \Comment{HDI completely within ROPE}
+        \State Stop = True
+    \ElsIf{$\mathrm{ROPE}_\mathrm{max}<\mathrm{HDI}_\mathrm{min}$}
+        \State Decision = Reject $\theta_{\rm null}$ \Comment{HDI completely outside ROPE; $\theta_{\rm null}<\hat\theta$}
+        \State Stop = True
+    \ElsIf{$\mathrm{HDI}_\mathrm{max}< \mathrm{ROPE}_\mathrm{min}$}
+        \State Decision = Reject $\theta_{\rm null}$ \Comment{HDI completely outside ROPE; $\hat\theta<\theta_{\rm null}$}
+        \State Stop = True
+    \ElsIf{$N_\mathrm{max} \le N $}
+        \State Stop = True
+    \EndIf
+    \EndWhile
+    \end{algorithmic}
+    \end{algorithm}
+
 
 \subsubsection{Algorithm Intuition And Comparison}
 
