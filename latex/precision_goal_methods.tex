@@ -246,28 +246,25 @@ null hypothesis $\theta_{\rm null}$.
 
 In Algorithm \ref{alg:hdi_rom} we provide a pseudo code of the HDI + ROPE algorithm.
 
+
+
 \begin{algorithm}
     \caption{HDI + ROM pseudo algorithm}\label{alg:hdi_rom}
     \begin{algorithmic}
     \Require $N_\mathrm{min}$, $N_\mathrm{max}$, $\theta_{\rm null}$, $\Delta_\mathrm{ROPE}$
     \State $\mathrm{ROPE}_\mathrm{min} = \theta_{\rm null} - \frac{1}{2}\Delta_\mathrm{ROPE}$
     \State $\mathrm{ROPE}_\mathrm{max} = \theta_{\rm null} + \frac{1}{2}\Delta_\mathrm{ROPE}$
-    \State Decision = Inconclusive
     \State Stop = False
+    \State Decision = Inconclusive
     \State N = 0
     \While{(Stop = False \& $N \le N_\mathrm{max}$)}  % perhaps change to while loop
     \State N += 1 \Comment{collect another data point} 
     \State Update $\hat\theta$, $P(\theta|\hat\theta)$ \Comment{update posterior} 
     \State $\mathrm{HDI}_\mathrm{min}, \ \mathrm{HDI}_\mathrm{max}  \gets P(\theta|\hat\theta)$
-    \If{$N < N_\mathrm{min}$}
-         \State pass  \Comment{collect more data without testing for Decision}
-    \ElsIf{$N_\mathrm{max} < N $} \Comment{Reached the maximum sample size}
-        \State Stop = True  
-        \State Decision = Inconclusive    
-    \Else
+    \If{$N_\mathrm{min} < N$}
         \State Decision = Decision Algorithm($\mathrm{ROPE}_\mathrm{min}, \mathrm{ROPE}_\mathrm{max}, \mathrm{HDI}_\mathrm{min}, \mathrm{HDI}_\mathrm{max}$)
         \If{Decision in \{Accept $\theta_{\rm null}$, Reject $\theta_{\rm null}$\}}
-            \State Stop = True  \Comment{Stopping only when decisive decision}
+            \State \HiLi Stop = True  \Comment{Stopping depends on decisive Decision}
         \EndIf
     \EndIf
     \EndWhile
@@ -310,34 +307,78 @@ We describe a pseudo algorithm of the Precision is the Goal algorithm in Algorit
 \begin{algorithm}
     \caption{Preicion is the Goal pseudo algorithm}\label{alg:pitg}
     \begin{algorithmic}
-    \Require $N_\mathrm{min}$, $N_\mathrm{max}$, $\theta_{\rm null}$, $\Delta_\mathrm{ROPE}$
-    %\Ensure $y = x^n$
+    \Require Goal, $N_\mathrm{max}$, $\theta_{\rm null}$, $\Delta_\mathrm{ROPE}$
     \State $\mathrm{ROPE}_\mathrm{min} = \theta_{\rm null} - \frac{1}{2}\Delta_\mathrm{ROPE}$
     \State $\mathrm{ROPE}_\mathrm{max} = \theta_{\rm null} + \frac{1}{2}\Delta_\mathrm{ROPE}$
-    \State Decision = Inconclusive
     \State Stop = False
+    \State Decision = Inconclusive
     \State N = 0
     \While{(Stop = False \& $N \le N_\mathrm{max}$)}  % perhaps change to while loop
     \State N += 1 \Comment{collect another data point} 
     \State Update $\hat\theta$, $P(\theta|\hat\theta)$ \Comment{update posterior} 
     \State $\mathrm{HDI}_\mathrm{min}, \ \mathrm{HDI}_\mathrm{max}  \gets P(\theta|\hat\theta)$
-    \If{$N < N_\mathrm{min}$}
-        \State pass  \Comment{collect more data without testing for Decision}
-    \ElsIf{$(\mathrm{ROPE}_\mathrm{min} < \mathrm{HDI}_\mathrm{min}) \ \& \ (\mathrm{HDI}_\mathrm{max} < \mathrm{ROPE}_\mathrm{max})$}
-        \State Decision = Accept $\theta_{\rm null}$ \Comment{HDI completely within ROPE}
-        \State Stop = True
-    \ElsIf{$\mathrm{ROPE}_\mathrm{max}<\mathrm{HDI}_\mathrm{min}$}
-        \State Decision = Reject $\theta_{\rm null}$ \Comment{HDI completely outside ROPE; $\theta_{\rm null}<\hat\theta$}
-        \State Stop = True
-    \ElsIf{$\mathrm{HDI}_\mathrm{max}< \mathrm{ROPE}_\mathrm{min}$}
-        \State Decision = Reject $\theta_{\rm null}$ \Comment{HDI completely outside ROPE; $\hat\theta<\theta_{\rm null}$}
-        \State Stop = True
-    \ElsIf{$N_\mathrm{max} \le N $}
-        \State Stop = True
+    \State Precision = $\mathrm{HDI}_\mathrm{max} - \mathrm{HDI}_\mathrm{min}$
+    \If{Precision $ \le $ Goal}
+         \State \HiLi Stop = True \Comment{Stopping regardless of Decision}
+         \State Decision = Decision Algorithm($\mathrm{ROPE}_\mathrm{min}, \mathrm{ROPE}_\mathrm{max}, \mathrm{HDI}_\mathrm{min}, \mathrm{HDI}_\mathrm{max}$)  
     \EndIf
     \EndWhile
     \end{algorithmic}
 \end{algorithm}
+
+Here we see that Precision is the Goal stops when the posterior width is less than
+the set goal regardless of the decision criterion, making it a two step process.
+
+The fact that the algorithm decision may yield and inconclusive decision
+(i.e, cannot justify accepeting or rejecting the null hypothesis) means that the
+burden of the deicsion is required elsewhere on a higher level of the process.
+A human-in-the-loop (or a wrapper alogithm) would have to either decided to
+
+\begin{itemize}
+    \item Conduct risk assessment based on the posterior $P(\theta|\hat\theta)$ to accept or reject the null hypothesis
+    \item Collect more data
+\end{itemize}
+
+We defer a discussion risk assessment and focus on the latter.
+In our analyses in section [TBD] we show that, depending on the setting,
+the Precision is the Goal algorithm may yield a high percentage of inconclusive results.
+
+In the next subsetion we suggest a slighlty more conservative variant of the algorithm
+that acts as the original but collects more data to increase the rates
+of decisive decisions.
+
+\subsubsection{Enhanced Precision Is The Goal: Width \& Location}
+
+Here we modify the \cite{kruschke2015doing} Precision is the Goal algorithm
+to make the stop criterion dependent both on the with of the posterior
+as well as its location in repsect to the null hypothesis.
+
+\begin{algorithm}
+    \caption{Enhanced Preicion is the Goal pseudo algorithm}\label{alg:epitg}
+    \begin{algorithmic}
+    \Require Goal, $N_\mathrm{max}$, $\theta_{\rm null}$, $\Delta_\mathrm{ROPE}$
+    \State $\mathrm{ROPE}_\mathrm{min} = \theta_{\rm null} - \frac{1}{2}\Delta_\mathrm{ROPE}$
+    \State $\mathrm{ROPE}_\mathrm{max} = \theta_{\rm null} + \frac{1}{2}\Delta_\mathrm{ROPE}$
+    \State Stop = False
+    \State Decision = Inconclusive
+    \State N = 0
+    \While{(Stop = False \& $N \le N_\mathrm{max}$)}  % perhaps change to while loop
+    \State N += 1 \Comment{collect another data point} 
+    \State Update $\hat\theta$, $P(\theta|\hat\theta)$ \Comment{update posterior} 
+    \State $\mathrm{HDI}_\mathrm{min}, \ \mathrm{HDI}_\mathrm{max}  \gets P(\theta|\hat\theta)$ 
+    \State Precision = $\mathrm{HDI}_\mathrm{max} - \mathrm{HDI}_\mathrm{min}$
+    \If{Precision $ \le $ Goal}
+        \State Decision = Decision Algorithm($\mathrm{ROPE}_\mathrm{min}, \mathrm{ROPE}_\mathrm{max}, \mathrm{HDI}_\mathrm{min}, \mathrm{HDI}_\mathrm{max}$) 
+        \If{Decision in \{Accept $\theta_{\rm null}$, Reject $\theta_{\rm null}$\}} 
+            \State \HiLi Stop = True \Comment{Stopping depends on Precision and Decision}
+        \EndIf
+    \EndIf
+    \EndWhile
+    \end{algorithmic}
+\end{algorithm}
+
+Here we see that the stopping and decision criteria act simultaneously, similar to the HDI + ROPE Algorithm \ref{alg:hdi_rom},
+but requires the precision condition as per the Precision is the Goal Algorithm \ref{alg:pitg}.
 
 \subsubsection{Algorithm Intuition And Comparison}
 all of which rely on the same decision criterion to determine acceptence
@@ -384,7 +425,5 @@ Here e we use notation
          
   \end{itemize}
 
-
-\subsubsection{Enhanced Precision Is The Goal: Width \& Location}
 
 \subsection{Synthetic Data Analysis}
