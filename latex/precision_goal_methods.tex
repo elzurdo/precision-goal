@@ -211,6 +211,24 @@ Whereas this is the only criterion for the HDI+ROPE algorithm, the other two
 are more conservative as they require also the posterior width information in the from
 of what is later to be defined as the Precision.
 
+\begin{algorithm}
+    \caption{Decision Criterion pseudo algorithm}\label{alg:decision_criterion}
+    \begin{algorithmic}
+    \Require $\mathrm{ROPE}_\mathrm{min}$, $\mathrm{ROPE}_\mathrm{max}$, $\mathrm{HDI}_\mathrm{min}$, $\mathrm{HDI}_\mathrm{max}$
+    \If{$(\mathrm{ROPE}_\mathrm{min} < \mathrm{HDI}_\mathrm{min}) \ \& \ (\mathrm{HDI}_\mathrm{max} < \mathrm{ROPE}_\mathrm{max})$}
+        \State Decision = Accept $\theta_{\rm null}$ \Comment{HDI completely within ROPE}
+    \ElsIf{$\mathrm{ROPE}_\mathrm{max}<\mathrm{HDI}_\mathrm{min}$}
+        \State Decision = Reject $\theta_{\rm null}$ \Comment{HDI completely outside ROPE; $\theta_{\rm null}<\hat\theta$}
+    \ElsIf{$\mathrm{HDI}_\mathrm{max}< \mathrm{ROPE}_\mathrm{min}$}
+        \State Decision = Reject $\theta_{\rm null}$ \Comment{HDI completely outside ROPE; $\hat\theta<\theta_{\rm null}$}
+    \Else
+    \State Decision = Inconclusive  \Comment{HDI straddles ROPE}
+    \EndIf \\
+    \Return Decision
+    \end{algorithmic} 
+    
+\end{algorithm}
+
 
 Note that the Precision is the Goal method is a two step process, 
 i.e, "Stop" then "Decide",
@@ -221,35 +239,90 @@ followed up with analytic and synthetic examples.
 
 \subsubsection{HDI + ROPE: Location, Location, Location}
 
-This popular method serves as a cautionary use case of the "confirmation bias"
-address by the Precision based methods.
+HDI + ROPE is a popular method that combines the HDI and ROPE heuristics to describe
+the relationship between the \textbf{location} of posterior $P(\theta|\hat\theta)$, which depends on the observed
+sample value $\hat\theta$ in regards to the
+null hypothesis $\theta_{\rm null}$.
 
-Here we provide a pseudo code of the HDI + ROPE algorithm:
-
-Pre Survey Decisions:
-
-\begin{itemize}
-    \item $N_\mathrm{min}$ - the minimal sample size to collect
-    \item $N_\mathrm{max}$ - the maximum sample size
-    \item $\Delta_\mathrm{ROPE}$ - The ROPE width (minimum effect size)
-\end{itemize}
-
-The Stop and Decision criteria are simultaneous:
+In Algorithm \ref{alg:hdi_rom} we provide a pseudo code of the HDI + ROPE algorithm.
 
 \begin{algorithm}
     \caption{HDI + ROM pseudo algorithm}\label{alg:hdi_rom}
     \begin{algorithmic}
-    \Require $N_\mathrm{min}$, $N_\mathrm{max}$, $\Delta_\mathrm{ROPE}$
+    \Require $N_\mathrm{min}$, $N_\mathrm{max}$, $\theta_{\rm null}$, $\Delta_\mathrm{ROPE}$
+    \State $\mathrm{ROPE}_\mathrm{min} = \theta_{\rm null} - \frac{1}{2}\Delta_\mathrm{ROPE}$
+    \State $\mathrm{ROPE}_\mathrm{max} = \theta_{\rm null} + \frac{1}{2}\Delta_\mathrm{ROPE}$
+    \State Decision = Inconclusive
+    \State Stop = False
+    \State N = 0
+    \While{(Stop = False \& $N \le N_\mathrm{max}$)}  % perhaps change to while loop
+    \State N += 1 \Comment{collect another data point} 
+    \State Update $\hat\theta$, $P(\theta|\hat\theta)$ \Comment{update posterior} 
+    \State $\mathrm{HDI}_\mathrm{min}, \ \mathrm{HDI}_\mathrm{max}  \gets P(\theta|\hat\theta)$
+    \If{$N < N_\mathrm{min}$}
+         \State pass  \Comment{collect more data without testing for Decision}
+    \ElsIf{$N_\mathrm{max} < N $} \Comment{Reached the maximum sample size}
+        \State Stop = True  
+        \State Decision = Inconclusive    
+    \Else
+        \State Decision = Decision Algorithm($\mathrm{ROPE}_\mathrm{min}, \mathrm{ROPE}_\mathrm{max}, \mathrm{HDI}_\mathrm{min}, \mathrm{HDI}_\mathrm{max}$)
+        \If{Decision in \{Accept $\theta_{\rm null}$, Reject $\theta_{\rm null}$\}}
+            \State Stop = True  \Comment{Stopping only when decisive decision}
+        \EndIf
+    \EndIf
+    \EndWhile
+    \end{algorithmic}
+\end{algorithm}
+
+
+The algorithms requires a few decisions to be made prior to the collection of data (Pre Survey Decisions):
+
+\begin{itemize}
+    \item $N_\mathrm{min}$ - the minimal sample size to collect
+    \item $N_\mathrm{max}$ - the maximum sample size
+    \item $\theta_{\rm null}$ - the null hypothesis parameter value being tested
+    \item $\Delta_\mathrm{ROPE}$ - The ROPE width (minimum effect size)
+\end{itemize}
+
+Algorithm \ref{alg:hdi_rom} assumes collection of one data point at a time,
+but this may be modified in the line $N += 1$ to be for a batch collection.
+
+The most important aspects of this algorithm are that:
+
+\begin{itemize}
+    \item The Stop and Decision criterion are one and the same
+    \item The Stop criterion depends only on location information, not on the precision of the posterior.
+\end{itemize}
+
+Due to its disregard of dependence on the uncertainty of the posterior,
+this popular method serves as a cautionary use case of the "confirmation bias"
+address by the Precision based methods described next.
+
+
+\subsubsection{Precision Is The Goal: Width Then Location}
+
+\cite{kruschke2015doing} introduced the Precision is the Goal algorithm to account
+of the importance of the width of the posterior as the objective of the Stop Criterion.
+Building upon the HDI + ROPE algorithm it uses the same Decision Criterion.
+
+We describe a pseudo algorithm of the Precision is the Goal algorithm in Algorithm \ref{alg:pitg}.
+
+\begin{algorithm}
+    \caption{Preicion is the Goal pseudo algorithm}\label{alg:pitg}
+    \begin{algorithmic}
+    \Require $N_\mathrm{min}$, $N_\mathrm{max}$, $\theta_{\rm null}$, $\Delta_\mathrm{ROPE}$
     %\Ensure $y = x^n$
     \State $\mathrm{ROPE}_\mathrm{min} = \theta_{\rm null} - \frac{1}{2}\Delta_\mathrm{ROPE}$
     \State $\mathrm{ROPE}_\mathrm{max} = \theta_{\rm null} + \frac{1}{2}\Delta_\mathrm{ROPE}$
     \State Decision = Inconclusive
     \State Stop = False
+    \State N = 0
     \While{(Stop = False \& $N \le N_\mathrm{max}$)}  % perhaps change to while loop
-    \State Update $\hat\theta$, $P(\theta|\hat\theta)$ ; N += 1; \Comment{collect more data and update posterior} 
+    \State N += 1 \Comment{collect another data point} 
+    \State Update $\hat\theta$, $P(\theta|\hat\theta)$ \Comment{update posterior} 
     \State $\mathrm{HDI}_\mathrm{min}, \ \mathrm{HDI}_\mathrm{max}  \gets P(\theta|\hat\theta)$
     \If{$N < N_\mathrm{min}$}
-        \State pass  \Comment{collect more data without checking HDI boundaries}
+        \State pass  \Comment{collect more data without testing for Decision}
     \ElsIf{$(\mathrm{ROPE}_\mathrm{min} < \mathrm{HDI}_\mathrm{min}) \ \& \ (\mathrm{HDI}_\mathrm{max} < \mathrm{ROPE}_\mathrm{max})$}
         \State Decision = Accept $\theta_{\rm null}$ \Comment{HDI completely within ROPE}
         \State Stop = True
@@ -264,11 +337,9 @@ The Stop and Decision criteria are simultaneous:
     \EndIf
     \EndWhile
     \end{algorithmic}
-    \end{algorithm}
-
+\end{algorithm}
 
 \subsubsection{Algorithm Intuition And Comparison}
-
 all of which rely on the same decision criterion to determine acceptence
 or rejection of the null hypothesis.
 
