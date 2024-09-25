@@ -111,8 +111,42 @@ the decision criterion for all three algorithms discussed is as follows:
     \item Otherwise → Inconclusive
 \end{itemize}
 
-We emphasise the third option of “inconclusive” as when the HDI straddles the ROPE
-boundaries. Addressing the issue of too many inconclusive outcomes is the main contribution of this study.
+The fact that the Decision Algorithm may yield an inconclusive outcome
+(i.e, cannot justify accepeting or rejecting the null hypothesis) means that the
+burden of the decision is required elsewhere on a higher level of the process.
+A human-in-the-loop (or a wrapper alogithm) would have to either decided to
+
+\begin{itemize}
+    \item Conduct risk assessment based on the posterior $P(\theta|\hat\theta)$ to
+    accept or reject the null hypothesis
+    \item Collect more data
+\end{itemize}
+
+We defer a discussion risk assessment and focus on the latter as
+addressing the issue of too many inconclusive outcomes is the main contribution of this study.
+
+%We emphasise the third option of “inconclusive” as when the HDI straddles the ROPE
+
+In Alogrithm \ref{alg:decision_criterion} we foramlise the Decision Algorithm description
+above in pseudo code using the HDI and ROPE heuristics (TBD: define $\theta$ et al.)
+
+\begin{algorithm}
+    \caption{Decision Criterion pseudo algorithm}\label{alg:decision_criterion}
+    \begin{algorithmic}
+    \Require $\mathrm{ROPE}_\mathrm{min}$, $\mathrm{ROPE}_\mathrm{max}$, $\mathrm{HDI}_\mathrm{min}$, $\mathrm{HDI}_\mathrm{max}$
+    \If{$(\mathrm{ROPE}_\mathrm{min} < \mathrm{HDI}_\mathrm{min}) \ \& \ (\mathrm{HDI}_\mathrm{max} < \mathrm{ROPE}_\mathrm{max})$}
+        \State Decision = Accept $\theta_{\rm null}$ \Comment{HDI completely within ROPE}
+    \ElsIf{$\mathrm{ROPE}_\mathrm{max}<\mathrm{HDI}_\mathrm{min}$}
+        \State Decision = Reject $\theta_{\rm null}$ \Comment{HDI completely outside ROPE; $\theta_{\rm null}<\hat\theta$}
+    \ElsIf{$\mathrm{HDI}_\mathrm{max}< \mathrm{ROPE}_\mathrm{min}$}
+        \State Decision = Reject $\theta_{\rm null}$ \Comment{HDI completely outside ROPE; $\hat\theta<\theta_{\rm null}$}
+    \Else
+    \State Decision = Inconclusive  \Comment{HDI straddles ROPE}
+    \EndIf \\
+    \Return Decision
+    \end{algorithmic} 
+    
+\end{algorithm}
 
 In Figure \ref{fig:posteriors} we show three different posteriors of the same experiment of Bernoulli
 trials (i.e, same sample of coin tosses). % of a fair coin ($\theta_\mathrm{true}$=0.5).
@@ -211,24 +245,6 @@ Whereas this is the only criterion for the HDI+ROPE algorithm, the other two
 are more conservative as they require also the posterior width information in the from
 of what is later to be defined as the Precision.
 
-\begin{algorithm}
-    \caption{Decision Criterion pseudo algorithm}\label{alg:decision_criterion}
-    \begin{algorithmic}
-    \Require $\mathrm{ROPE}_\mathrm{min}$, $\mathrm{ROPE}_\mathrm{max}$, $\mathrm{HDI}_\mathrm{min}$, $\mathrm{HDI}_\mathrm{max}$
-    \If{$(\mathrm{ROPE}_\mathrm{min} < \mathrm{HDI}_\mathrm{min}) \ \& \ (\mathrm{HDI}_\mathrm{max} < \mathrm{ROPE}_\mathrm{max})$}
-        \State Decision = Accept $\theta_{\rm null}$ \Comment{HDI completely within ROPE}
-    \ElsIf{$\mathrm{ROPE}_\mathrm{max}<\mathrm{HDI}_\mathrm{min}$}
-        \State Decision = Reject $\theta_{\rm null}$ \Comment{HDI completely outside ROPE; $\theta_{\rm null}<\hat\theta$}
-    \ElsIf{$\mathrm{HDI}_\mathrm{max}< \mathrm{ROPE}_\mathrm{min}$}
-        \State Decision = Reject $\theta_{\rm null}$ \Comment{HDI completely outside ROPE; $\hat\theta<\theta_{\rm null}$}
-    \Else
-    \State Decision = Inconclusive  \Comment{HDI straddles ROPE}
-    \EndIf \\
-    \Return Decision
-    \end{algorithmic} 
-    
-\end{algorithm}
-
 
 Note that the Precision is the Goal method is a two step process, 
 i.e, "Stop" then "Decide",
@@ -326,30 +342,20 @@ We describe a pseudo algorithm of the Precision is the Goal algorithm in Algorit
     \end{algorithmic}
 \end{algorithm}
 
-Here we see that Precision is the Goal stops when the posterior width is less than
+Here we see that Precision is the Goal stops collecting when the posterior width is less than
 the set goal regardless of the decision criterion, making it a two step process.
 
-The fact that the algorithm decision may yield and inconclusive decision
-(i.e, cannot justify accepeting or rejecting the null hypothesis) means that the
-burden of the deicsion is required elsewhere on a higher level of the process.
-A human-in-the-loop (or a wrapper alogithm) would have to either decided to
 
-\begin{itemize}
-    \item Conduct risk assessment based on the posterior $P(\theta|\hat\theta)$ to accept or reject the null hypothesis
-    \item Collect more data
-\end{itemize}
-
-We defer a discussion risk assessment and focus on the latter.
 In our analyses in section [TBD] we show that, depending on the setting,
 the Precision is the Goal algorithm may yield a high percentage of inconclusive results.
 
-In the next subsetion we suggest a slighlty more conservative variant of the algorithm
+In the next subsection we suggest a slighlty more conservative variant of the algorithm
 that acts as the original but collects more data to increase the rates
 of decisive decisions.
 
 \subsubsection{Enhanced Precision Is The Goal: Width \& Location}
 
-Here we modify the \cite{kruschke2015doing} Precision is the Goal algorithm
+We modify the \cite{kruschke2015doing} Precision is the Goal algorithm
 to make the stop criterion dependent both on the with of the posterior
 as well as its location in repsect to the null hypothesis.
 
@@ -377,53 +383,18 @@ as well as its location in repsect to the null hypothesis.
     \end{algorithmic}
 \end{algorithm}
 
-Here we see that the stopping and decision criteria act simultaneously, similar to the HDI + ROPE Algorithm \ref{alg:hdi_rom},
+We see that the stopping and decision criteria act simultaneously, similar to the HDI + ROPE Algorithm \ref{alg:hdi_rom},
 but requires the precision condition as per the Precision is the Goal Algorithm \ref{alg:pitg}.
 
-\subsubsection{Algorithm Intuition And Comparison}
-all of which rely on the same decision criterion to determine acceptence
-or rejection of the null hypothesis.
+A highlevel summary of the three algorithms as described in Table \ref{tab:table1}
+and Algorithms \ref{alg:hdi_rom}, \ref{alg:pitg}, and \ref{alg:epitg} is that
 
-
-Table (cite table) provides an intuitive comparison between the three algorithms of interst.
-In order to conduct this comparison we consider:
 \begin{itemize}
-    \item Pre Survey Decisions - the parameters required to decide ahead of data
-    collection
-    \item The stop criterion main characteristic 
-    \item The decision criterion characteristic
-    \item Stop and Decision order - are they simultaneous a two step process?
+    \item HDI + ROPE is a one step process that stops based on the location of the posterior
+    \item Precision is the Goal is a two step process that stops based on the width of the posterior
+    \item Enhanced Precision is the Goal is a one step process that stops based on the width and location of the posterior
 \end{itemize}
-By creterion {\it characteristic} we are referring to the property of the posterior of
-importance: its location and/or width
 
-% make a table in latex with four rows and 5 columns
-
-% \begin{tabularx}{1.2\textwidth} { 
-%     | >{\raggedright\arraybackslash}X 
-%     | >{\centering\arraybackslash}X 
-%     | >{\raggedright\arraybackslash}X 
-%     | >{\centering\arraybackslash}X 
-%     | >{\raggedleft\arraybackslash}X | }
-%    \hline
-%    Algorithm & Pre Survey Decisions & Stop Criterion Characteristic
-
-%    & Decision Criterion Characteristic & Sequence\\
-%    \hline
-%    HDI + ROPE  & \textbf{$N_\mathrm{min}$}, $N_\mathrm{max}$, $\sigma_\mathrm{effect}$  & Location  & Location & Simultaneously \\
-%    \hline
-%    item 31  & item 32  & item 33  & item 34 \\
-   
-%   \hline
-%   \end{tabularx}
-Here e we use notation
-
-  \begin{itemize}
-        \item $N_\mathrm{min}$ - the minimal sample size to collect (needs further explanation)
-        \item $N_\mathrm{max}$ - the maximum sample size
-        \item $\sigma_\mathrm{effect}$ - The effect size
-         
-  \end{itemize}
-
-
+We next turn to simulating sequential hypothesis testing using synthetic data as well
+analytical descriptions of the expected outcomes.
 \subsection{Synthetic Data Analysis}
