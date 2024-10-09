@@ -207,7 +207,6 @@ Table \ref{tab:table1} provides a high level comparison between the test algorit
 
 \begin{table}[h!]\label{tab:table1}
     \begin{center}
-      %\caption{Multirow and -column table.}
       \begin{tabular}{c|c|c|c}
         \textbf{Test Algorithm } & \textbf{Pre Survey} & \textbf{Stop Criterion} &  \textbf{Decision Criterion}\\
         \hline
@@ -397,4 +396,35 @@ and Algorithms \ref{alg:hdi_rom}, \ref{alg:pitg}, and \ref{alg:epitg} is that
 
 We next turn to simulating sequential hypothesis testing using synthetic data as well
 analytical descriptions of the expected outcomes.
-\subsection{Synthetic Data Analysis}
+\subsection{Synthetic Data and Experiment Setup}
+
+To compare and invetigate the implications of three algorithms we
+follow the setup of \cite{kruschke2015doing} and generate synthetic data
+based on a Bernoulli trials with known true values of $\theta_{\rm true}$.
+
+We generate a $M$ sequences of $N_{\rm max}$ Bernoulli trials with a true value of $\theta_{\rm true}$.
+
+Values used are
+
+\begin{itemize}
+    \item $N_{\rm max}=1,500$ to simulate a medium sized survey
+    \item $M=500$ sequences to ensure statistical robusteness of results
+    \item $\theta_{\rm true}=0.5, 0.52, 0.6$ to simulate a fair, slightly unfair and loaded coins
+\end{itemize}
+
+The default value of the ROPE width is $\Delta_{\rm ROPE}=0.1$. This indicates
+the effect size that is considered meaningful. (TK minimum maximum?).
+
+The default value of the Precision Goal is 80\% of the ROPE width, i.e, $\mathrm{Goal}=0.08$.
+
+The default value of the minimal sample size is $N_{\rm min}=30$. This is a practical
+setting to avoid many weak outliers to impact HDI+ROPE (the precision based algorithms
+are shielded from requiring this as inhereitely require larger sample sizes).
+
+These values were chosen as considered reasonable settings for some real life
+situations. (TK examples? Polling data)
+
+We start with the default setting and then vary the parameters to investigate to
+explore implications for other settings (TK examples?).
+
+
