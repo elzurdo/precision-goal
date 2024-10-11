@@ -64,7 +64,7 @@ class BinomialHypothesis():
         plot_multiple_decision_rates_separate(self.method_df_iteration_counts, success_rate, self.n_experiments, viz_epitg=viz_epitg, iteration_values=None)
 
     def plot_stop_iter_sample_rates(self, success_rate=None, title=None):
-        scatter_stop_iter_sample_rate(self.method_df_stats, rope_min=self.rope_min, rope_max=self.rope_max, success_rate=success_rate, title=title)
+        scatter_stop_iter_sample_rate(self.method_df_stats, rope_min=self.rope_min, rope_max=self.rope_max, success_rate_true=success_rate, success_rate_hypothesis=self.success_rate_null, precision_goal=self.precision_goal, title=title)
 
     def viz_one_experiment_all_iterations(self, df_sample_results, success_rate=None):
         viz_one_sample_results(df_sample_results, self.precision_goal, self.rope_min, self.rope_max, success_rate=success_rate)
