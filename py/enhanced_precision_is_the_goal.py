@@ -166,7 +166,7 @@ plot_multiple_decision_rates_jammed(method_df_iteration_counts, success_rate, ex
 viz_epitg = True
 plot_multiple_decision_rates_separate(method_df_iteration_counts, success_rate, experiments, viz_epitg=viz_epitg, iteration_values=None)
 
-scatter_stop_iter_sample_rate(method_df_stats, rope_min=rope_min, rope_max=rope_max, success_rate=success_rate, title=None)
+scatter_stop_iter_sample_rate(method_df_stats, rope_min=rope_min, rope_max=rope_max, success_rate_true=success_rate, title=None)
 
 # # Old Scripts
 # Some still useful!
