@@ -6,6 +6,12 @@ import pandas as pd
 CI_FRACTION = 0.95
 MIN_COUNTS = 1.
 
+
+def binomial_rate_ci_width_to_sample_size(p, credible_interval_width, z_star = 1.96):
+    variance_ = (0.5 *  credible_interval_width / z_star) ** 2
+    n_ = p * (1 - p) / variance_ - 1
+    return n_
+
 def test_value(x):
     if x == 0:
         return MIN_COUNTS
