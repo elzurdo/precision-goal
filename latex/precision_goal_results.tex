@@ -44,8 +44,10 @@ This results in correctly accepting $\theta_{\rm null}$.
   \label{fig:iterations}
 \end{figure}
 
-In Figure \ref{fig:fair_iter_vs_rate} we explore the outcomes of $M=500$
-experiments and summarise key stats in Table \ref{tab:fair_iter_vs_rate}. (TK Ref JK figure number being additional information to his histograms).
+We continue to explore $M=500$ experiments and dispaly outcomes in
+Figure \ref{fig:fair_iter_vs_rate} and summarise key stats in
+Table \ref{tab:fair_iter_vs_rate}. 
+(TK Ref JK figure number being additional information to his histograms).
 
 
 \begin{figure}[h!]
@@ -77,17 +79,22 @@ $\overline{\theta}$ column in Table \ref{tab:fair_iter_vs_rate}.
     ePitG & 0.984 & 0.00 & 0.984 & 0.016 & 732.2 & 210 & 0.4998 & 0.0127\\
     \hline
   \end{tabular}
-  \caption{Stastic summaries of 500 experiments of the three stop criteria shown in Figure \ref{fig:fair_iter_vs_rate}. Accept
+  \caption{Statistic summaries of 500 experiments of the three stop criteria shown in
+  Figure \ref{fig:fair_iter_vs_rate}. {\it Accept}
   is the fraction of experiments which results in acceptence of $\theta_{\rm null}$,
-  and similar in reverse for Reject. Conclusive is the sum of Accept and Reject and Inconclusive is its complementary. The mean stop iteration is $\overline{n}$ and the standard deviation $\sigma_n$
+  and similar in reverse for {\it Reject}. {\it Conclusive} is the sum of Accept
+  and Reject and {\it Inconclusive} is its complementary.
+  The mean stop iteration is $\overline{n}$ and the standard deviation $\sigma_n$
   The mean sample rate when the stop is triggered is $\overline{\theta}$ and its standard deviation is $\sigma_{\hat{\theta}}$.
   }
 \end{center}
 \end{table}
 
-That said, HDI+ROPE falsely accepts $\theta_{\rm null}$ at a rate of 6\% 
-whereas the precision methods do not have False Posistives (see Reject column in Table \ref{tab:fair_iter_vs_rate}).
-(Note that if we relax the minimum sample size ($N_{\rm min}=0$) the FPR increases to TK\%).
+That said, HDI+ROPE falsely rejects $\theta_{\rm null}$ at a rate of 6\% 
+whereas the precision methods do not have False Positives
+(see Reject column in Table \ref{tab:fair_iter_vs_rate}).
+(Note that if we relax the minimum sample size ($N_{\rm min}=0$) for the HDI+ROPE
+algorithm the FPR increases to TK\%).
 Precision is the Goal (blue circles) stops around iteration ~598 but decisions are 61\% inconclusive.
 For conclusiveness of these 61\%, the Enhanced PitG (green Xs) requires more sampling 
 resulting in only 1.6\% inconclusive outcomes by final iteration of $N_{\rm max}=1,500$.
@@ -102,14 +109,20 @@ In Figure \ref{fig:fair_decisions} we explore the decision rates of the three al
 \begin{figure}[h!]
   \centering
   \includegraphics[width=1\textwidth]{fair_experiment_decision_rates.png}
-  \caption{Similar information as in Figure \ref{fig:fair_iter_vs_rate} but focusing on the distribution of decisions. Left panel is for HDI+ROPE. Right panel are both precision based methods. Horizontal axis- iteration. Vertical axis- proportion of decisions made up to (and including) each iteration. The sum of Reject (red dashed), Accept (green solid) and Inconclusive/Collect-more- (gray dot-dashed) decisions at each iteration is 100\%.
+  \caption{Similar information as in Figure \ref{fig:fair_iter_vs_rate} but focusing on
+  the distribution of decisions. Left panel is for HDI+ROPE. Right panel are both
+  precision based methods. Horizontal axis- iteration. Vertical axis- proportion of
+  decisions made up to (and including) each iteration. The sum of Reject (red dashed),
+  Accept (green solid) and Inconclusive/Collect-more- (gray dot-dashed) decisions at
+  each iteration is 100\%.
   }
   \label{fig:fair_decisions}
 \end{figure}
 
 In the left panel of Figure \ref{fig:fair_decisions} we can see that for low $n$ the HDI+ROPE algorithm may result with rejection of
-$\theta_{\rm null}$ ($6\%$ FPR) which the precision based methods do not (right panel). At around iteration 400 (TK to be calculated)
-it gradually accepts $\theta_{\rm null}$. In Figure \ref{fig:fair_iter_vs_rate}
+$\theta_{\rm null}$ ($6\%$ FPR) which the precision based methods do not (right panel).
+At around iteration 400 (TK to be calculated) HDI+ROPE
+gradually accepts $\theta_{\rm null}$. In Figure \ref{fig:fair_iter_vs_rate}
 this manifests as the red squares being exactly on the $\theta_{\rm true}=0.5$ line
 and then gradually moving towards the ROPE boundaries on both sides in a symmetric
 manner due to the nature of the setup (e.g, we shall see that this symmetry
@@ -122,7 +135,7 @@ we see that Precision is the Goal triggers the stop criterion at iteration 598 f
 it instances. This is by design - once the precision goal is met the algorithm stops.
 For all instances we see this hapenning with very small variance of 1.4 iterations around 598.3.
 As a result of this two step process we can clearly see that only 39\% of result in a decisive decision
-(they all correctly accept $\theta_{\rm null}$). 
+(the decisive all correctly accept $\theta_{\rm null}$). 
 
 The Enhanced Precision is the Goal (green Xs) is shown in these figure to be the natural extension
 of the promise of the Precision is the Goal in terms of resulting in unbiassed outcomes. It's main 
@@ -139,10 +152,67 @@ where
 \begin{itemize}
   \item $p$ is the success rate
   \item $CI$ is the precision goal of the credible interval. In our case 0.08.
-  \item $z_{*}$ is the (TK). E.g, for 95\% quantile of the standard normal distribution $z_{*}=z_{0.05}=1.96$
+  \item $z_{*}$ is the (TK). E.g, for 95\% quantile of the standard normal
+  distribution $z_{*}=z_{0.05}=1.96$
 \end{itemize}
 
-In Figures \ref{fig:fair_iter_vs_rate}, \ref{fig:fair_decisions}
-we this as a prominant feature for the Precision is the Goal algorithm results.
-It's worth noting that in this fiar coin case we chose $p=0.5$ which is both the value of $\theta_{\rm true}$ and $\theta_0$.
+For this fair coin instances we set $\theta_0=\theta_{\rm true}=\frac{1}{2}$ and obtain
+$n=599.2$ as indicated as the dashed vertical line in Figure \ref{fig:fair_iter_vs_rate}.
+
 We now turn to examining a loaded coins example where this is not the case.
+
+\subsection{Loaded Coins}
+We now examine cases where we should reject the null hypothesis of a fair conditions
+$\theta_{0}=0.5$.
+
+\subsubsection{$\theta_{\rm true}=0.6$}
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=1\textwidth]{loaded0pt6_experiments_iter_vs_rate.png}
+  \caption{Similar to Figure \ref{fig:loaded_iter_vs_rate} but with
+  loaded coin $\theta_{\rm true}=0.6$.
+  Small symbols are individual experiment outcomes. Large are experiments
+  mean values. When using HDI+ROPE as the stop criterion results in the red squares.
+  Precision is the Goal as the criterion results in the blue circles
+  and the Enhanced PitG as the green Xs. $\theta_{\rm true}$ is the solid line and
+  the ROPE is the dashed lines. Summary stats are in Table \ref{tab:fair_iter_vs_rate}. TK: analytical results
+  }
+  \label{fig:loaded_iter_vs_rate}
+\end{figure}
+
+
+\begin{table}[h!]\label{tab:loaded0pt6_iter_vs_rate}
+  \begin{center}
+  \begin{tabular}{c|c|c|c|c|c|c|c|c}
+    \hline
+    Algorithm & Accept & Reject & Conclusive & Inconclusive & $\overline{n}$ & $\sigma_n$ & $\overline{\theta}$ & $\sigma_{\hat{\theta}}$\\
+    \hline
+    HDI+ROPE & 0.0	& 0.998	& 0.998 &	0.002	& 268.3 &	290.8 & 0.6441 &	0.0539 \\
+    PitG & 0.0 &	0.708 &	0.708 &	0.292	& 573.7	& 10.2 &	0.6011 &	0.02038 \\
+    ePitG & 0.0	& 0.998	& 0.998	& 0.002	& 634.9	& 149	& 0.6034	 & 0.0174 \\
+    \hline
+  \end{tabular}
+  \caption{Similar to Table \ref{tab:fair_iter_vs_rate} but for $\theta_{\rm true}=0.6$ Statistic summaries of 500 experiments of the three stop criteria shown in
+  Figure \ref{fig:fair_iter_vs_rate}. {\it Accept}
+  is the fraction of experiments which results in acceptence of $\theta_{\rm null}$,
+  and similar in reverse for {\it Reject}. {\it Conclusive} is the sum of Accept
+  and Reject and {\it Inconclusive} is its complementary.
+  The mean stop iteration is $\overline{n}$ and the standard deviation $\sigma_n$
+  The mean sample rate when the stop is triggered is $\overline{\theta}$ and its standard deviation is $\sigma_{\hat{\theta}}$.
+  }
+\end{center}
+\end{table}
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=1\textwidth]{loaded0pt6_experiment_decision_rates.png}
+  \caption{Similar information as in Figure \ref{fig:fair_iter_vs_rate} but focusing on
+  the distribution of decisions. Left panel is for HDI+ROPE. Right panel are both
+  precision based methods. Horizontal axis- iteration. Vertical axis- proportion of
+  decisions made up to (and including) each iteration. The sum of Reject (red dashed),
+  Accept (green solid) and Inconclusive/Collect-more- (gray dot-dashed) decisions at
+  each iteration is 100\%.
+  }
+  \label{fig:loaded0pt6_decisions}
+\end{figure}
