@@ -82,11 +82,9 @@ plt.rcParams['axes.spines.top'] = False
 means = [0.5, 0.75, 0.9]
 ns = [30, 100, 1000]
 
-
-
 # %%
 means = [0.5, 0.75, 0.9]
-ns = [30, 40, 50, 60, 70, 80, 90, 100, 150, 200, 250, 300, 500, 700, 1000]
+ns = [30, 40, 50, 60, 70, 80, 90, 100] #, 150, 200, 250, 300, 500, 700, 1000]
 
 z_0pt05 = 1.96
 twoside_factor = 2
@@ -199,7 +197,7 @@ plt.ylabel("(Approx - 95%HDI)/95%HDI (%)")
 def p_ci_to_n(p, ci_width, z_star=1.96):
     return (4 * z_star**2) * p * (1 - p) / ci_width**2 - 1
 
-p_ci_to_n(0.5, 0.08, z_star=1.96)
+p_ci_to_n(0.85, 0.08, z_star=1.96)
 
 # %%
 ci_widths = [0.08, 0.075, 0.07, 0.065, 0.06, 0.055, 0.05]
@@ -293,25 +291,29 @@ plt.ylabel("Survey size")
 # %%
 def null_p_to_n(p, null_p, rope, z_star=1.96, rope_high_low = "high"):
     if "high" == rope_high_low:
-        rope_e = null_p + 0.5 * rope  # rope_h
+        rope_edege = null_p + 0.5 * rope  # rope_h
+        if p <= rope_edege:
+            return None
+    elif "low" == rope_high_low:
+        rope_edege = null_p - 0.5 * rope  # rope_l
+        if p >= rope_edege:
+            return None
     else:
-        rope_e = null_p - 0.5 * rope  # rope_l
-    return (z_star**2) * p * (1-p) / (p-rope_e)**2 - 1
+        raise ValueError("rope_high_low must be either 'high' or 'low'")
+        
+    return (z_star**2) * p * (1-p) / (p-rope_edege)**2 - 1
 
 
-null_p_to_n(0.5, 0.5, 0.08, z_star=1.96)
-
-# %%
-null_p_to_n(0.5, 0.5, 0.08, z_star=1.96, rope_high_low="low")
+null_p_to_n(0.6, 0.5, 0.1, z_star=1.96)
 
 # %%
 # size of circle depends on realtive probability of getting a data point there (or under)
 
-rope = 0.08
+rope = 0.1
 null_p = 0.5
 z_star = 1.96
 
-ps = np.arange(0.6, 0.9, 0.01)
+ps = np.arange(null_p + 0.1, 0.9, 0.01)
 ns_rejecth = []
 ns_rejectl = []
 for p in ps:
@@ -325,6 +327,13 @@ plot_vhlines_lines(horizontal=null_p + 0.5 * rope, vertical=None, label="ROPE", 
 plot_vhlines_lines(horizontal=null_p - 0.5 * rope, vertical=None, label=None, linestyle="--", alpha=0.4, color="black")
 
 plt.legend()
+
+# %%
+p, 1 - p, null_p, rope
+
+# %%
+null_p_to_n(1 - p, null_p, rope, z_star=z_star, rope_high_low="low")
+
 
 # %%
 
