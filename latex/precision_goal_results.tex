@@ -7,7 +7,7 @@ Here we examine results of the simulations for a few setups
   \item Slightly loaded coin
 \end{itemize}
 
-\subsection{Fair coin}
+\subsection{Fair coin}\label{sec:fair_coin}
 
 Figure \ref{fig:iterations} presents the results of the cherry picked fair coin
 experiment ($\theta_{\rm true}=0.5$). It was chosen to highlight potential stark
@@ -165,6 +165,20 @@ We now turn to examining a loaded coins example where this is not the case.
 We now examine cases where we should reject the null hypothesis of a fair conditions
 $\theta_{0}=0.5$.
 
+Results for these experiments are in Figures \ref{fig:loaded0pt6_iter_vs_rate} and
+\ref{fig:loaded0pt6_decisions}, as well as Table \ref{tab:loaded0pt6_iter_vs_rate},
+which are similar to those presented in the fair coin case in
+Section \ref{sec:fair_coin}.
+
+We see that for all three algorithms there is a 0\% FPR.
+The HDI+ROPE algorithm, however, is highly biased with a mean
+success rate at stop of 64.4\%. This can be explained by the all of experiments
+which stopped fairly early. Both of the the precision based algorithms result in
+unbiased outcomes.
+
+We see that the Precision is the Goal algorithm, is still quite undecisive at a rate of 29.2\%
+of experiments being inconclusive.
+
 \subsubsection{$\theta_{\rm true}=0.6$}
 
 \begin{figure}[h!]
@@ -178,7 +192,7 @@ $\theta_{0}=0.5$.
   and the Enhanced PitG as the green Xs. $\theta_{\rm true}$ is the solid line and
   the ROPE is the dashed lines. Summary stats are in Table \ref{tab:fair_iter_vs_rate}. TK: analytical results
   }
-  \label{fig:loaded_iter_vs_rate}
+  \label{fig:loaded0pt6_iter_vs_rate}
 \end{figure}
 
 
