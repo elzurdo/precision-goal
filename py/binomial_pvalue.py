@@ -43,6 +43,14 @@ theta_null_label = r"$\theta_{null}$"
 # +
 n, k, theta_null = 10, 8, 0.5
 #n, k, p = 256, 130, 0.5
+#n, k, p = 256, 130, 0.5
+
+factor = 3
+n *= factor
+k *= factor
+#n, k, theta_null = 32, 16, 0.5
+#k += n//4
+
 
 # -------
 rerr = 1 + 1e-7
@@ -74,10 +82,29 @@ plt.bar(probs_gt_thresh.index, probs_gt_thresh.values, width=width, color="purpl
 plt.legend()
 
 khat = r"$\hat{k}$"
-plt.yscale("log")
 plt.xlabel(fr"k (successes of n={n} trials)")
-plt.ylabel(f"log(P($k$))")
+plt.yscale("log") ; plt.ylabel(f"log(P($k$|n={n}))")
+#plt.ylabel(f"P($k|n={n}$)")
 plt.title(fr"$n$={n}, {khat}={k}, {theta_null_label}={theta_null}")
+
+# +
+idxs = probs_le_thresh[probs_le_thresh.index < probs_gt_thresh.index.min()].index
+label = label=f"p-value = {100. * probs_le_thresh.sum():0.2f}%"
+plt.fill_between(probs_le_thresh[idxs].index, probs_le_thresh[idxs].values, color='red', label=label)
+
+idxs = probs_le_thresh[probs_le_thresh.index > probs_gt_thresh.index.max()].index
+plt.fill_between(probs_le_thresh[idxs].index, probs_le_thresh[idxs].values, color='red')
+
+
+plt.plot(probs_gt_thresh.index, probs_gt_thresh.values, color="black")
+plt.legend()
+#plt.yscale("log")
+
+# +
+plt.plot(probs_le_thresh.index, probs_le_thresh.values)
+#plt.plot(probs_gt_thresh.index, probs_gt_thresh.values)
+
+plt.yscale("log")
 # -
 
 probs_le_thresh.sum()
@@ -94,7 +121,7 @@ alternative = 'two-sided' # 'greater'
 n_experiments = 5000 # 5000 #1000 #10000
 n_samples = 2**12
 
-theta_true = 0.5 #0.55 # true success rate
+theta_true = 0.55 #0.5 #0.55 # true success rate
 # -----
 
 seed = 1
@@ -108,7 +135,7 @@ samples = np.random.binomial(1, theta_true, [n_experiments, n_samples])
 
 #all_n_samples = [n_samples // 16, n_samples // 8, n_samples // 4, n_samples // 2, n_samples]
 
-all_n_samples = [n_samples // 16, n_samples]
+all_n_samples = [n_samples // 16] #[n_samples // 16, n_samples]
 
 # +
 all_p_values = np.zeros((len(all_n_samples), n_experiments)) - 1

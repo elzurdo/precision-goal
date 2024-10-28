@@ -202,8 +202,8 @@ from utils_viz import plot_decision_rates_nhst
 #n_samples = 30000
 
 experiments = 100 #1000 #200
-n_samples = 1500
-success_rate = 0.65
+n_samples = 30000
+success_rate = 0.5
 success_rate_null = 0.5
 
 # +
@@ -214,17 +214,7 @@ samples = generate_biomial_sequence(success_rate=success_rate,
                                     )
 
 samples.shape
-
-# +
-for isample, sample in enumerate(samples[::1]):
-    None
-    
-isample
 # -
-
-
-
-
 
 # ## NHST
 
@@ -236,12 +226,23 @@ alternative = 'two-sided' # 'greater'
 p_value_thresh = 0.05 # alpha
 # +
 nhst_details = {'success_rate_null': success_rate_null,'p_value_thresh': p_value_thresh, 'alternative': alternative}
-step = 1
+step = 200
 
 nhst_experiment_stop_results, nhst_iteration_stopping_on_or_prior = \
-stop_decision_multiple_experiments(samples, nhst_details)
+stop_decision_multiple_experiments(samples, nhst_details, step=step)
 # -
 
+plt.figure(figsize=(FIG_WIDTH, FIG_HEIGHT))
+plot_decision_rates_nhst(experiments, nhst_iteration_stopping_on_or_prior)
+plt.savefig(f"./nhst_multi_step{int(step)}.png")
+
+
+
+plt.figure(figsize=(FIG_WIDTH, FIG_HEIGHT))
+plot_decision_rates_nhst(experiments, nhst_iteration_stopping_on_or_prior)
+plt.savefig(f"./nhst_multi_step{int(step)}.png")
+
+plt.figure(figsize=(FIG_WIDTH, FIG_HEIGHT))
 plot_decision_rates_nhst(experiments, nhst_iteration_stopping_on_or_prior)
 
 plot_decision_rates_nhst(experiments, nhst_iteration_stopping_on_or_prior)

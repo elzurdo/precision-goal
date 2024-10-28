@@ -69,6 +69,7 @@ def sequence_to_sequential_pvalues(sequence, success_rate_null=0.5):
     return p_values
 
 
+
 def stop_decision_multiple_experiments(samples, nhst_details, step=1):
     n_samples = samples.shape[1]
 
