@@ -1,0 +1,113 @@
+\documentclass{article}
+% use for page size and margins: https://www.overleaf.com/learn/latex/Page_size_and_margins
+\usepackage[a4paper, margin=0.7in]{geometry}
+% bibliography setup
+\usepackage{natbib}
+\bibliographystyle{apalike}  % abbrvnat
+\setcitestyle{authoryear,open={(},close={)}} %Citation-related commands
+% makes color citations
+\usepackage[colorlinks=true,urlcolor=blue,citecolor=red,linkcolor=red,bookmarks=true]{hyperref}
+% images
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
+
+% hypter parameter setup
+\usepackage{hyperref}
+% for table setup
+\usepackage{multirow}
+
+% for pseudo code
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+% to highlight lines of code, as per: https://tex.stackexchange.com/questions/149779/how-can-i-colourfuly-highlight-some-lines-of-an-algorithm-using-algorithm2e
+\usepackage{xcolor}
+\def\HiLi{\leavevmode\rlap{\hbox to \hsize{\color{yellow!50}\leaders\hrule height .8\baselineskip depth .5ex\hfill}}}
+
+
+\title{Improved Sequential Hypothesis Testing with
+``Enhanced Precision Is The Goal"}
+\date{\today}
+\author{Eyal A. Kazin}
+
+\begin{document}
+\maketitle
+
+\input precision_goal_abstract
+
+\section{Introduction}
+\input precision_goal_introduction
+
+\subsection{Contributions}
+
+\subsubsection{Paper Structure}
+The paper is organized as follows.
+In the Methods section we describe three (four if Frequentist?)
+stop criteria as well as the setup to test on synthetic deichotomous data.
+In the Results section we present the results of the synthetic data analysis as well as analytical analysis.
+In the Discussion section we discuss the implications of the results (Reword this).
+In the Conclusion section we summarize the findings and suggest future directions (Reword this).
+
+
+\section{Methods}
+\input precision_goal_methods
+
+
+\section{Results}
+\input precision_goal_results
+
+
+\section{Discussion}
+
+Aspects not addressed in the paper:
+
+\begin{itemize}
+  \item adding a prior (quite trivial for this setup -- just updating success and failure counts)
+  \item continuous data
+  \item non analytiucal solutions - would require sampling methods like MCMC which would take much longer to calculate (may be less of an issue with future computer power, e.g, quantum computers)
+\end{itemize}
+
+\section{Conclusion}
+
+\section{Useful Equations}
+\input precision_goal_useful_equations
+
+\section{Submission Instructions}
+
+Methods Paper—maximum word count: 6500
+Methods Papers present an advance likely to make major impact in one or more applied
+fields. While theory (e.g. theorems concerning statistical or
+learning-theoretic properties) are welcome, this is not essential, but intuition and
+understanding of why the method works is important.
+We are also very open to theory in a broader sense including examples and conjectures.
+Generally, we would expect empirical results to demonstrate effectiveness.
+However, in cases where the extent of methodological/conceptual innovation is large
+enough, results themselves may be illustrative and need not be of immediate high impact
+in any particular applied domain.
+
+Each piece should include:
+
+Unstructured Abstract—maximum word count: 250
+Keywords—maximum of 6 and minimum of 5
+May include tables and figures—no limit
+May include the following back matter sections:
+Acknowledgements
+Author contributions (with CRediT details)
+Conflicts of interest
+Funding
+Must include the following:
+Data availability
+References—no limit
+Each submission must contain the following sections and use these terms as the first
+level section headers: Introduction, Methods, Results, Discussion and Conclusion
+(Discussion and Conclusion may be combined).
+
+{\bf Resources}
+
+\href{https://academic.oup.com/rssdat/pages/general-instructions}{RSS Instructions} 
+
+\href{https://academic.oup.com/pages/authoring/books/preparing-your-manuscript/working-in-latex}{RSS Working in \LaTeX}.
+
+\bibliography{references.bib}
+
+\end{document}

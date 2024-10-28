@@ -8,7 +8,8 @@ from utils_stats import (CI_FRACTION,
                          successes_failures_to_hdi_ci_limits,
                          get_success_rates,
                          beta,
-                         test_value
+                         test_value,
+                         binomial_rate_ci_width_to_sample_size,
                          )
 
 FIG_WIDTH = 8
@@ -352,7 +353,7 @@ method_pretty_short_name = {
     "hdi_rope": "HDI+ROPE"
 }
 
-def scatter_stop_iter_sample_rate(method_df_stats, rope_min=None, rope_max=None, success_rate=None, title=None, method_names=None):
+def scatter_stop_iter_sample_rate(method_df_stats, rope_min=None, rope_max=None, success_rate_true=None, success_rate_hypothesis=None, precision_goal=None, title=None, method_names=None):
     method_colors = {"pitg": "blue", "epitg": "lightgreen", "hdi_rope": "red"}
     method_markers = {"pitg": "o", "epitg": "x", "hdi_rope": "s"}
     method_mean_markers = {"pitg": "$\u25EF$", "epitg": "x", "hdi_rope": "$\u25A1$"}
@@ -370,27 +371,41 @@ def scatter_stop_iter_sample_rate(method_df_stats, rope_min=None, rope_max=None,
         plt.scatter(df_stats["decision_iteration"], df_stats["success_rate"], alpha=0.3, color=color, label=label, marker=marker, s=20)
         plt.scatter(df_stats["decision_iteration"].mean(), df_stats["success_rate"].mean(), color=color, label=label_mean, s=200, marker=mean_marker)
 
-    
-    
-    #plt.scatter(df_stats_pitg["decision_iteration"], df_stats_pitg["success_rate"], alpha=0.03, color="blue", label="PitG", marker=".")
-    #plt.scatter(df_stats_epitg["decision_iteration"], df_stats_epitg["success_rate"], alpha=0.3, color="lightgreen", label="ePitG", marker="o", s=10)
-
-    #plt.scatter(df_stats_pitg["decision_iteration"].mean(), df_stats_pitg["success_rate"].mean(), color="blue", label="PitG mean", s=200, marker="$\u25EF$")
-    #plt.scatter(df_stats_epitg["decision_iteration"].mean(), df_stats_epitg["success_rate"].mean(), color="lightgreen", label="ePitG mean", s=200, marker="$\u25EF$")
 
 
-
-    if success_rate is not None:
-        plot_vhlines_lines(vertical=None, label=f'{theta_true_str}', horizontal=success_rate, alpha=0.7)
+    if success_rate_true is not None:
+        plot_vhlines_lines(vertical=None, label=f'{theta_true_str}', horizontal=success_rate_true, alpha=0.7)
 
     if rope_min is not None:
         plot_vhlines_lines(vertical=None, label='ROPE', horizontal=rope_min, linestyle="--")
     if rope_max is not None:
         plot_vhlines_lines(vertical=None, horizontal=rope_max, linestyle="--")
+
+
+    if precision_goal is not None:
+        # adding horizontal lines for expected N in which precision goal is achieved
+        # This might be different for true and hypothesis success rates
+        n_true_str = r"$N_{\theta_\mathrm{true}}$"
+        n_hypo_str = r"$N_{\theta_0}$"
+        n_precision_goal_true, n_precision_goal_hypothesis = None, None
+        if (success_rate_true is not None):
+            n_precision_goal_true = binomial_rate_ci_width_to_sample_size(success_rate_true, precision_goal)
+        if (success_rate_hypothesis is not None):
+            n_precision_goal_hypothesis = binomial_rate_ci_width_to_sample_size(success_rate_hypothesis, precision_goal) 
+
+        if (n_precision_goal_true == n_precision_goal_hypothesis) and (n_precision_goal_true is not None):
+            label_n = f"{n_true_str}={n_hypo_str}={n_precision_goal_true:0.1f}"
+            plt.axvline(n_precision_goal_true, color='gray', linestyle=':', label=label_n)
+        else:
+            label_n_true = f"{n_true_str}={n_precision_goal_true:0.1f}"
+            laben_n_hypo = f"{n_hypo_str}={n_precision_goal_hypothesis:0.1f}"
+            plt.axvline(n_precision_goal_true, color='gray', linestyle=':', label=label_n_true)
+            plt.axvline(n_precision_goal_hypothesis, color='gray', linestyle='--', label=laben_n_hypo)
+
+
     plt.xlabel("stop iteration")
     theta_hat_str = r"$\hat{\theta}$"
     plt.ylabel(f"success rate at stop {theta_hat_str}")
-
     plt.legend(title=f"{len(df_stats):,} experiments", loc="upper right", fontsize=10)
     if title is not None:
         plt.title(title)

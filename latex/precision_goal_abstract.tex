@@ -1,0 +1,69 @@
+Sequential hypothesis testing enables to continuously collect data until there is enough
+evidence to make a decision, rather than predetermining a sample
+size.
+Common approaches rely on accept/reject decision criteria as stopping rules,
+which can introduce {\it confirmation bias} due to an unrepresentative sequence which is
+likely in a small sample.
+While this issue is often associated with the Frequentist {\it p-value} heuristic,
+it also occurs in popular Bayesian metrics.
+To address this, a predetermined posterior accuracy has been proposed
+as a stopping criterion, separate from the decision criterion.
+Demonstrating on dichotomous sampling \cite{kruschke2015doing} showed that
+defining in advance the
+posterior precision as a stopping criterion eliminates the confirmation bias.
+While this {\it Precision is the Goal} method is unbiassed,
+practical challenges arise when the posterior distribution does not clearly indicate
+whether the null hypothesis should be accepted or rejected—leading to frequent {\it inconclusive}
+outcomes.
+To mitigate this, we propose a conservative variant called
+{\it Enhanced Precision Is The Goal} which requires simultaneously meeting both the
+precision objective and the decision criterion.
+We tested this approach on synthetic data and found it significantly reduces
+inconclusiveness. E.g, when testing for a fair coin the original method may result in 61\%
+inconclusive outcomes where our variant just 1.6\%—at the cost of a moderate increase in sample
+size (approximately 22\% larger).
+We also provide an online interactive calculator, pseudo and Python code to facilitate the adoption of the
+approach in planning data collection and interpretation.
+
+
+\
+\
+
+\cite{kruschke2015doing} introduced the "Precision is the Goal" method,
+which eliminates bias in dichotomous outcome sampling by setting an objective precision threshold as the stopping rule.
+
+We find in cases where the null hypothesis is true,
+applying the "Precision is the Goal" method avoids false positives but results in a high rate of inconclusive decisions.
+
+
+\
+\
+
+
+Sequential hypothesis testing is a process in which a practitioner does not predefine a
+sample size but relies on assumptions about incoming data to indicate that enough has
+been collected to make a decision about a hypothesis. Most commonly used approaches
+apply an accept/reject decision criterion as a stopping criterion which makes results
+prone to biases, such as confirmation bias due to the possibility of obtaining extreme
+results. Although known as a problem with the frequentist {\it p-value} mechanism, it is not
+magically resolved with Bayesian approaches. To resolve this issue, a predetermined
+accuracy in parameter estimation has been advocated as a stopping criterion.
+In particular \cite{kruschke2015doing} showed that by defining in advance an  posterior precision as
+a stopping criterion, a method called {\it Precision is the Goal}, eliminates bias in the
+case of dichotomous outcomes sampling. Whereas we find this to be true, we highlight
+important practical details, in particular when the posterior doesn’t clearly indicate
+if the null hypothesis may neither be rejected or accepted, i.e, a situation of
+“inconclusiveness”. In cases where the null hypothesis is true, when applying
+“Precision is the Goal” we find that even though the null hypothesis is never
+incorrectly rejected (free from False positives), the majority of the decisions may
+be inconclusive. 
+To address this problem we introduce a conservative variant of this method which we call
+{\it Enhanced Precision Is The Goal} in which the stopping criterion simultaneously
+requires fulfilling the precision objective as well as the
+reject/accept decision criterions. We apply to synthetic  data and show that it may
+substantially reduce inconclusiveness at the cost of larger sample sizes. In one
+reasonable setting we find this to reduce from 61\% inconclusiveness to sub 2\%
+requiring a sample size on average 22\% larger. 
+We also provide an online calculator with source code which aims to make usage of
+“Precision is the Goal'' more commonplace in planning of data collection as well as
+experiment interpretation.

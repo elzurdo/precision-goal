@@ -11,6 +11,8 @@ and the first attempt at enahnced percision is the goal
 (I suspect that `notebook_coin_toss_experiments.py` precedes it and should be
 considered legacy.)
 
+* `beta_uncertainties.py` - analytic solutions for uncertainties of beta functions.
+
 **Legacy Notebooks**
 
 * `notebook_explore.py` - visualising beta functions of two different success/failure
