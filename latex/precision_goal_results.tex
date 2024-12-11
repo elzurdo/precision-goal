@@ -11,18 +11,21 @@ Here we examine results of the simulations for a few setups
 
 Figure \ref{fig:iterations} presents the results of the cherry picked fair coin
 experiment ($\theta_{\rm true}=0.5$). It was chosen to highlight potential stark
-different outcomes of the three stop criterion algorithms. For comparison note that the posteriors
-shown in Figure \ref{fig:posteriors} are three iterations of this figure.
+different outcomes of the three stop criterion algorithms. For comparison note that the
+posteriors shown in Figure \ref{fig:posteriors} are three iterations of this figure.
 (TB footnote: 1 - provide the sequence, 2 - reference to JK figure number)
 
-As we can see from both figures at iteration 126 the credible interval (95\% HDI posterior) of HDI+ROPE is fully
-outside of the ROPE making it confidently, though incorrectly, reject $\theta_{\rm null}$.
+As we can see from both figures at iteration 126 the credible interval
+(95\% HDI posterior) of HDI+ROPE is fully
+outside of the ROPE making it confidently, though incorrectly,
+reject $\theta_{\rm null}$.
 The Precision is the Goal stop criterion is met at iteration 598, where the credible
 interval width
-subpasses the precision goal of 0.08. Since the credible interval straddles the ROPE
+subpasses the precision goal of 0.08. Since the credible interval straddlers the ROPE
 the decision is inconclusive.
 For the Enhanced Precision is the Goal the credible interval
-meets both criterions at iteration 804: narrower than 0.08 precision goal and fully within the ROPE.
+meets both criterions at iteration 804: narrower than 0.08 precision goal and fully
+within the ROPE.
 This results in correctly accepting $\theta_{\rm null}$.
 
 
@@ -36,10 +39,12 @@ This results in correctly accepting $\theta_{\rm null}$.
   The highlighted iterations indicate where stop criterion trigger conditions are met:
   red dashed lines is when  $\theta_{\rm null}$ may be rejected, green solid lines
   is when he $\theta_{\rm null}$ may be accepted. Purple dots on the 95\% HDI boundaries
-  indicated when the precision goal is achieved. Note that the posteriors of Figure \ref{fig:posteriors}
-  are slices of this figure: HDI+ROPE is the the first red dashed line (iteration 126),
-  Precision is the Goal is the first purple dot (598), and Enhanced Precision is the Goal is the second purple dot (598)
-  is the first green line (804). The ROPE boundaries is represented by the dashed lines.
+  indicated when the precision goal is achieved. Note that the posteriors of
+  Figure \ref{fig:posteriors} are slices of this figure: HDI+ROPE is the the first red
+  dashed line (iteration 126),
+  Precision is the Goal is the first purple dot (598), and
+  Enhanced Precision is the Goal is the second purple dot (598) is the
+  first green line (804). The ROPE boundaries is represented by the dashed lines.
   }
   \label{fig:iterations}
 \end{figure}
@@ -162,8 +167,14 @@ $n=599.2$ as indicated as the dashed vertical line in Figure \ref{fig:fair_iter_
 We now turn to examining a loaded coins example where this is not the case.
 
 \subsection{Loaded Coins}
-We now examine cases where we should reject the null hypothesis of a fair conditions
-$\theta_{0}=0.5$.
+We now use our experimental setup to analyse cases where we should reject the null
+hypothesis of $\theta_{0}=0.5$.
+
+We start with a strongly loaded coin $\theta_{\rm true}=0.6$
+and then explore ones that are less loaded $\theta_{\rm true}=0.55$ and
+$\theta_{\rm true}=0.51$.
+
+\subsubsection{$\theta_{\rm true}=0.6$}
 
 Results for these experiments are in Figures \ref{fig:loaded0pt6_iter_vs_rate} and
 \ref{fig:loaded0pt6_decisions}, as well as Table \ref{tab:loaded0pt6_iter_vs_rate},
@@ -182,7 +193,7 @@ of experiments being inconclusive.
 TODO: add calculation of the expected stop iteration for the Precision is the Goal algorithm for the 
 inconclusive and conclusive
 
-\subsubsection{$\theta_{\rm true}=0.6$}
+
 
 \begin{figure}[h!]
   \centering
@@ -232,4 +243,66 @@ inconclusive and conclusive
   each iteration is 100\%.
   }
   \label{fig:loaded0pt6_decisions}
+\end{figure}
+
+
+\subsubsection{$\theta_{\rm true}=0.57, 0.53$}
+
+We now explore the cases of $\theta_{\rm true}=0.57$ and $0.53$
+where we expect a lot of inconclusive outcomes due to straddlers of the ROPE.
+
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=1\textwidth]{loaded0pt57_experiments_iter_vs_rate.png}
+  \caption{Similar to Figure \ref{fig:fair_iter_vs_rate} but with
+  loaded coin $\theta_{\rm true}=0.57$.
+  Small symbols are individual experiment outcomes. Large are experiments
+  mean values. When using HDI+ROPE as the stop criterion results in the red squares.
+  Precision is the Goal as the criterion results in the blue circles
+  and the Enhanced PitG as the green Xs. $\theta_{\rm true}$ is the solid line and
+  the ROPE is the dashed lines. Summary stats are in Table \ref{tab:fair_iter_vs_rate}. TK: analytical results
+  }
+  \label{fig:loaded0pt57_iter_vs_rate}
+\end{figure}
+
+
+\begin{table}[h!]\label{tab:loaded0pt57_iter_vs_rate}
+  \begin{center}
+  \begin{tabular}{c|c|c|c|c|c|c|c|c}
+    \hline
+    Algorithm & Accept & Reject & Conclusive & Inconclusive & $\overline{n}$ & $\sigma_n$ & $\overline{\theta}$ & $\sigma_{\hat{\theta}}$\\
+    \hline
+    HDI+ROPE & 0.0080	& 0.648 &	0.656 &	0.344 &	804.6	& 611.0	& 0.605	& 0.058 \\
+    PitG & 0.0005 &	0.157 &	0.158 &	0.843	& 586.5	& 7.1 &	0.570 &	0.020\\
+    ePitG & 0.0035 &	0.542 &	0.545 & 	0.455 &	1127.2 &	395.9	& 0.576 &	0.017  \\
+    \hline
+  \end{tabular}
+  \caption{Similar to Table \ref{tab:fair_iter_vs_rate} but for $\theta_{\rm true}=0.57$ Statistic summaries of 500 experiments of the three stop criteria shown in
+  Figure \ref{fig:fair_iter_vs_rate}. {\it Accept}
+  is the fraction of experiments which results in acceptence of $\theta_{\rm null}$,
+  and similar in reverse for {\it Reject}. {\it Conclusive} is the sum of Accept
+  and Reject and {\it Inconclusive} is its complementary.
+  The mean stop iteration is $\overline{n}$ and the standard deviation $\sigma_n$
+  The mean sample rate when the stop is triggered is $\overline{\theta}$ and its standard deviation is $\sigma_{\hat{\theta}}$.
+  }
+\end{center}
+\end{table}
+
+% hdi_rope	0.0080	& 0.6480 &	0.6560 &	0.3440 &	804.6165	& 611.021115	& 0.604697	& 0.058295
+% pitg	0.0005 &	0.1570 &	0.1575 &	0.8425	& 586.4470	& 7.116144 &	0.570288 &	0.020308
+% epitg	0.0035 &	0.5415 &	0.5450 & 	0.4550 &	1127.1755 &	395.941462	& 0.575583 &	0.017217
+
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=1\textwidth]{loaded0pt57_experiment_decision_rates.png}
+  \caption{Similar information as in Figure \ref{fig:fair_iter_vs_rate} but focusing on
+  the distribution of decisions. Left panel is for HDI+ROPE. Right panel are both
+  precision based methods. Horizontal axis- iteration. Vertical axis- proportion of
+  decisions made up to (and including) each iteration. The sum of Reject (red dashed),
+  Accept (green solid) and Inconclusive/Collect-more- (gray dot-dashed) decisions at
+  each iteration is 100\%.
+  }
+  \label{fig:loaded0pt57_decisions}
 \end{figure}
