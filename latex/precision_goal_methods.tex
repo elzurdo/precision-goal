@@ -1,14 +1,22 @@
 Here we describe three stopping algorithms for sequential hypothesis testing.
 
-We begin by describing heuristics of posterior location and width used in all three.
-We describe their intuition, as well as in pseudo code.
-We also provide useful anlaytical experessions and conclude by describing a setup
+\
+\
+
+Prior to detailing the algorithms we discuss the intuition behind them,
+which relies on two key heuristics of the posterior distribution: location and width.
+
+When then present the stop/decicision algorithms qualitatively, in pseudo as well as analytical expressions.
+
+We conclude by describing a setup
 to test the methods on synthetic data.
-Although our belief is that these methods apply to any type of data,
+
+Although our belief is that these methods are applicable to any data type,
 our focus is on dichotomous data (Bernouli trials)
-in order to compare with \cite{kruschke2015doing}
-(somehow experess that: "as it is simple to describe analytically and
-to conduct rapid tests on synthetic data.")
+in order to compare with \cite{kruschke2015doing}.
+
+The advantage of coin flip data is that it is simple to describe analytically
+enabling rapid tests on synthetic data.
 
 
 We conclude with a contrast comparison of the algorithms.
@@ -18,11 +26,11 @@ perhaps "collection algorithm"?)
 
 
 \subsubsection{Region of Practical Equivalence and High Density Interval}
-All three stop algorithms explored below depend on heuristics that describe two key
-aspects of expectations from the experiment:
+All three stop algorithms explored depend on heuristics that describe two key
+aspects of an experiment:
 \begin{itemize}
-    \item Effective size expected from the experiment
-    \item Posterior width
+    \item The expected {\it effective size}.
+    \item The expected {\it aelatoric uncertainty} at the stopping iteration
 \end{itemize}
 
 
@@ -30,8 +38,8 @@ One common misconception in hypothesis testing is that an outcome that is
 “statistically significant” is sufficient to make a meaningful real world decision.
 In practice one must consider the effect size.
 E.g, medical research requires a “minimal detectable change” or
-“minimal clinically important difference” to consider an outcome relevant for
-considering a change in action.
+“minimal clinically important difference” [TK cite] of an outcome to be
+considered for a pragmatic change in action.
 
 As an over simplistic made-up example imagine that a researcher examines if a
 therapeutic differs in impact by gender.
@@ -62,11 +70,12 @@ but would not want to pay a premium for accuracy that would not be noticed by a 
 player. A casino on the other hand would require a much higher accuracy to ensure
 players that the dice are not loaded.
 
-In the algorithms expolred here we are intersted in the quantifying the overlap
-between the posterior and the ROPE, e.g a \textit{credible interval} (similar to the frequentist confidence interval).
-A popular heuristic is the \textit{Highest Density Interval} (HDI)
+In the algorithms expolred here we are interested in the quantifying the overlap
+between the posterior, e.g a \textit{credible interval} (similar to the frequentist confidence interval) and the ROPE.
+
+A popular credible interval heuristic is the \textit{Highest Density Interval} (HDI)
 which describes the region where a substantial amount of the posterior resides.
-In practice the HDI means that all points within the credible interval have a higher
+In practice the HDI means that all points within it have a higher
 probability density than points outside of it.
 
 The width of the HDI is commonly calculated using 95\% of the mass to be comparable
@@ -84,7 +93,7 @@ The three algorithms explored here differ in their stop criterion, which we late
 details, but have the same decision criterion which we discuss next.
 
 
-\subsubsection{Decision Criterion: Is The HDI In Or Out Of The ROPE?}\label{sec:decision_criterion}
+\subsubsection{Decision Criterion: Is the HDI in or Out of the ROPE?}\label{sec:decision_criterion}
 
 \begin{figure}[h!]
     \centering
@@ -114,7 +123,7 @@ the decision criterion for all three algorithms discussed is as follows:
 The fact that the Decision Algorithm may yield an inconclusive outcome
 (i.e, cannot justify accepeting or rejecting the null hypothesis) means that the
 burden of the decision is required elsewhere on a higher level of the process.
-A human-in-the-loop (or a wrapper alogithm) would have to either decided to
+A human-in-the-loop (or a wrapper alogithm) would have to decide to either
 
 \begin{itemize}
     \item Conduct risk assessment based on the posterior $P(\theta|\hat\theta)$ to
@@ -122,13 +131,13 @@ A human-in-the-loop (or a wrapper alogithm) would have to either decided to
     \item Collect more data
 \end{itemize}
 
-We defer a discussion risk assessment and focus on the latter as
+We defer a risk assessment discussion and focus on the latter as
 addressing the issue of too many inconclusive outcomes is the main contribution of this study.
 
 %We emphasise the third option of “inconclusive” as when the HDI straddles the ROPE
 
-In Alogrithm \ref{alg:decision_criterion} we foramlise the Decision Algorithm description
-above in pseudo code using the HDI and ROPE heuristics (TBD: define $\theta$ et al.)
+In Alogrithm \ref{alg:decision_criterion} we formalise the Decision Algorithm description
+above in pseudo code using the HDI and ROPE boundaries as heuristics to deterine the relationship between a point metric success rate $\hat{\theta}$ and the null hypothesis value $\theta_{\rm null}$.
 
 \begin{algorithm}
     \caption{Decision Criterion pseudo algorithm}\label{alg:decision_criterion}
@@ -156,7 +165,7 @@ The posterior used is the Beta distribution which quantifies $P(\theta|\hat{\the
 i.e the probability that a
 success rate $\theta$ (the horizontal axis) to generate this subsample,
 given we observed the subsample mean $\hat\theta$ (no. of successes/no. of tosses)
-as quantified in the legend of each panel.
+as quantified in the legend of each panel. The null hypothesis is a fair coin, i.e, $\theta_{\rm null}=0.5$.
 
 In the top panel we examine the posterior
 %of the \textit{HDI+ ROPE} algorithm (defined below)
@@ -166,7 +175,7 @@ rejects the null hypothesis $\theta_{\rm null}$.
 
 In the middle pannel we see the posterior
 %of the \textit{Precision is the Goal} algorithm (defined below).
-when a stop criterion was triggered at iteration 598
+when a stop criterion was triggered at iteration 598.
 %when the 95\% HDI width achieved the precision goal of 0.08 (80\% of the ROPE width).
 In this case the HDI straddles and the decision is inconclusive.
 
@@ -180,7 +189,7 @@ $\theta_{\rm null}$ may be accepted (TBD: J.K's comment about only central value
 
 The main insight from this Figure \ref{fig:posteriors} (which is based on a 
 cherry picked example) is that the decision outcome may would be differ by iteration.
-More data, obviously is better, but the main question is when is best stop.
+More data is obviously is better, but considering expense of data collection, the main question is when is best stop to make a sound decision.
 \\
 \\
 Alternative Text that focuses on the main insight and does not mention the algorithms:\\

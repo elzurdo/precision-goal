@@ -72,6 +72,7 @@ class BinomialHypothesis():
     def plot_experiment_pdf_methods(self, iexperiment, xlim=(0.4,0.8), method_names=None):
         plot_sample_pdf_methods(self.method_df_stats, iexperiment, self.rope_min, self.rope_max, xlim=xlim, method_names=method_names)
 
+    # TODO: update conditional stats. E.g, only conclusive, only inconclusive, etc.
     def experiments_summary(self, verbose=1):
         method_names = ["hdi_rope", "pitg", "epitg"]
 
