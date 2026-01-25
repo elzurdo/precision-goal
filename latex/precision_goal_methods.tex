@@ -6,7 +6,7 @@ Here we describe three stopping algorithms for sequential hypothesis testing.
 Prior to detailing the algorithms we discuss the intuition behind them,
 which relies on two key heuristics of the posterior distribution: location and width.
 
-When then present the stop/decicision algorithms qualitatively, in pseudo as well as analytical expressions.
+We then present the stop/decision algorithms qualitatively, in pseudo code as well as analytical expressions.
 
 We conclude by describing a setup
 to test the methods on synthetic data.
@@ -24,13 +24,14 @@ We conclude with a contrast comparison of the algorithms.
 (Mention somewhere difference between "stopping algorithm" to "stopping criterion",
 perhaps "collection algorithm"?)
 
+\subsection{The Intuition Behind the Algorithms}
 
 \subsubsection{Region of Practical Equivalence and High Density Interval}
 All three stop algorithms explored depend on heuristics that describe two key
 aspects of an experiment:
 \begin{itemize}
     \item The expected {\it effective size}.
-    \item The expected {\it aelatoric uncertainty} at the stopping iteration
+    \item The expected {\it aleatoric uncertainty} at the stopping iteration
 \end{itemize}
 
 
@@ -68,9 +69,9 @@ against that required for gambling enterprises.
 A manufacturer of household board games would like them to be fair to a certain extent,
 but would not want to pay a premium for accuracy that would not be noticed by a casual
 player. A casino on the other hand would require a much higher accuracy to ensure
-players that the dice are not loaded.
+players and regulators that the dice are not loaded.
 
-In the algorithms expolred here we are interested in the quantifying the overlap
+In the algorithms explored here we are interested in the quantifying the overlap
 between the posterior, e.g a \textit{credible interval} (similar to the frequentist confidence interval) and the ROPE.
 
 A popular credible interval heuristic is the \textit{Highest Density Interval} (HDI)
@@ -90,7 +91,7 @@ the highest prime value under the traditional 95\% threshold.
 The ROPE and HDI metrics may be used in various combinations in the
 test criterion algorithm.
 The three algorithms explored here differ in their stop criterion, which we later
-details, but have the same decision criterion which we discuss next.
+detail, but have the same decision criterion which we discuss next.
 
 
 \subsubsection{Decision Criterion: Is the HDI in or Out of the ROPE?}\label{sec:decision_criterion}
@@ -115,7 +116,7 @@ Once the stop criterion is triggered (be it manual or automated),
 the decision criterion for all three algorithms discussed is as follows:
 
 \begin{itemize}
-    \item If the HDI is completely outside ofthe ROPE → Reject the Null Hypothesis
+    \item If the HDI is completely outside of the ROPE → Reject the Null Hypothesis
     \item If the HDI is completely inside the ROPE → Accept the Null Hypothesis
     \item Otherwise → Inconclusive
 \end{itemize}
@@ -131,13 +132,14 @@ A human-in-the-loop (or a wrapper alogithm) would have to decide to either
     \item Collect more data
 \end{itemize}
 
-We defer a risk assessment discussion and focus on the latter as
-addressing the issue of too many inconclusive outcomes is the main contribution of this study.
+Since risk assessment is highly contextual, we defer a discussion and rather focus on the 
+the necessity to collect more data as a trade-off to 
+resulting in too many inconclusive outcomes. This is the main contribution of this study.
 
 %We emphasise the third option of “inconclusive” as when the HDI straddles the ROPE
 
 In Alogrithm \ref{alg:decision_criterion} we formalise the Decision Algorithm description
-above in pseudo code using the HDI and ROPE boundaries as heuristics to deterine the relationship between a point metric success rate $\hat{\theta}$ and the null hypothesis value $\theta_{\rm null}$.
+above in pseudo code using the HDI and ROPE boundaries as heuristics to determine the relationship between a point metric success rate $\hat{\theta}$ and the null hypothesis value $\theta_{\rm null}$.
 
 \begin{algorithm}
     \caption{Decision Criterion pseudo algorithm}\label{alg:decision_criterion}
@@ -157,15 +159,17 @@ above in pseudo code using the HDI and ROPE boundaries as heuristics to deterine
     
 \end{algorithm}
 
-In Figure \ref{fig:posteriors} we show three different posteriors of the same experiment of Bernoulli
+In Figure \ref{fig:posteriors} we display three posteriors of different stopping points of the same experiment of Bernoulli
 trials (i.e, same sample of coin tosses). % of a fair coin ($\theta_\mathrm{true}$=0.5).
-Each panel shows the posterior of a subsample when a different stopping iteration
+%Each panel shows the posterior of a subsample when a different stopping iteration
 %criterion algorithm would have been triggered as mentioned in the title.
 The posterior used is the Beta distribution which quantifies $P(\theta|\hat{\theta})$,
 i.e the probability that a
 success rate $\theta$ (the horizontal axis) to generate this subsample,
 given we observed the subsample mean $\hat\theta$ (no. of successes/no. of tosses)
 as quantified in the legend of each panel. The null hypothesis is a fair coin, i.e, $\theta_{\rm null}=0.5$.
+The ROPE is of width 10\% around $\theta_{\rm null}$ (i.e, 5\% on each side).
+
 
 In the top panel we examine the posterior
 %of the \textit{HDI+ ROPE} algorithm (defined below)
@@ -188,24 +192,11 @@ Since the 95\% HDI is fully within the ROPE
 $\theta_{\rm null}$ may be accepted (TBD: J.K's comment about only central value).
 
 The main insight from this Figure \ref{fig:posteriors} (which is based on a 
-cherry picked example) is that the decision outcome may would be differ by iteration.
+cherry picked example) is that the decision outcome may differ by iteration.
 More data is obviously is better, but considering expense of data collection, the main question is when is best stop to make a sound decision.
-\\
-\\
-Alternative Text that focuses on the main insight and does not mention the algorithms:\\
 
-
-In the top panel we see that in trial 126 the HDI is completely outside of the ROPE.
-If the stop criterion is triggered the user would reject the null hypothesis.
-In the middle panel we see that at trial 598 the posterior straddles the ROPE.
-If the stop criterion has not been triggered the researchers would need to collect more
-data. If it has been triggered, the result is inconclusive and the researcher would have
-to use other mechanisms to assess the risk of accepting or rejecting. In the bottom
-panel at trial 804 the HDI is fully within the ROPE. If the stop criterion is triggered
-here the null hypothesis is correctly accepted. The main insight from this figure is
-that in all three stopping criteria the decision would be different.
-
-\subsubsection{A High Level Comparison Of The Three Algorithems}
+\subsection{The Algorithms}
+\subsubsection{A High Level Comparison}
 
 As mentioned above, when the stop criteria trigger, all three test algorithms
 apply the same decision criterion but in slightly different manners.
@@ -237,7 +228,7 @@ is very sensitive to strong outliers.
 
 For the two precision based algorithms the $\mathrm{GOAL}$ precision is required,
 which should be less than the $\mathrm{ROPE}$ width $\Delta_\mathrm{ROPE}$. For brevity of the table
-readability we excluded two Pre Survey parameters that are required for all three
+readability we excluded two additional Pre Survey parameters that are required for all three
 algorithms:
 \begin{itemize}
     \item $N_\mathrm{max}$ - the maximum sample size, i.e, the final budget size. In most practical cases one will want an upper bound of how much data to collect
@@ -250,14 +241,14 @@ for all three. That is to say that all three make the decision based on the
 location of the HDI with respect to the ROPE, i.e, the posterior location in respect
 to the null hypothesis and its effective region.
 Whereas this is the only criterion for the HDI+ROPE algorithm, the other two
-are more conservative as they require also the posterior width information in the from
-of what is later to be defined as the Precision.
+are more conservative as they require also the posterior width information in the form
+{\it precision}, which we will later define.
 
 
 Note that the Precision is the Goal method is a two step process, 
 i.e, "Stop" then "Decide",
 and the other two activate both Stop and Decision criteria simultaneously
-(i.e, "Stop and Decide"). In the next three secions we explain these in detail,
+(i.e, "Stop and Decide"). In the next three sections we explain each in detail,
 followed up with analytic and synthetic examples.
 
 
@@ -296,7 +287,7 @@ In Algorithm \ref{alg:hdi_rom} we provide a pseudo code of the HDI + ROPE algori
 \end{algorithm}
 
 
-The algorithms requires a few decisions to be made prior to the collection of data (Pre Survey Decisions):
+It requires a few decisions to be made prior to the collection of data (Pre Survey Decisions):
 
 \begin{itemize}
     \item $N_\mathrm{min}$ - the minimal sample size to collect
@@ -316,8 +307,8 @@ The most important aspects of this algorithm are that:
 \end{itemize}
 
 Due to its disregard of dependence on the uncertainty of the posterior,
-this popular method serves as a cautionary use case of the "confirmation bias"
-address by the Precision based methods described next.
+this popular method serves as a cautionary use case of the ``confirmation bias"
+which is addressed by the Precision based methods described next.
 
 
 \subsubsection{Precision Is The Goal: Width Then Location}
@@ -411,14 +402,14 @@ To compare and invetigate the implications of three algorithms we
 follow the setup of \cite{kruschke2015doing} and generate synthetic data
 based on a Bernoulli trials with known true values of $\theta_{\rm true}$.
 
-We generate a $M$ sequences of $N_{\rm max}$ Bernoulli trials with a true value of $\theta_{\rm true}$.
+We generate $M$ sequences of $N_{\rm max}$ Bernoulli trials with a true value of $\theta_{\rm true}$.
 
 Values used are
 
 \begin{itemize}
     \item $N_{\rm max}=1,500$ to simulate a medium sized survey
     \item $M=500$ sequences to ensure statistical robusteness of results
-    \item $\theta_{\rm true}=0.5, 0.52, 0.6$ to simulate a fair, slightly unfair and loaded coins
+    \item $\theta_{\rm true}=0.5, 0.52, 0.6$ to simulate a fair, slightly and highly loaded coins
 \end{itemize}
 
 The default value of the ROPE width is $\Delta_{\rm ROPE}=0.1$. This indicates

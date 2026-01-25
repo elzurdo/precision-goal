@@ -2,9 +2,9 @@
 Here we examine results of the simulations for a few setups
 
 \begin{itemize}
-  \item Fair coin
-  \item Loaded coin
-  \item Slightly loaded coin
+  \item Fair coin: $\theta_{\rm true}=0.5$
+  \item Highly loaded coin $\theta_{\rm true}=0.6$
+  \item Slightly loaded coins $\theta_{\rm true}=0.51, \ 0.55$
 \end{itemize}
 
 \subsection{Fair coin}\label{sec:fair_coin}
@@ -21,10 +21,10 @@ outside of the ROPE making it confidently, though incorrectly,
 reject $\theta_{\rm null}$.
 The Precision is the Goal stop criterion is met at iteration 598, where the credible
 interval width
-subpasses the precision goal of 0.08. Since the credible interval straddlers the ROPE
+subpasses the precision goal of 0.08. Since the credible interval straddles the ROPE
 the decision is inconclusive.
 For the Enhanced Precision is the Goal the credible interval
-meets both criterions at iteration 804: narrower than 0.08 precision goal and fully
+meets both criteria at iteration 804: narrower than 0.08 precision goal and fully
 within the ROPE.
 This results in correctly accepting $\theta_{\rm null}$.
 
@@ -51,7 +51,9 @@ This results in correctly accepting $\theta_{\rm null}$.
 
 We continue to explore $M=500$ experiments and dispaly outcomes in
 Figure \ref{fig:fair_iter_vs_rate} and summarise key stats in
-Table \ref{tab:fair_iter_vs_rate}. 
+Table \ref{tab:fair_iter_vs_rate}. Note that this visual is insipred by
+Figure ?? of (cite JK), but whereas they focus on the success rate value at the
+stop iteration $\hat{\theta}$ we scatter these against the iteration number.
 (TK Ref JK figure number being additional information to his histograms).
 
 
@@ -69,7 +71,7 @@ Table \ref{tab:fair_iter_vs_rate}.
 
 In the Figure \ref{fig:fair_iter_vs_rate} the large symbols represent the 500 experiment outcome means 
 (large red square, blue circle and X as per legend) show
-that on average all methods yield, on average, unbiased outcomes, as per the
+that on average all methods yield unbiased outcomes, as per the
 $\overline{\theta}$ column in Table \ref{tab:fair_iter_vs_rate}.
 
 
@@ -106,10 +108,10 @@ resulting in only 1.6\% inconclusive outcomes by final iteration of $N_{\rm max}
 This manifests in an average of $732.2\pm 210$ samples per experiment for the Enhanced PitG
 compared to $598.3\pm 1.4$ for the Precision is the Goal.
 
-Figure \ref{fig:fair_iter_vs_rate} highlights that after the "Precision stop barrier" at iteration 598 Enhanced Precision is the Goal and HDI+ROPE are the same algorithm.
+Figure \ref{fig:fair_iter_vs_rate} highlights that after the ``Precision stop barrier" at iteration 598 Enhanced Precision is the Goal and HDI+ROPE are the same algorithm.
 
 In Figure \ref{fig:fair_decisions} we explore the decision rates of the three algorithms.
-(TK reference to JK's graph).
+This display is inspired by Figure TK of JK. (TK reference to JK's graph).
 
 \begin{figure}[h!]
   \centering
@@ -143,9 +145,9 @@ As a result of this two step process we can clearly see that only 39\% of result
 (the decisive all correctly accept $\theta_{\rm null}$). 
 
 The Enhanced Precision is the Goal (green Xs) is shown in these figure to be the natural extension
-of the promise of the Precision is the Goal in terms of resulting in unbiassed outcomes. It's main 
+of the promise of the Precision is the Goal in terms of resulting in unbiassed outcomes. Its main 
 benefit is that it is much more decisive. In the right panel of Figure \ref{fig:fair_decisions}
-this manifests in the slow growing of the "accept" curve all the way to 98.4\% of the experiments
+this manifests in the slow growing of the ``accept" curve all the way to 98.4\% of the experiments
 by the end of the $N_{\rm max}=1,500$ iterations.
 
 As this binomial setup is well defined we see obvious trends
@@ -156,12 +158,12 @@ where
 
 \begin{itemize}
   \item $p$ is the success rate
-  \item $CI$ is the precision goal of the credible interval. In our case 0.08.
+  \item ${\rm CI}$ is the precision goal of the credible interval. In our case 0.08.
   \item $z_{*}$ is the (TK). E.g, for 95\% quantile of the standard normal
   distribution $z_{*}=z_{0.05}=1.96$
 \end{itemize}
 
-For this fair coin instances we set $\theta_0=\theta_{\rm true}=\frac{1}{2}$ and obtain
+For this fair coin instances we set $p=\theta_0=\theta_{\rm true}=\frac{1}{2}$ and obtain
 $n=599.2$ as indicated as the dashed vertical line in Figure \ref{fig:fair_iter_vs_rate}.
 
 We now turn to examining a loaded coins example where this is not the case.
