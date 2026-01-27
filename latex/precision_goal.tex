@@ -38,15 +38,20 @@
 \section{Introduction}
 \input precision_goal_introduction
 
-\subsection{Contributions}
 
-\subsubsection{Paper Structure}
-The paper is organized as follows.
-In the Methods section we describe three (four if Frequentist?)
-stop criteria as well as the setup to test on synthetic deichotomous data.
-In the Results section we present the results of the synthetic data analysis as well as analytical analysis.
-In the Discussion section we discuss the implications of the results (Reword this).
-In the Conclusion section we summarize the findings and suggest future directions (Reword this).
+\section{Contributions}
+
+This paper makes the following contributions:
+\begin{itemize}
+  \item \textbf{Identifies a Limitation of Precision-Based Stopping Rules:} We show that the ``Precision is the Goal'' (PitG) method, while unbiased, can result in a high rate of inconclusive outcomes, particularly when the null hypothesis is true.
+  \item \textbf{Proposes an Enhanced Stopping Algorithm:} We introduce the ``Enhanced Precision is the Goal'' (ePitG) method, which requires both the precision and decision criteria to be met simultaneously. This approach substantially reduces the rate of inconclusive results with only a moderate increase in sample size.
+  \item \textbf{Provides Analytical and Empirical Evaluation:} We analytically derive and empirically validate the performance of ePitG and compare it to existing methods using synthetic dichotomous data.
+  \item \textbf{Offers Practical Guidance and Tools:} We provide pseudo-code, Python implementations, and an online calculator to facilitate adoption of the method in practical settings.
+  \item \textbf{Demonstrates Broader Applicability:} While our focus is on dichotomous data, the approach is general and can be extended to other data types and experimental designs.
+\end{itemize}
+
+\subsection{Paper Structure}
+The paper is organized as follows. In the Methods section, we describe three stop criteria as well as the setup to test on synthetic dichotomous data. In the Results section, we present the results of the synthetic data analysis as well as analytical analysis. In the Discussion section, we discuss the implications of the results. In the Conclusion section, we summarize the findings and suggest future directions.
 
 
 \section{Methods}

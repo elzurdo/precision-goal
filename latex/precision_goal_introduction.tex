@@ -1,82 +1,13 @@
-Much of scientific progress is due to the ability to empirically test for hypotheses.
-To this end statistical methods serve as bedrock tools to assess how representative a
-sample is of an underlying truth. Since the accuracy of these assessments largely
-depends on sample sizes this becomes a pressing question prior to conducting data collection.
 
+Empirical hypothesis testing is foundational to scientific progress, enabling researchers to assess how well a sample represents an underlying truth. A central challenge in this process is determining when enough data has been collected to make a reliable decision, especially as the accuracy of statistical assessments depends heavily on sample size. As emphasized by \cite{maxwell1984}, careful planning for statistical power and precision is essential to avoid biased inference and ensure meaningful results.
 
-In this study we focus on sequential testing, an alternative method to data
-collection, by which  accumulation is done in a serial manner and a stop criterion is
-determined and subsequently a decision criterion indicates the outcome.
-This may be applied in clinical trials and medical diagnostics, quality control,
-a/b testing (e.g, website decisions, digital marketing) as well as financial market
-monitoring.
+Sequential hypothesis testing offers a flexible alternative to fixed-sample designs by allowing data to be evaluated as it accumulates, with stopping and decision criteria guiding when to conclude data collection. This approach is widely used in fields such as clinical trials, quality control, A/B testing, and financial monitoring, offering potential benefits in efficiency, timeliness, and ethical considerations.
 
-One potential benefit is efficiency, which may occur if the signal is stronger than
-expected. Reducing the number of observations required to reach a conclusion may save
-time and resources. Another advantage is flexibility and timeliness which
-is useful in dynamic environments where conditions rapid changes may be
-made as soon as sufficient evidence is available leading to quicker implementation of
-findings. In the medical domain this may be
-beneficial in terms of ethical considerations as it can prevent unnecessary exposure of
-participants to ineffective or harmful treatments. 
+However, sequential analysis introduces important trade-offs. While it can reduce resource use and speed up decision-making, it also increases the risk of biased outcomes if stopping rules are not carefully chosen. In particular, commonly used Frequentist and Bayesian stopping criteria—such as p-value thresholds or posterior-based heuristics (e.g., HDI+ROPE, Bayes Factors)—can lead to confirmation bias, especially when stopping is triggered by extreme or unrepresentative samples. This phenomenon, known as early peaking, can result in premature and biased conclusions.
 
-With such benefits one must also consider the tradeoffs. Sequential analysis may be
-complex and heavy operational demands as it requires more sophisticated statistical
-methods and careful planning, if done by a human or an automated decision algorithm.
-The focus of this study addresses an even more dangerous tradeoff --
-the potential for biassed decision making.
+To address this, \cite{kruschke2015doing}—building on the foundational insight of \cite{maxwell1984}—advocated for using a predetermined target for posterior precision as a stopping rule, decoupling the decision to stop from the decision to accept or reject the null hypothesis. This ``Precision is the Goal'' (PitG) method eliminates bias in dichotomous outcome sampling. However, our analysis reveals a subtle but important limitation: when the null hypothesis is true, PitG often yields a high rate of inconclusive results, rather than correctly accepting the null.
 
-\cite{kruschke2015doing} points out that commonly applied Frequentist and Bayesian
-methods to sequential sampling may yield biassed results. In the Frequentist case
-practitioners set the stop criterion that triggers according to a sample to
-hypothesis p-value and then decide if to reject the null hypothesis
-(Frequentist methods cannot accept null hypotheses because p-values do not contain
-enough information). In one  common Bayesian method, called HDI+ROPE which we elaborate
-and demonstrate below, decisions on when to stop collecting data and the decision to
-reject or accept the null hypothesis is when most of the posterior mass is fully inside
-or outside of an “effective region” around the null hypothesis. In another Bayesian
-method, called Bayesian Factor, one makes decisions based on ratios of posteriors and
-priors metrics of a null hypothesis model compared to that of an alternative one.
+In this paper, we propose an enhanced approach—``Enhanced Precision is the Goal'' (ePitG)—which requires that both the precision and decision criteria be met simultaneously. This more conservative rule substantially reduces the rate of inconclusive outcomes, with only a moderate increase in average sample size. We demonstrate that ePitG is especially effective when the null hypothesis is true, while remaining nearly indistinguishable from PitG in scenarios where the null can be strongly rejected.
 
-\cite{kruschke2015doing} have shown that the common use of these heuristics as stop criteria may
-trigger when a more extreme than average sample is obtained, which is more likely with
-small sample sizes. From this we learn that premature stopping is likely to result in
-biassed outcomes, which is commonly referred to as {\it confirmation bias} or
-{\it early peaking} which reflects a practitioner’s eagerness for the data to agree with a
-preferred hypothesis and stop collecting data when convenient. For science to make true
-progress practitioners need to avoid such outcomes by using more appropriate methods.
+Our results, based on simulations with dichotomous data, provide practical guidance for researchers seeking to balance efficiency, bias, and conclusiveness in sequential hypothesis testing. We also provide analytical insights, code, and tools to facilitate adoption of the method in applied settings.
 
-As pointed out by \cite{maxwell1984}, \cite{kruschke2015doing} shows that by
-pre-determining a target precision value such biases are eliminated. The purpose of this
-study is to fill in a subtle gap in their argument.
-In our analysis we focus on simulating sequential dichotomous data and show that their
-method, called “Precision is the Goal”, although works very well when the null
-hypothesis may be strongly ruled out, requires an improvement when the null hypothesis
-should be accepted. In this latter scenario we find that “Precision is the Goal” may
-yield, instead of correctly resulting in acceptance of the null hypothesis,
-yield an unfortunate large fraction of inconclusive outcomes.
-
-To ameliorate this inconclusiveness problem we suggest a variant to their method,
-which we call “Enhanced Precision is the Goal”, which uses a similar but more
-conservative stop criterion. The original “Precision is the Goal” is a two step
-criterion process with a stop criterion and a decision one.
-The stop criterion depends
-on the width of the posterior (i.e, the sample precision). The decision criterion to
-accept/reject the null hypothesis depends on the posterior location information, i.e,
-where most of the mass is in respect to an effective region around the null hypothesis.
-We argue that it is advantageous to require both the width and location requirements
-simultaneously. By doing so the practitioner is effectively combining the stop and
-decision criterion into one step with three possible outcomes: accept/reject/collect
-more. 
-
-As we demonstrate here, this more conservative criterion yields substantially more
-conclusive outcomes without introducing bias at the cost of larger sample sizes.
-In one reasonable setup detailed below, we find that “Precision is the Goal” may yield
-$\sim$61\% as inconclusive and where in the enhanced version this is  reduced to sub 2\%
-at a cost of, on average, a sample size 22\% larger.
-The improvements of this enhanced method are highly effective in cases where the null
-hypothesis is true, but nearly indistinguishable from the original method when the null
-hypothesis may be strongly rejected. By indistinguishable we mean that the enhanced
-version will act in case of strong rejection signals exactly as “Precision is the Goal”
-in all aspects including the sample sizes required (the said larger sample size is only
-when the null hypothesis is true).
