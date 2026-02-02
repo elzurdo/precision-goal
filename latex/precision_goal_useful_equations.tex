@@ -60,3 +60,44 @@ $${\rm CI}_{\rm max} < {\rm ROPE}_{\rm l}$$
 $$p + z_{0.05} \sqrt{\frac{p(1-p)}{(n+1)}} < {\rm ROPE}_{\rm l}$$
 
 $$z_{0.05}^2 \frac{p(1-p)}{ ( p - {\rm ROPE}_{\rm l})^2}- 1 < n$$
+
+\subsection{Continuous Data Equations}
+
+For continuous data assumed to be normally distributed $x \sim \mathcal{N}(\mu, \sigma^2)$, we utilize the standard non-informative prior approach where the posterior distribution for the mean $\mu$ follows a Student's $t$-distribution.
+
+\subsubsection{Precision (HDI Width)}
+
+The width $W$ of the $(1-\alpha)$ Highest Density Interval (typically 95\%) is given by:
+
+$$ W = 2 \cdot t_{1-\alpha/2, \, n-1} \cdot \frac{s}{\sqrt{n}} $$
+
+where:
+\begin{itemize}
+    \item $s$ is the sample standard deviation.
+    \item $n$ is the sample size.
+    \item $t_{1-\alpha/2, \, n-1}$ is the critical value from the $t$-distribution with $n-1$ degrees of freedom.
+\end{itemize}
+
+\subsubsection{Stopping Criterion (Precision)}
+
+Data collection continues until the posterior width is less than the target precision $W_{\rm goal}$:
+
+$$ 2 \cdot t_{1-\alpha/2, \, n-1} \cdot \frac{s}{\sqrt{n}} \leq W_{\rm goal} $$
+
+\subsubsection{Estimated Sample Size for Planning}
+
+To estimate the required sample size $n$ for a desired precision $W_{\rm goal}$, assuming a known or estimated standard deviation $\sigma$:
+
+$$ n \approx \left( \frac{2 z_{1-\alpha/2} \cdot \sigma}{W_{\rm goal}} \right)^2 $$
+
+For small samples, $z$ (Normal) should be replaced iteratively with $t$ values, but this serves as a closed-form approximation.
+
+\subsubsection{Decision Rules (Enhanced PitG)}
+
+Let ${\rm ROPE} = [\theta_L, \theta_H]$ and the posterior HDI be $[L, U] = [\bar{x} - W/2, \bar{x} + W/2]$.
+
+\begin{itemize}
+    \item \textbf{Accept Null}: $(L \geq \theta_L) \land (U \leq \theta_H) \land (W \leq W_{\rm goal})$
+    \item \textbf{Reject Null}: $(U < \theta_L \lor L > \theta_H) \land (W \leq W_{\rm goal})$
+    \item \textbf{Inconclusive}: Otherwise
+\end{itemize}
