@@ -1,6 +1,23 @@
+# ---
+# jupyter:
+#   jupytext:
+#     cell_metadata_filter: -all
+#     custom_cell_magics: kql
+#     text_representation:
+#       extension: .py
+#       format_name: percent
+#       format_version: '1.3'
+#       jupytext_version: 1.11.2
+#   kernelspec:
+#     display_name: Python 3.8.11 (scrappy)
+#     language: python
+#     name: scrappy-3.8.11
+# ---
+
+# %% [markdown]
 # Testing [Binomal Test](https://en.wikipedia.org/wiki/Binomial_test) as used in [scipy.stats](https://github.com/scipy/scipy/blob/v1.9.0/scipy/stats/_morestats.py#L2648-L2741).
 
-# +
+# %%
 import numpy as np
 import pandas as pd
 
@@ -11,7 +28,7 @@ from scipy.stats import binom_test # binomtest (in later versions ...)
 from scipy.special import comb
 from scipy.stats import binom
 
-# +
+# %%
 import matplotlib.pyplot as plt
 
 SMALL_SIZE = 12
@@ -33,15 +50,18 @@ plt.rcParams["figure.figsize"] = FIG_WIDTH, FIG_HEIGHT
 
 plt.rcParams['axes.spines.right'] = False
 plt.rcParams['axes.spines.top'] = False
-# -
 
-theta_true_label = r"$\theta_{true}$"
-theta_null_label = r"$\theta_{null}$"
+# %%
+theta_true_label = r"$\theta_{\rm true}$"
+theta_null_label = r"$\theta_{\rm null}$"
 
+# %% [markdown]
 # # One Binomial Test
 
-# +
-n, k, theta_null = 10, 8, 0.5
+# %%
+#n, k, theta_null = 10, 8, 0.5
+n, k, theta_null = 30, 24, 0.5
+#n, k, p = 256, 204, 0.5
 #n, k, p = 256, 130, 0.5
 
 # -------
@@ -53,13 +73,13 @@ p_value_low = np.sum([binom.pmf(i, n, theta_null) for i in range(k + 1)])
 # one sided: testing p_alt > p_null
 p_value_high = np.sum([binom.pmf(i, n, theta_null) for i in range(k, n + 1)])
 
-# +
+# %%
 probs_all = [binom.pmf(i, n, theta_null) for i in range(n + 1)] 
 
 probs_all = pd.Series(probs_all)
 probs_all[probs_all <= binom.pmf(k, n, theta_null) * rerr].sum() 
 
-# +
+# %%
 width = 0.4
 
 
@@ -78,13 +98,14 @@ plt.yscale("log")
 plt.xlabel(fr"k (successes of n={n} trials)")
 plt.ylabel(f"log(P($k$))")
 plt.title(fr"$n$={n}, {khat}={k}, {theta_null_label}={theta_null}")
-# -
 
+# %%
 probs_le_thresh.sum()
 
+# %% [markdown]
 # # Many Binomial Tests
 
-# +
+# %%
 # Simulation setup
 
 theta_null = 0.5 # null hypothesis success rate
@@ -94,7 +115,7 @@ alternative = 'two-sided' # 'greater'
 n_experiments = 5000 # 5000 #1000 #10000
 n_samples = 2**12
 
-theta_true = 0.5 #0.55 # true success rate
+theta_true = 0.52 # 0.55 # true success rate
 # -----
 
 seed = 1
@@ -103,14 +124,14 @@ seed = 1
 np.random.seed(seed)
 samples = np.random.binomial(1, theta_true, [n_experiments, n_samples])
 
-# +
+# %%
 # exploring different stop criterions
 
 #all_n_samples = [n_samples // 16, n_samples // 8, n_samples // 4, n_samples // 2, n_samples]
 
 all_n_samples = [n_samples // 16, n_samples]
 
-# +
+# %%
 all_p_values = np.zeros((len(all_n_samples), n_experiments)) - 1
 
 all_success_values = np.zeros((len(all_n_samples), n_experiments)) - 1 # this variable is for debugging purposes
@@ -125,7 +146,7 @@ for idx_experiment, sample in enumerate(samples):
         all_success_values[idx_n_sample, idx_experiment] = this_sample.sum() # this variable is for debugging purposes
 
 
-# +
+# %%
 plt.hist(all_p_values[0,:], bins=10, histtype="step")
 plt.hist(all_p_values[1,:], bins=10, histtype="step")
 
@@ -133,7 +154,7 @@ plt.hist(all_p_values[1,:], bins=10, histtype="step")
 plt.xlabel("p-value")
 plt.ylabel("counts")
 
-# +
+# %%
 plt.figure(figsize=(FIG_WIDTH * 2, FIG_HEIGHT))
 hatches = ["/", "\\", "-", ".", "*"]
 
@@ -160,21 +181,21 @@ plt.xlabel("p-value")
 plt.ylabel("%")
 
 plt.title(f"{theta_true_label}: {theta_true:0.2}, {theta_null_label}: {theta_null:0.2}, NHST: {alternative}")
-# -
 
+# %% [markdown]
 # # Testing
 
-# +
+# %%
 idx_n_sample = 0
 
 floored = pd.Series(np.floor(all_p_values[idx_n_sample] * 10), index=all_p_values[idx_n_sample])
 
 floored.index.value_counts()
-# -
 
+# %%
 pd.Series(all_success_values[idx_n_sample]).value_counts()
 
-# +
+# %%
 idx_n_sample = 0
 
 
@@ -196,16 +217,16 @@ plt.bar(sr_rounded.index - 0.5 *(width*(n_ntosses - 1)) + idx_mode * width, sr_r
 
 
 plt.legend()
-# -
 
+# %%
 sr_floored
 
+# %%
 sr_floored[3:5].mean()
 
-# +
+# %%
 test_ = np.array([0.44, 0.45, 0.46])
 
 np.round(test_ * 10)
-# -
-
+# %%
 
