@@ -198,37 +198,29 @@ As seen in Algorithm \ref{alg:epitg}, strictly enforcing both conditions ensures
 
 Note that all stopping algorithms (\ref{alg:hdi_rope}--\ref{alg:epitg}) assume the collection of one data point at a time, though this is easily modified in the increment step ($N \mathrel{+}= 1$) to accommodate batch collection.
 
-We next turn to simulating sequential hypothesis testing using synthetic data as well
-analytical descriptions of the expected outcomes.
-\subsection{Synthetic Data and Experiment Setup}
+\subsection{Experimental Design}
 
-To compare and invetigate the implications of three algorithms we
-follow the setup of \cite{kruschke2015doing} and generate synthetic data
-based on a Bernoulli trials with known true values of $\theta_{\rm true}$.
+To evaluate and compare the performance of the three algorithms, we employ a synthetic data simulation based on Bernoulli trials (dichotomous data). While these methods are applicable to continuous data, we focus on the Bernoulli case to maintain comparability with the work of \cite{kruschke2015doing}.
 
-We generate $M$ sequences of $N_{\rm max}$ Bernoulli trials with a true value of $\theta_{\rm true}$.
+We generate $M=500$ independent sequences of $N_{\rm max}=1,500$ trials each. This maximum sample size is chosen to simulate a typical medium-sized survey or experiment.
 
-Values used are
+We test three scenarios for the ground truth probability $\theta_{\rm true}$ against a null hypothesis of $\theta_{\rm null}=0.5$:
+\begin{enumerate}
+    \item \textbf{Fair Coin ($\theta_{\rm true}=0.5$)}: The null hypothesis is true.
+    \item \textbf{High Loading ($\theta_{\rm true}=0.6$)}: A strong effect exists.
+    \item \textbf{Slight Loading ($\theta_{\rm true}=0.52$)}: A weak effect exists, challenging the sensitivity of the algorithms.
+\end{enumerate}
+
+\subsubsection{Algorithm Configuration}
+
+Unless stated otherwise, we utilize the following default parameters, chosen to reflect detailed but realistic experimental conditions (e.g., opinion polling):
 
 \begin{itemize}
-    \item $N_{\rm max}=1,500$ to simulate a medium sized survey
-    \item $M=500$ sequences to ensure statistical robusteness of results
-    \item $\theta_{\rm true}=0.5, 0.52, 0.6$ to simulate a fair, slightly and highly loaded coins
+    \item \textbf{ROPE Width ($\Delta_{\rm ROPE}=0.1$)}: We define the Region of Practical Equivalence as $\theta_{\rm null} \pm 0.05$. This implies that any result within the range $[0.45, 0.55]$ is considered practically equivalent to the null.
+    \item \textbf{Precision Goal}: We set the target precision (HDI width) to 80\% of the ROPE width ($\mathrm{Goal}=0.08$).
+    \item \textbf{Minimum Sample Size ($N_{\rm min}=30$)}: A practical lower bound to prevent premature stopping due to early stochastic noise, particularly relevant for the location-based HDI+ROPE algorithm.
 \end{itemize}
 
-The default value of the ROPE width is $\Delta_{\rm ROPE}=0.1$. This indicates
-the effect size that is considered meaningful. (TK minimum maximum?).
-
-The default value of the Precision Goal is 80\% of the ROPE width, i.e, $\mathrm{Goal}=0.08$.
-
-The default value of the minimal sample size is $N_{\rm min}=30$. This is a practical
-setting to avoid many weak outliers to impact HDI+ROPE (the precision based algorithms
-are shielded from requiring this as inhereitely require larger sample sizes).
-
-These values were chosen as considered reasonable settings for some real life
-situations. (TK examples? Polling data)
-
-We start with the default setting and then vary the parameters to investigate to
-explore implications for other settings (TK examples?).
+In the following section, we present the results of these simulations, first under these default settings and subsequently by varying key parameters to explore robustness.
 
 
