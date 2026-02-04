@@ -76,76 +76,45 @@ Algorithm \ref{alg:decision_criterion} formalises this logic.
     \end{algorithmic} 
 \end{algorithm}
 
-\subsection{The Algorithms}
-\subsubsection{A High Level Comparison}
+\subsection{Sequential Stopping Algorithms}
 
-As mentioned above, when the stop criteria trigger, all three test algorithms
-apply the same decision criterion but in slightly different manners.
+Table \ref{tab:comparison} provides a high-level comparison of the three algorithms. Each algorithm shares the same Decision Rule (Algorithm \ref{alg:decision_criterion}) but differs in when it triggers the stop condition.
 
-
-Table \ref{tab:table1} provides a high level comparison between the test algorithms.
-
-
-\begin{table}[h!]\label{tab:table1}
+\begin{table}[h!]
     \begin{center}
-      \begin{tabular}{c|c|c|c}
-        \textbf{Test Algorithm } & \textbf{Pre Survey} & \textbf{Stop Criterion} &  \textbf{Decision Criterion}\\
+      \begin{tabular}{l|c|l|l}
+        \textbf{Algorithm} & \textbf{Pre-Survey} & \textbf{Stop Criterion} &  \textbf{Decision Logic} \\
         \hline
-        HDI + ROPE & $N_\mathrm{min}$  & \multicolumn{2}{c}{\multirow{1}{*}{HDI within/outside ROPE?}}  \\
-        Precision is the Goal & Goal & Precision $<$ Goal? & HDI within/outside ROPE? \\
-        Enhanced Precision is the Goal & Goal& \multicolumn{2}{c}{\multirow{1}{*}{(Precision $<$ Goal?) \& (HDI within/outside ROPE?)}}  \\
+        HDI + ROPE & $N_\mathrm{min}$ & Decision is conclusive & Stop $\to$ Decision \\
+        Precision is the Goal & Goal & Precision $\le$ Goal & Stop $\to$ Decision \\
+        Enhanced PitG & Goal & Precision $\le$ Goal \textbf{AND} & Stop $\to$ Decision \\
+         & & Decision is conclusive & \\
       \end{tabular}
-      \caption{A high level comparison between the test algorithms.
-      The merged cells mean Stop and Decision criteria are simultaneous.
-      Otherwise multi-step.
-      }
+      \caption{Comparison of stopping algorithms. `Decision is conclusive' means the HDI is fully inside or fully outside the ROPE.}
+      \label{tab:comparison}
     \end{center}
   \end{table}
 
-In the Pre Survey column we highlight the a characteristic parameter required to be
-determined prior to the collection of data. For HDI+ROPE this is the minimal sample size
-to collect $N_\mathrm{min}$, e.g, 30. The reason for this is that this algorithm
-is very sensitive to strong outliers.
+In the Pre-Survey column we highlight the characteristic parameter required to be determined prior to the collection of data.
+\begin{enumerate}
+    \item \textbf{HDI + ROPE}: Requires $N_\mathrm{min}$ (minimal sample size), e.g., 30. This is crucial as the algorithm is sensitive to early outliers.
+    \item \textbf{Precision Methods}: Require `Goal`, the target precision width, which must be narrower than the ROPE width $\Delta_\mathrm{ROPE}$.
+\end{enumerate}
 
-For the two precision based algorithms the $\mathrm{GOAL}$ precision is required,
-which should be less than the $\mathrm{ROPE}$ width $\Delta_\mathrm{ROPE}$. For brevity of the table
-readability we excluded two additional Pre Survey parameters that are required for all three
-algorithms:
+For brevity, the table excludes two universal parameters required for all three algorithms:
 \begin{itemize}
-    \item $N_\mathrm{max}$ - the maximum sample size, i.e, the final budget size. In most practical cases one will want an upper bound of how much data to collect
-    \item $\Delta_\mathrm{ROPE}$ - The ROPE width which is a statement of minimum effect size considered meaningful
+    \item $N_\mathrm{max}$ (Final Budget): The maximum sample size or budget limit.
+    \item $\Delta_\mathrm{ROPE}$ (Effect Size): The width of the Region of Practical Equivalence.
 \end{itemize}
 
-In the Stop and Decision Criteria columns we see that,
-as per \S\ref{sec:decision_criterion}, the decision criterion is the same
-for all three. That is to say that all three make the decision based on the
-location of the HDI with respect to the ROPE, i.e, the posterior location in respect
-to the null hypothesis and its effective region.
-Whereas this is the only criterion for the HDI+ROPE algorithm, the other two
-are more conservative as they require also the posterior width information in the form
-{\it precision}, which we will later define.
+\subsubsection{HDI + ROPE: Location Only}
 
+The \textbf{HDI + ROPE} method stops data collection as soon as the posterior's location allows for a decisive acceptance or rejection of the null hypothesis. It does not explicitly demand a specific degree of precision (width), only that the HDI does not straddle the ROPE boundary.
 
-Note that the Precision is the Goal method is a two step process, 
-i.e, "Stop" then "Decide",
-and the other two activate both Stop and Decision criteria simultaneously
-(i.e, "Stop and Decide"). In the next three sections we explain each in detail,
-followed up with analytic and synthetic examples.
-
-
-\subsubsection{HDI + ROPE: Location, Location, Location}
-
-HDI + ROPE is a popular method that combines the HDI and ROPE heuristics to describe
-the relationship between the \textbf{location} of posterior $P(\theta|\hat\theta)$, which depends on the observed
-sample value $\hat\theta$ in regards to the
-null hypothesis $\theta_{\rm null}$.
-
-In Algorithm \ref{alg:hdi_rom} we provide a pseudo code of the HDI + ROPE algorithm.
-
-
+Algorithm \ref{alg:hdi_rope} details the procedure. Note the inclusion of $N_\mathrm{min}$ (minimal sample size); this is critical because, with small sample sizes, the HDI can fluctuate wildly and accidentally fall entirely within or outside the ROPE due to random noise (aleatoric uncertainty) rather than true effect.
 
 \begin{algorithm}
-    \caption{HDI + ROM pseudo algorithm}\label{alg:hdi_rom}
+    \caption{HDI + ROPE}\label{alg:hdi_rope}
     \begin{algorithmic}
     \Require $N_\mathrm{min}$, $N_\mathrm{max}$, $\theta_{\rm null}$, $\Delta_\mathrm{ROPE}$
     \State $\mathrm{ROPE}_\mathrm{min} = \theta_{\rm null} - \frac{1}{2}\Delta_\mathrm{ROPE}$
@@ -153,55 +122,30 @@ In Algorithm \ref{alg:hdi_rom} we provide a pseudo code of the HDI + ROPE algori
     \State Stop = False
     \State Decision = Inconclusive
     \State N = 0
-    \While{(Stop = False \& $N \le N_\mathrm{max}$)}  % perhaps change to while loop
-    \State N += 1 \Comment{collect another data point} 
-    \State Update $\hat\theta$, $P(\theta|\hat\theta)$ \Comment{update posterior} 
+    \While{(Stop = False \& $N < N_\mathrm{max}$)} 
+    \State N += 1 \Comment{collect another data point}
+    \State Update $\hat\theta$, $P(\theta|\hat\theta)$ \Comment{update posterior}
     \State $\mathrm{HDI}_\mathrm{min}, \ \mathrm{HDI}_\mathrm{max}  \gets P(\theta|\hat\theta)$
-    \If{$N_\mathrm{min} < N$}
+    \If{$N \ge N_\mathrm{min}$}
         \State Decision = Decision Algorithm($\mathrm{ROPE}_\mathrm{min}, \mathrm{ROPE}_\mathrm{max}, \mathrm{HDI}_\mathrm{min}, \mathrm{HDI}_\mathrm{max}$)
         \If{Decision in \{Accept $\theta_{\rm null}$, Reject $\theta_{\rm null}$\}}
-            \State \HiLi Stop = True  \Comment{Stopping depends on decisive Decision}
+            \State \HiLi Stop = True \Comment{Stopping depends on decisive Decision}
         \EndIf
     \EndIf
     \EndWhile
     \end{algorithmic}
 \end{algorithm}
 
+This method is efficient but serves as a cautionary use case of ``confirmation bias'' or ``peeking'' intent if not bounded by $N_\mathrm{min}$.
 
-It requires a few decisions to be made prior to the collection of data (Pre Survey Decisions):
+\subsubsection{Precision Is The Goal (PitG): Precision Only}
 
-\begin{itemize}
-    \item $N_\mathrm{min}$ - the minimal sample size to collect
-    \item $N_\mathrm{max}$ - the maximum sample size
-    \item $\theta_{\rm null}$ - the null hypothesis parameter value being tested
-    \item $\Delta_\mathrm{ROPE}$ - The ROPE width (minimum effect size)
-\end{itemize}
+Introduced by \cite{kruschke2015doing}, \textbf{Precision is the Goal} shifts the stopping condition from the \textit{decision} to the \textit{precision} (width) of the estimate. Data collection stops when the width of the HDI is narrower than a pre-specified Goal (e.g., 80\% of the ROPE width).
 
-Algorithm \ref{alg:hdi_rom} assumes collection of one data point at a time,
-but this may be modified in the line $N += 1$ to be for a batch collection.
-
-The most important aspects of this algorithm are that:
-
-\begin{itemize}
-    \item The Stop and Decision criterion are one and the same
-    \item The Stop criterion depends only on location information, not on the precision of the posterior.
-\end{itemize}
-
-Due to its disregard of dependence on the uncertainty of the posterior,
-this popular method serves as a cautionary use case of the ``confirmation bias"
-which is addressed by the Precision based methods described next.
-
-
-\subsubsection{Precision Is The Goal: Width Then Location}
-
-\cite{kruschke2015doing} introduced the Precision is the Goal algorithm to account
-of the importance of the width of the posterior as the objective of the Stop Criterion.
-Building upon the HDI + ROPE algorithm it uses the same Decision Criterion.
-
-We describe a pseudo algorithm of the Precision is the Goal algorithm in Algorithm \ref{alg:pitg}.
+Algorithm \ref{alg:pitg} shows the ``De-coupled'' nature of this method: stopping depends on width, while the decision depends on location. This can lead to situations where the algorithm stops (precision reached) but the result is Inconclusive (straddling).
 
 \begin{algorithm}
-    \caption{Preicion is the Goal pseudo algorithm}\label{alg:pitg}
+    \caption{Precision is the Goal}\label{alg:pitg}
     \begin{algorithmic}
     \Require Goal, $N_\mathrm{max}$, $\theta_{\rm null}$, $\Delta_\mathrm{ROPE}$
     \State $\mathrm{ROPE}_\mathrm{min} = \theta_{\rm null} - \frac{1}{2}\Delta_\mathrm{ROPE}$
@@ -209,12 +153,12 @@ We describe a pseudo algorithm of the Precision is the Goal algorithm in Algorit
     \State Stop = False
     \State Decision = Inconclusive
     \State N = 0
-    \While{(Stop = False \& $N \le N_\mathrm{max}$)}  % perhaps change to while loop
-    \State N += 1 \Comment{collect another data point} 
-    \State Update $\hat\theta$, $P(\theta|\hat\theta)$ \Comment{update posterior} 
-    \State $\mathrm{HDI}_\mathrm{min}, \ \mathrm{HDI}_\mathrm{max}  \gets P(\theta|\hat\theta)$
+    \While{(Stop = False \& $N < N_\mathrm{max}$)}
+    \State N += 1 \Comment{collect another data point}
+    \State Update $\hat\theta, P(\theta|\hat\theta)$ \Comment{update posterior}
+    \State $\mathrm{HDI}_\mathrm{min}, \mathrm{HDI}_\mathrm{max} \gets P(\theta|\hat\theta)$
     \State Precision = $\mathrm{HDI}_\mathrm{max} - \mathrm{HDI}_\mathrm{min}$
-    \If{Precision $ \le $ Goal}
+    \If{Precision $\le$ Goal}
          \State \HiLi Stop = True \Comment{Stopping regardless of Decision}
          \State Decision = Decision Algorithm($\mathrm{ROPE}_\mathrm{min}, \mathrm{ROPE}_\mathrm{max}, \mathrm{HDI}_\mathrm{min}, \mathrm{HDI}_\mathrm{max}$)  
     \EndIf
@@ -222,25 +166,14 @@ We describe a pseudo algorithm of the Precision is the Goal algorithm in Algorit
     \end{algorithmic}
 \end{algorithm}
 
-Here we see that Precision is the Goal stops collecting when the posterior width is less than
-the set goal regardless of the decision criterion, making it a two step process.
+\subsubsection{Enhanced Precision Is The Goal (ePitG): Precision and Location}
 
+We propose \textbf{Enhanced Precision is the Goal}, a conservative variant of PitG, to mitigate the high rate of inconclusive results. This method ``re-couples'' the criteria: it stops strictly when \textit{both} the precision goal is met \textit{AND} a conclusive decision can be made.
 
-In our analyses in section [TBD] we show that, depending on the setting,
-the Precision is the Goal algorithm may yield a high percentage of inconclusive results.
-
-In the next subsection we suggest a slighlty more conservative variant of the algorithm
-that acts as the original but collects more data to increase the rates
-of decisive decisions.
-
-\subsubsection{Enhanced Precision Is The Goal: Width \& Location}
-
-We modify the \cite{kruschke2015doing} Precision is the Goal algorithm
-to make the stop criterion dependent both on the with of the posterior
-as well as its location in repsect to the null hypothesis.
+As seen in Algorithm \ref{alg:epitg}, strictly enforcing both conditions ensures that we do not stop in an inconclusive state, potentially at the cost of collecting more data (up to $N_\mathrm{max}$).
 
 \begin{algorithm}
-    \caption{Enhanced Preicion is the Goal pseudo algorithm}\label{alg:epitg}
+    \caption{Enhanced Precision is the Goal}\label{alg:epitg}
     \begin{algorithmic}
     \Require Goal, $N_\mathrm{max}$, $\theta_{\rm null}$, $\Delta_\mathrm{ROPE}$
     \State $\mathrm{ROPE}_\mathrm{min} = \theta_{\rm null} - \frac{1}{2}\Delta_\mathrm{ROPE}$
@@ -248,12 +181,12 @@ as well as its location in repsect to the null hypothesis.
     \State Stop = False
     \State Decision = Inconclusive
     \State N = 0
-    \While{(Stop = False \& $N \le N_\mathrm{max}$)}  % perhaps change to while loop
-    \State N += 1 \Comment{collect another data point} 
-    \State Update $\hat\theta$, $P(\theta|\hat\theta)$ \Comment{update posterior} 
+    \While{(Stop = False \& $N < N_\mathrm{max}$)}
+    \State N += 1 \Comment{collect another data point}
+    \State Update $\hat\theta, P(\theta|\hat\theta)$ \Comment{update posterior}
     \State $\mathrm{HDI}_\mathrm{min}, \ \mathrm{HDI}_\mathrm{max}  \gets P(\theta|\hat\theta)$ 
     \State Precision = $\mathrm{HDI}_\mathrm{max} - \mathrm{HDI}_\mathrm{min}$
-    \If{Precision $ \le $ Goal}
+    \If{Precision $\le$ Goal}
         \State Decision = Decision Algorithm($\mathrm{ROPE}_\mathrm{min}, \mathrm{ROPE}_\mathrm{max}, \mathrm{HDI}_\mathrm{min}, \mathrm{HDI}_\mathrm{max}$) 
         \If{Decision in \{Accept $\theta_{\rm null}$, Reject $\theta_{\rm null}$\}} 
             \State \HiLi Stop = True \Comment{Stopping depends on Precision and Decision}
@@ -263,17 +196,7 @@ as well as its location in repsect to the null hypothesis.
     \end{algorithmic}
 \end{algorithm}
 
-We see that the stopping and decision criteria act simultaneously, similar to the HDI + ROPE Algorithm \ref{alg:hdi_rom},
-but requires the precision condition as per the Precision is the Goal Algorithm \ref{alg:pitg}.
-
-A highlevel summary of the three algorithms as described in Table \ref{tab:table1}
-and Algorithms \ref{alg:hdi_rom}, \ref{alg:pitg}, and \ref{alg:epitg} is that
-
-\begin{itemize}
-    \item HDI + ROPE is a one step process that stops based on the location of the posterior
-    \item Precision is the Goal is a two step process that stops based on the width of the posterior
-    \item Enhanced Precision is the Goal is a one step process that stops based on the width and location of the posterior
-\end{itemize}
+Note that all stopping algorithms (\ref{alg:hdi_rope}--\ref{alg:epitg}) assume the collection of one data point at a time, though this is easily modified in the increment step ($N \mathrel{+}= 1$) to accommodate batch collection.
 
 We next turn to simulating sequential hypothesis testing using synthetic data as well
 analytical descriptions of the expected outcomes.
