@@ -86,45 +86,41 @@ For this fair coin instance ($p=0.5$), we obtain $n \approx 599.2$, indicated by
 
 We now turn to examining a loaded coin example where this is not the case.
 
-\subsection{Loaded Coins}
-We now use our experimental setup to analyse cases where we should reject the null
-hypothesis of $\theta_{0}=0.5$.
 
-We start with a strongly loaded coin $\theta_{\rm true}=0.6$
-and then explore ones that are less loaded $\theta_{\rm true}=0.55$ and
-$\theta_{\rm true}=0.51$.
+\subsection{Loaded Coin ($\theta_{\rm true}=0.6$)}
 
-\subsubsection{$\theta_{\rm true}=0.6$}
-
-Results for these experiments are in Figures \ref{fig:loaded0pt6_iter_vs_rate} and
+This experiement represents a case where the null hypothesis is false and there is a fairly strong effect. Results for these experiments are in Figures \ref{fig:loaded0pt6_iter_vs_rate} and
 \ref{fig:loaded0pt6_decisions}, as well as Table \ref{tab:loaded0pt6_iter_vs_rate},
 which are similar to those presented in the fair coin case in
 Section \ref{sec:fair_coin}.
 
 We see that for all three algorithms there is a 0\% FPR.
 The HDI+ROPE algorithm, however, is highly biased with a mean
-success rate at stop of 64.4\%. This can be explained by the all of experiments
-which stopped fairly early. Both of the the precision based algorithms result in
-unbiased outcomes.
+success rate at stop of 64.4\%. This can be explained by the many experiments
+which stopped fairly early resulting in a mean stop iteration of $\sim \overline{n}=268$ (with a large standard deviation of $\sigma_n=291$)
+which is half the precision goal value of $N_{\theta_{\rm true}}=575.2$.
 
-We see that the Precision is the Goal algorithm, is still quite undecisive at a rate of 29.2\%
-of experiments being inconclusive.
+Both of the the precision based algorithms result in
+unbiased outcomes. That said, PitG is still quite undecisive at a rate of 29.2\%
+where ePitG is even more decicive at a rate of 99.8\% (for the fair coint it was 98.4\% decisive).
+In this case the average ePitG requires only 10.7\% more samples than PitG, on average.
 
-TODO: add calculation of the expected stop iteration for the Precision is the Goal algorithm for the 
-inconclusive and conclusive
-
+The apparent symmetry in the fair coin Figure \ref{fig:fair_iter_vs_rate} around
+its true value of $\theta_{\rm true}=0.5$ is, as expected, not present in the loaded coin case in Figure \ref{fig:loaded0pt6_iter_vs_rate}.
+This, e.g, manifests in the sharp slope of the PitG blue circles which assymptote towards the 
+precision goal value of $N_{\theta_{\rm true}}=575.2$ (dashed vertical line) from above ($\hat{\theta}\ge \theta_{\rm true}$) and not from the bottom.
 
 
 \begin{figure}[h!]
   \centering
   \includegraphics[width=1\textwidth]{loaded0pt6_experiments_iter_vs_rate.png}
-  \caption{Similar to Figure \ref{fig:loaded_iter_vs_rate} but with
+  \caption{Similar to Figure \ref{fig:fair_iter_vs_rate} but with
   loaded coin $\theta_{\rm true}=0.6$.
   Small symbols are individual experiment outcomes. Large are experiments
   mean values. When using HDI+ROPE as the stop criterion results in the red squares.
   Precision is the Goal as the criterion results in the blue circles
-  and the Enhanced PitG as the green Xs. $\theta_{\rm true}$ is the solid line and
-  the ROPE is the dashed lines. Summary stats are in Table \ref{tab:fair_iter_vs_rate}. TK: analytical results
+  and the Enhanced PitG as the green Xs. $\theta_{\rm true}$ is the horizontal solid line and
+  the ROPE is the horiztonal dashed lines. Summary stats are in Table \ref{tab:fair_iter_vs_rate}. TK: analytical results
   }
   \label{fig:loaded0pt6_iter_vs_rate}
 \end{figure}
@@ -141,7 +137,7 @@ inconclusive and conclusive
     ePitG & 0.0	& 0.998	& 0.998	& 0.002	& 634.9	& 149	& 0.6034	 & 0.0174 \\
     \hline
   \end{tabular}
-  \caption{Similar to Table \ref{tab:fair_iter_vs_rate} but for $\theta_{\rm true}=0.6$ Statistic summaries of 500 experiments of the three stop criteria shown in
+  \caption{Similar to Table \ref{tab:fair_iter_vs_rate} but for $\theta_{\rm true}=0.6$. Statistic summaries of 500 experiments of the three stop criteria shown in
   Figure \ref{fig:fair_iter_vs_rate}. {\it Accept}
   is the fraction of experiments which results in acceptence of $\theta_{\rm null}$,
   and similar in reverse for {\it Reject}. {\it Conclusive} is the sum of Accept
@@ -155,7 +151,8 @@ inconclusive and conclusive
 \begin{figure}[h!]
   \centering
   \includegraphics[width=1\textwidth]{loaded0pt6_experiment_decision_rates.png}
-  \caption{Similar information as in Figure \ref{fig:fair_iter_vs_rate} but focusing on
+  \caption{Similar to Figure \ref{fig:fair_decisions} but for $\theta_{\rm true}=0.6$. 
+    It contains the same information as in Figure \ref{fig:loaded0pt6_iter_vs_rate} but focusing on
   the distribution of decisions. Left panel is for HDI+ROPE. Right panel are both
   precision based methods. Horizontal axis- iteration. Vertical axis- proportion of
   decisions made up to (and including) each iteration. The sum of Reject (red dashed),
@@ -166,7 +163,7 @@ inconclusive and conclusive
 \end{figure}
 
 
-\subsubsection{$\theta_{\rm true}=0.57, 0.53$}
+\subsection{Close to the ROPE ($\theta_{\rm true}=0.53, 0.57$)}
 
 We now explore the cases of $\theta_{\rm true}=0.57$ and $0.53$
 where we expect a lot of inconclusive outcomes due to straddlers of the ROPE.
@@ -180,8 +177,8 @@ where we expect a lot of inconclusive outcomes due to straddlers of the ROPE.
   Small symbols are individual experiment outcomes. Large are experiments
   mean values. When using HDI+ROPE as the stop criterion results in the red squares.
   Precision is the Goal as the criterion results in the blue circles
-  and the Enhanced PitG as the green Xs. $\theta_{\rm true}$ is the solid line and
-  the ROPE is the dashed lines. Summary stats are in Table \ref{tab:fair_iter_vs_rate}. TK: analytical results
+  and the Enhanced PitG as the green Xs. $\theta_{\rm true}$ is the solid horizontal line and
+  the ROPE is the horizontaldashed lines. Summary stats are in Table \ref{tab:fair_iter_vs_rate}. TK: analytical results
   }
   \label{fig:loaded0pt57_iter_vs_rate}
 \end{figure}
