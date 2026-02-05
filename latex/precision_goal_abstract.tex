@@ -1,29 +1,4 @@
-Sequential hypothesis testing enables the continuous collection of data until enough
-evidence is obtained to make a decision, rather than predetermining a sample
-size.
-Common approaches rely on accept/reject decision criteria as stopping rules,
-which can introduce {\it confirmation bias} due to an unrepresentative sequence which is
-likely in smaller samples.
-While this issue is often associated with the Frequentist {\it p-value} heuristic,
-it also occurs in popular Bayesian criteria.
-To address this, a predetermined posterior accuracy has been proposed
-as a stopping criterion, separate from the decision criterion.
-Demonstrating on dichotomous sampling \cite{kruschke2015doing} showed that
-defining in advance the
-posterior precision goal as a stopping criterion eliminates the confirmation bias.
-While this {\it Precision is the Goal} method is unbiassed,
-practical challenges arise when the posterior distribution does not clearly indicate
-whether the null hypothesis should be accepted or rejected—leading to frequent {\it inconclusive}
-outcomes.
-To mitigate this, we propose a conservative variant called
-{\it Enhanced Precision Is The Goal} which requires simultaneously meeting both the
-precision objective and the decision criterion.
-We tested this approach on synthetic data and found it significantly reduces
-inconclusiveness. E.g, when testing for a fair coin the original method may result in 61\%
-inconclusive outcomes where our variant just 1.6\%—at the cost of a moderate increase in sample
-size (approximately 22\% larger).
-We also provide an online interactive calculator, pseudo and Python code to facilitate the adoption of the
-approach in planning data collection and interpretation.
+Sequential hypothesis testing allows for continuous data collection until sufficient evidence is obtained, avoiding the need for predetermined sample sizes. However, using decision metrics as stopping rules can introduce confirmation bias in both Frequentist and Bayesian frameworks. Approaches that separate the stopping criterion from the decision criterion, such as "Precision is the Goal", effectively eliminate this bias by stopping only when a target posterior precision is reached. While this ensures unbiased decisions, we demonstrate that it frequently yields inconclusive outcomes, both when substantial effects exist and---most notably---when the null hypothesis is true. To address this limitation, we propose "Enhanced Precision is the Goal", a variant that requires simultaneously meeting both the precision target and the decision criterion. Using synthetic dichotomous data, we show that this reduces inconclusive results from 61\% to 1.6\% in fair coin experiments ($\theta_{\rm true}=0.5$) and from 29\% to 0.2\% in the $\theta_{\rm true}=0.6$ scenario. This improvement comes at the cost of a moderate increase in average sample size (approximately 22\% and 11\% respectively). We provide an online interactive calculator and open-source code to facilitate the effective planning and interpretation of sequential experiments.
 
 
 \
