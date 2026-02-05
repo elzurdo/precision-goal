@@ -9,7 +9,12 @@ To address this, \cite{kruschke2015doing} advocated for a method that strictly d
 
 While scientific incentives often favor the discovery of new effects, the rigorous confirmation of the null hypothesis is equally critical in fields ranging from bioequivalence trials for generic drugs \citep{karalis2012} to ``do-no-harm'' regression testing in software deployment and determining the futility of expensive public policy interventions. In this paper, we propose an enhanced approach—``Enhanced Precision is the Goal'' (ePitG)—which recouples the stopping and decision rules in a conservative manner. Specifically, ePitG requires that \textit{both} the precision goal (stopping rule) and a conclusive hypothesis outcome (decision rule) be met simultaneously to cease data collection.
 
-Examining on similar dichotomous data as in the \cite{kruschke2015doing} setup, this more conservative rule substantially reduces the rate of inconclusive outcomes (e.g., from ~60\% to $<$2\% in our experiments), with only a moderate increase in average sample size. We demonstrate that ePitG is especially effective when the null hypothesis is true, while remaining nearly indistinguishable from PitG in scenarios where the null can be strongly rejected.
+Examining on dichotomous data this more conservative rule substantially reduces the rate
+of inconclusive outcomes (e.g., in the case of the null hypothesis being true from ~60\% to $<$2\%),
+with only a moderate increase in average sample size (~22\%).
+We demonstrate that ePitG is especially effective not only when the null hypothesis is true,
+but also ensures decisive outcomes in scenarios where the null is false,
+yielding a robust decision mechanism across experimental conditions.
 
 Our results, based on simulations with dichotomous data, provide practical guidance for researchers seeking to balance efficiency, bias, and conclusiveness in sequential hypothesis testing. We also provide analytical insights, code, and tools to facilitate adoption of the method in applied settings.
 
