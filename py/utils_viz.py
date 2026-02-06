@@ -67,7 +67,7 @@ def _get_sequence_idx(sequence):
 
 def plot_sequence_experiment_cumsum_average(sequence, success_rate_true=None, xlabel="trial no.", msize=5):
     if success_rate_true:
-        theta_true_str = r"$\theta_{true}$"
+        # theta_true_str = r"$\theta_{\rm true}$"
         title = f" {theta_true_str} = {success_rate_true:0.2f}"
     else:
         title = None
@@ -165,7 +165,7 @@ def plot_sequence_experiment_hdi_rope_combo_results(sequence, success_rate_true,
     plt.annotate(f"rope max={rope_max:0.2f}", xy=(sequence_idx[-500], rope_max + 0.02), color="black", alpha=0.7)
     plt.ylabel("cumsum average\nHDI 95% CI")
     plt.ylim(success_rate_true - 0.3, success_rate_true + 0.3)
-    theta_null_str = r"$\theta_{null}$"
+    # theta_null_str = r"$\theta_{\rm null}$"
     title = f" {theta_null_str} = {success_rate_null:0.2f}"
     plt.title(title)
     plt.xlabel(xlabel)
@@ -234,7 +234,7 @@ def plot_decision_rates_nhst(n_experiments, iteration_stopping_on_or_prior):
     xlabel = "trial no."
     ylabel = f"decision rate at {xlabel} (or lower)"
     title = f"{n_experiments:,} experiments"
-    theta_null_str = r"$\theta_{null}$"
+    # theta_null_str = r"$\theta_{\rm null}$"
 
     sr_iteration_stopping_on_or_prior = pd.Series(iteration_stopping_on_or_prior)
     sr_nhst_reject = sr_iteration_stopping_on_or_prior / n_experiments
@@ -254,7 +254,7 @@ def plot_decision_rates(n_experiments, df_decision_counts):
     xlabel = "trial no."
     ylabel = f"decision rate at {xlabel} (or lower)"
     title = f"{n_experiments:,} experiments"
-    theta_null_str = r"$\theta_{null}$"
+    #theta_null_str = r"$\theta_{null}$"
 
     plt.plot(df_decision_counts.index, df_decision_counts['accept'] / n_experiments, color="green", label=f"accept {theta_null_str}", linewidth=linewidth, linestyle='-.')
     plt.plot(df_decision_counts.index, df_decision_counts['reject'] / n_experiments, color="red", label=f"reject {theta_null_str}", linewidth=linewidth * 0.8)
@@ -447,6 +447,12 @@ def scatter_stop_iter_sample_rate(method_df_stats, rope_min=None, rope_max=None,
     if method_names is None:
         method_names = ["hdi_rope", "pitg", "epitg"]
 
+    if success_rate_true:
+        #theta_true_str = r"$\theta_{\rm true}$"
+        title = f" {theta_true_str} = {success_rate_true:0.2f}"
+    else:
+        title = ""
+
     fig = plt.figure(figsize=(FIG_WIDTH * 1.5, FIG_HEIGHT * 1.5))
     
     gs = gridspec.GridSpec(2, 2, width_ratios=[1, scatter_ratio], height_ratios=[scatter_ratio, 1], 
@@ -531,7 +537,7 @@ def scatter_stop_iter_sample_rate(method_df_stats, rope_min=None, rope_max=None,
 
     if precision_goal is not None:
         n_true_str = r"$N_{\theta_\mathrm{true}}$"
-        n_hypo_str = r"$N_{\theta_0}$"
+        n_hypo_str = r"$N_{\theta_\mathrm{null}}$"
         n_precision_goal_true, n_precision_goal_hypothesis = None, None
         if (success_rate_true is not None):
             n_precision_goal_true = binomial_rate_ci_width_to_sample_size(success_rate_true, precision_goal)
@@ -573,12 +579,13 @@ def scatter_stop_iter_sample_rate(method_df_stats, rope_min=None, rope_max=None,
     ax_left.set_xlabel("density")
 
     # Legend on Scatter
-    ax_scatter.legend(title=f"{last_df_len:,} experiments", loc="upper right", fontsize=10)
+    ax_scatter.legend(title=None, loc="upper right", fontsize=10)
 
-    if title is not None:
-        # Adjust title position to not overlap with top-left empty space if needed
-        # but suptitle usually handles it well.
-        plt.suptitle(title, y=0.95)
+    # if title is not None:
+    #     # Adjust title position to not overlap with top-left empty space if needed
+    #     # but suptitle usually handles it well.
+    title += f" ({last_df_len:,} experiments)"
+    plt.suptitle(title, y=0.95)
 
     return fig
 
