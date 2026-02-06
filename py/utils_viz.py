@@ -19,6 +19,8 @@ theta_str = r"$\theta$"
 theta_null_str = r"$\theta_{\rm null}$"
 theta_true_str = r"$\theta_{\rm true}$"
 
+ALGO_COLORS = {"pitg": "blue", "epitg": "lightgreen", "hdi_rope": "red"}
+
 def plot_success_rates(success, failure, ci_fraction=CI_FRACTION,
                        min_psuccess=0.85, max_psucess=1.,d_psuccess=0.0001,
                        color="purple", format='-', label=None, fill=False, display_ci=True,
@@ -440,7 +442,6 @@ def scatter_stop_iter_sample_rate(method_df_stats, rope_min=None, rope_max=None,
     """
     import matplotlib.gridspec as gridspec
 
-    method_colors = {"pitg": "blue", "epitg": "lightgreen", "hdi_rope": "red"}
     method_markers = {"pitg": "o", "epitg": "x", "hdi_rope": "s"}
     method_mean_markers = {"pitg": "$\u25EF$", "epitg": "x", "hdi_rope": "$\u25A1$"}
 
@@ -474,7 +475,7 @@ def scatter_stop_iter_sample_rate(method_df_stats, rope_min=None, rope_max=None,
         df_stats = method_df_stats[method_name].copy()
         last_df_len = len(df_stats)
         
-        color, marker = method_colors[method_name], method_markers[method_name]
+        color, marker = ALGO_COLORS[method_name], method_markers[method_name]
         mean_marker = method_mean_markers[method_name]
         label = method_pretty_short_name[method_name]
         label_mean = f"{method_pretty_short_name[method_name]} mean"

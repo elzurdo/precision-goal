@@ -255,16 +255,28 @@ def report_success_rates(df_stats):
         if len(df_group) == 0:
             continue
             
-        series = df_group['success_rate']
+        sr_success_rate = df_group['success_rate']
+        sr_stop_iter = df_group['decision_iteration']
+        sr_conclusive = df_group['conclusive'].astype(int) # convert boolean to int for stats
         
         records.append({
             "group": group_name,
-            "count": int(series.count()),
-            "mean": series.mean(),
-            "std": series.std(),
-            "p25": series.quantile(0.25),
-            "median": series.median(),
-            "p75": series.quantile(0.75)
+            "count": int(sr_success_rate.count()),
+            "success_frac": sr_success_rate.count() / len(df_stats),
+            # success rate statistics
+            "success_mean": sr_success_rate.mean(),
+            "success_std": sr_success_rate.std(),
+            "success_p25": sr_success_rate.quantile(0.25),
+            "success_median": sr_success_rate.median(),
+            "success_p75": sr_success_rate.quantile(0.75),
+            # stop iteration statistics
+            "stop_iter_mean": sr_stop_iter.mean(),
+            "stop_iter_std": sr_stop_iter.std(),
+            "stop_iter_p25": sr_stop_iter.quantile(0.25),
+            "stop_iter_median": sr_stop_iter.median(),
+            "stop_iter_p75": sr_stop_iter.quantile(0.75),
+            # conclusive statistics
+            "conclusive_mean": sr_conclusive.mean(),
         })
         
     return pd.DataFrame(records).set_index("group")
@@ -307,7 +319,7 @@ def run_simulations_and_analysis_report(binary_accounting: BinaryAccounting, suc
     # plt.show()
     hypothesis.plot_stop_iter_sample_rates(success_rate=synth.success_rate, title=None)
     # plt.show()
-    report_success_rates_multiple_algos(hypothesis.method_df_stats.copy())
+    df_stats = report_success_rates_multiple_algos(hypothesis.method_df_stats.copy())
 
-    return {"synth": synth, "hypothesis": hypothesis}
+    return {"synth": synth, "hypothesis": hypothesis, "df_stats": df_stats}
 
