@@ -34,6 +34,8 @@ We expand this analysis to $M=500$ experiments, displaying outcomes in Figure \r
 
 In Figure \ref{fig:fair_iter_vs_rate}, the large symbols representing the means of 500 experiments show that, on average, all methods yield unbiased outcomes (see the $\overline{\theta}$ column in Table \ref{tab:fair_iter_vs_rate}).
 
+TODO: consider using median and percentiles instead of mean and standard deviation, as these are more robust to outliers. This is especially relevant for the HDI+ROPE method, which has a large variance in stop iteration due to early stopping on extreme samples.
+
 \begin{table}[h!]\label{tab:fair_iter_vs_rate}
   \begin{center}
   \begin{tabular}{c|c|c|c|c|c|c|c|c}

@@ -60,7 +60,7 @@ class BinomialHypothesis():
 
         return df_experiment_results
 
-    def plot_decision_rates(self, success_rate=None, viz_epitg=True):
+    def plot_decision_rates(self, success_rate=None, viz_epitg="separate"):
         plot_multiple_decision_rates_separate(self.method_df_iteration_counts, success_rate, self.n_experiments, viz_epitg=viz_epitg, iteration_values=None)
 
     def plot_stop_iter_sample_rates(self, success_rate=None, title=None):
