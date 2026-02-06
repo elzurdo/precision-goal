@@ -232,5 +232,82 @@ def stop_decision_multiple_experiments_pitg(samples, precision_goal, bayes_detai
 
     return experiment_stop_results, df_decision_counts
 
+from utils_experiments import (
+    BinaryAccounting,
+    BinomialSimulation,
+    BinomialHypothesis,
+)
 
+def report_success_rates(df_stats):
+    """
+    Computes summary statistics for success_rate across different decision subgroups.
+    """
+    subgroups = {
+        "overall": df_stats,
+        "conclusive": df_stats.query("conclusive"),
+        "inconclusive": df_stats.query("inconclusive"),
+        "accept": df_stats.query("accept"),
+        "reject": df_stats.query("reject")
+    }
+    
+    records = []
+    for group_name, df_group in subgroups.items():
+        if len(df_group) == 0:
+            continue
+            
+        series = df_group['success_rate']
+        
+        records.append({
+            "group": group_name,
+            "count": int(series.count()),
+            "mean": series.mean(),
+            "std": series.std(),
+            "p25": series.quantile(0.25),
+            "median": series.median(),
+            "p75": series.quantile(0.75)
+        })
+        
+    return pd.DataFrame(records).set_index("group")
+
+def report_success_rates_multiple_algos(method_df_stats):
+    """
+    Aggregates success rate statistics for multiple algorithms into a single DataFrame.
+    """
+    all_reports = []
+    
+    for algo_name, df_stats in method_df_stats.items():
+        # Get stats for this algorithm
+        df_report = report_success_rates(df_stats)
+        
+        # We generally care most about the 'overall' statistics for comparison, 
+        # or we might want a multi-index (Algo, Group). 
+        # Based on the user request "each row is a different algo_name", 
+        # it implies comparing apples-to-apples (likely 'overall' or weighted stats).
+        # However, information about 'conclusive' vs 'inconclusive' is vital.
+        # Let's create a MultiIndex DataFrame to capture everything cleanly.
+        
+        df_report["algorithm"] = algo_name
+        all_reports.append(df_report)
+        
+    if not all_reports:
+        return pd.DataFrame()
+
+    df_combined = pd.concat(all_reports).reset_index().set_index(["algorithm", "group"])
+    
+    from IPython.display import display
+    display(df_combined)
+    
+    return df_combined
+
+def run_simulations_and_analysis_report(binary_accounting: BinaryAccounting, success_rate_true: float=0.5, success_rate_null: float=0.5, dsuccess_rate: float=0.05, n_experiments: int=2000):
+    synth = BinomialSimulation(success_rate=success_rate_true, n_experiments=n_experiments)
+    hypothesis = BinomialHypothesis(success_rate_null=success_rate_null,dsuccess_rate=dsuccess_rate)
+    hypothesis.run_hypothesis_on_experiments(synth.experiments, binary_accounting)
+    hypothesis.plot_decision_rates(synth.success_rate)
+    # plt.show()
+    hypothesis.plot_stop_iter_sample_rates(success_rate=synth.success_rate, title=None)
+    # plt.show()
+    report_success_rates_multiple_algos(hypothesis.method_df_stats.copy())
+
+    return {"synth": synth, "hypothesis": hypothesis}
 
