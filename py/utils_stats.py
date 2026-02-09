@@ -281,7 +281,7 @@ def report_success_rates(df_stats):
         
     return pd.DataFrame(records).set_index("group")
 
-def report_success_rates_multiple_algos(method_df_stats):
+def report_success_rates_multiple_algos(method_df_stats, viz=True):
     """
     Aggregates success rate statistics for multiple algorithms into a single DataFrame.
     """
@@ -307,19 +307,29 @@ def report_success_rates_multiple_algos(method_df_stats):
     df_combined = pd.concat(all_reports).reset_index().set_index(["algorithm", "group"])
     
     from IPython.display import display
-    display(df_combined)
+    
+    if viz:
+        display(df_combined)
     
     return df_combined
 
-def run_simulations_and_analysis_report(binary_accounting: BinaryAccounting, success_rate_true: float=0.5, success_rate_null: float=0.5, dsuccess_rate: float=0.05, n_experiments: int=2000):
-    synth = BinomialSimulation(success_rate=success_rate_true, n_experiments=n_experiments)
-    hypothesis = BinomialHypothesis(success_rate_null=success_rate_null,dsuccess_rate=dsuccess_rate)
+def run_simulations_and_analysis_report(binary_accounting: BinaryAccounting,
+                                        success_rate_true: float=0.5,
+                                        success_rate_null: float=0.5,
+                                        dsuccess_rate: float=0.05,
+                                        n_samples: int=1500,
+                                        n_experiments: int=2000,
+                                        seed: int=42,
+                                        rope_precision_fraction: float=0.08,
+                                        viz=True,
+                                        ):
+    synth = BinomialSimulation(success_rate=success_rate_true, n_experiments=n_experiments, n_samples=n_samples,seed=seed)
+    hypothesis = BinomialHypothesis(success_rate_null=success_rate_null,dsuccess_rate=dsuccess_rate, rope_precision_fraction=rope_precision_fraction)
     hypothesis.run_hypothesis_on_experiments(synth.experiments, binary_accounting)
-    hypothesis.plot_decision_rates(synth.success_rate)
-    # plt.show()
-    hypothesis.plot_stop_iter_sample_rates(success_rate=synth.success_rate, title=None)
-    # plt.show()
-    df_stats = report_success_rates_multiple_algos(hypothesis.method_df_stats.copy())
+    if viz:
+        hypothesis.plot_decision_rates(synth.success_rate)
+        hypothesis.plot_stop_iter_sample_rates(success_rate=synth.success_rate, title=None)
+    df_stats = report_success_rates_multiple_algos(hypothesis.method_df_stats.copy(), viz=viz)
 
     return {"synth": synth, "hypothesis": hypothesis, "df_stats": df_stats}
 
