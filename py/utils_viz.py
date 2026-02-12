@@ -737,3 +737,80 @@ def plot_parity_line(ax=None):
     lims = [np.min([xlims[0], ylims[0]]), np.max([xlims[1], ylims[1]])]
 
     ax.plot(lims, lims, "k--", linewidth=1)
+
+def plot_success_by_truth(algo_stats_df, dsuccess_rate, subset_name = "conclusive"):
+
+    assert subset_name in ["conclusive", "overall"]
+
+    if  "conclusive" == subset_name:
+        title = "Conclusive Only"
+    elif "overall" == subset_name:
+        title = "Conclusive + Inconclusive"
+
+    truth_values = np.array(algo_stats_df[subset_name]["epitg"]["success_median"].index.tolist())
+
+    rope_mins = truth_values - dsuccess_rate
+    rope_maxs = truth_values + dsuccess_rate
+
+    plt.title(title, fontsize=20)
+    plt.fill_between(truth_values, algo_stats_df[subset_name]["hdi_rope"]["success_p25"], algo_stats_df[subset_name]["hdi_rope"]["success_p75"], color=ALGO_COLORS["hdi_rope"], alpha=0.2, label=f"{METHOD_SHORT['hdi_rope']}")
+
+    plt.fill_between(truth_values, algo_stats_df[subset_name]["pitg"]["success_p25"], algo_stats_df[subset_name]["pitg"]["success_p75"], color=ALGO_COLORS["pitg"], alpha=0.5, label=f"{METHOD_SHORT['pitg']}", hatch="/")
+    plt.fill_between(truth_values, algo_stats_df[subset_name]["epitg"]["success_p25"], algo_stats_df[subset_name]["epitg"]["success_p75"], color=ALGO_COLORS["epitg"], alpha=0.5, label=f"{METHOD_SHORT['epitg']}", hatch="\\")
+    #plt.plot(algo_stats_df[subset_name]["epitg"]["success_mean"],color=ALGO_COLORS["epitg"])
+    #plt.plot(algo_stats_df[subset_name]["pitg"]["success_mean"], color=ALGO_COLORS["pitg"])
+
+    plt.plot(truth_values, rope_mins, color="gray", linestyle=":")
+    plt.plot(truth_values, rope_maxs, color="gray", linestyle=":")
+    plt.plot(truth_values, truth_values, color="gray", linestyle=None, alpha=1)
+    plt.axvline(x=0.5 + dsuccess_rate, color="black", linestyle="--", alpha=0.5)
+
+    plt.xlabel(r"$\theta_{\rm true}$")
+    plt.ylabel(r"$\hat{\theta}$")
+    plt.legend()
+
+
+    plt.grid(alpha=0.3)
+
+
+ALGO_LINEWIDTH =  {"hdi_rope":1, "pitg": 2, "epitg":3}
+
+def plot_success_by_truth_diff(algo_stats_df, dsuccess_rate, subset_name="conclusive", success_metrics=["success_median"]):
+    METRIC_LINESTYLE = {"success_median": None, "success_mean": "--"}
+
+    truth_values = np.array(algo_stats_df[subset_name]["epitg"]["success_median"].index.tolist())
+
+    for success_metric in success_metrics:
+        for algo_name in METHOD_SHORT.keys():
+            result_diff = algo_stats_df[subset_name][algo_name][success_metric] - truth_values
+
+            label = f"{METHOD_SHORT[algo_name]}"
+            plt.plot(truth_values, result_diff, color=ALGO_COLORS[algo_name], linestyle=METRIC_LINESTYLE[success_metric], alpha=0.7, label=label, linewidth=ALGO_LINEWIDTH[algo_name])
+
+
+    # hdirope_median_diff = algo_stats_df[subset_name]["hdi_rope"]["success_median"] - xvalues
+    # hdirope_mean_diff = algo_stats_df[subset_name]["hdi_rope"]["success_mean"] - xvalues
+    # epitg_median_diff = algo_stats_df[subset_name]["epitg"]["success_median"] - xvalues
+    # pit_median_diff = algo_stats_df[subset_name]["pitg"]["success_median"] - xvalues
+
+    # epitg_mean_diff = algo_stats_df[subset_name]["epitg"]["success_mean"] - xvalues
+    # pit_mean_diff = algo_stats_df[subset_name]["pitg"]["success_mean"] - xvalues
+
+    
+    # plt.plot(xvalues, hdirope_median_diff, color=ALGO_COLORS["hdi_rope"], linestyle=None, alpha=0.7, label=f"{ALGO_NAME['hdi_rope']} median")
+
+    # plt.plot(xvalues, pit_mean_diff, color=ALGO_COLORS["pitg"], linestyle="--", alpha=0.4, label=f"{ALGO_NAME['pitg']} mean", linewidth=ALGO_LINEWIDTH["pitg"])
+    # plt.plot(xvalues, pit_median_diff, color=ALGO_COLORS["pitg"], linestyle=None, alpha=0.7, label=f"{ALGO_NAME['pitg']} median", linewidth=ALGO_LINEWIDTH["pitg"])
+
+    # plt.plot(xvalues, epitg_mean_diff, color=ALGO_COLORS["epitg"], linestyle="--", alpha=0.4, label=f"{ALGO_NAME['epitg']} mean", linewidth=ALGO_LINEWIDTH["epitg"])
+    # plt.plot(xvalues, epitg_median_diff, color=ALGO_COLORS["epitg"], linestyle=None, alpha=0.7, label=f"{ALGO_NAME['epitg']} median", linewidth=ALGO_LINEWIDTH["epitg"])
+
+    plt.axhline(y=0, color="black", linestyle=":", alpha=0.5)
+    plt.xlabel(r"$\theta_{\rm true}$")
+    plt.ylabel(r"$\hat{\theta} - \theta_{\rm true}$")
+    plt.legend()
+    plt.axvline(x=0.5 + dsuccess_rate, color="black", linestyle="--", alpha=0.5)
+
+    plt.ylim(-dsuccess_rate,dsuccess_rate)
+
+    plt.grid(alpha=0.3)
