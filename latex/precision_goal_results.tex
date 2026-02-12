@@ -191,3 +191,30 @@ where we expect a lot of inconclusive outcomes due to straddlers of the ROPE.
   }
   \label{fig:loaded0pt57_decisions}
 \end{figure}
+
+\subsection{Results Summary}
+
+We next examine trends of these algorithms when conducting the experiments between
+$\theta_{\rm true}=0.5$ through $0.65$ at intervals of $0.1$. \footnote{Due to symmetry of the problem the results between $\theta_{\rm true}=0.35$ through $0.5$ would mirror the ones shown here.}
+Assuming a null hypothesis of $\theta_{\rm true}=0.5$ we find that the PitG and ePitG
+are effectively the same algorithm as they yields the same results. Below we demonstrate
+where they differ.
+
+Figure \ref{fig:conclusiveness_rates} illustrates the conclusiveness rates of each
+algorithm. All have a similar trends with a minimal extremum at the ROPE upper coundary of $\theta=0.55$ (vertical dashed line).
+As seen in Figures TBD and TBD at $\theta_{\rm true}=0.5$ the HDI+ROPE and ePitG are nearly
+100\% conclusive whereas PitG is less than 40\%. HDI+ROPE and ePitG assymptopt
+to 100\% conclusiveness again at $\theta_{\rm true}=0.6$, whereas for PitG this happens
+at $\theta_{\rm true}=0.65$. Throughout HDI+ROPE is the most conclusive, however, it
+is the most biased.
+
+
+
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=1\textwidth]{conclusive_rates.png}
+  \caption{Conclusiveness Rates.
+  }
+  \label{fig:conclusiveness_rates}
+\end{figure}
