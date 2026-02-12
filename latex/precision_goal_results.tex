@@ -200,6 +200,14 @@ Assuming a null hypothesis of $\theta_{\rm true}=0.5$ we find that the PitG and 
 are effectively the same algorithm as they yields the same results. Below we demonstrate
 where they differ.
 
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=1\textwidth]{conclusive_rates.png}
+  \caption{Conclusiveness Rates.
+  }
+  \label{fig:conclusiveness_rates}
+\end{figure}
+
 Figure \ref{fig:conclusiveness_rates} illustrates the conclusiveness rates of each
 algorithm. All have a similar trends with a minimal extremum at the ROPE upper coundary of $\theta=0.55$ (vertical dashed line).
 As seen in Figures TBD and TBD at $\theta_{\rm true}=0.5$ the HDI+ROPE and ePitG are nearly
@@ -209,12 +217,16 @@ at $\theta_{\rm true}=0.65$. Throughout HDI+ROPE is the most conclusive, however
 is the most biased.
 
 
-
-
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=1\textwidth]{conclusive_rates.png}
-  \caption{Conclusiveness Rates.
+  \includegraphics[width=1\textwidth]{success_by_truth.png}
+  \caption{Success Rates Compared to True Rates.
+  Left: Results of Conclusive Experiments (for rates see Figure \ref{fig:conclusiveness_rates}).
+  Right: Results of Inconclusive Experiments.
+  Top:  Interquartile ranges (IQR).The solid line is parity with $\theta_{\rm true}$. Dotted lines are the ROPE boundaries. Note that in the Inconclusive Experiments those of HDI+ROPE and ePitG are very narrow.
+  Bottom: Deviations from the truth: Median minus $\theta_{\rm true}$.
   }
-  \label{fig:conclusiveness_rates}
+  \label{fig:success_by_truth}
 \end{figure}
+
+
