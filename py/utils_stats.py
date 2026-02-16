@@ -258,6 +258,8 @@ def report_success_rates(df_stats):
         sr_success_rate = df_group['success_rate']
         sr_stop_iter = df_group['decision_iteration']
         sr_conclusive = df_group['conclusive'].astype(int) # convert boolean to int for stats
+        sr_accept = df_group['accept'].astype(int) # convert boolean to int for stats
+        sr_reject = df_group['reject'].astype(int) # convert boolean to int for stats
         
         records.append({
             "group": group_name,
@@ -277,6 +279,9 @@ def report_success_rates(df_stats):
             "stop_iter_p75": sr_stop_iter.quantile(0.75),
             # conclusive statistics
             "conclusive_mean": sr_conclusive.mean(),
+            # accept/reject statistics
+            "accept_mean": sr_accept.mean(),
+            "reject_mean": sr_reject.mean()
         })
         
     return pd.DataFrame(records).set_index("group")

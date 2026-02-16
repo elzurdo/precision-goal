@@ -209,24 +209,85 @@ where they differ.
 \end{figure}
 
 Figure \ref{fig:conclusiveness_rates} illustrates the conclusiveness rates of each
-algorithm. All have a similar trends with a minimal extremum at the ROPE upper coundary of $\theta=0.55$ (vertical dashed line).
+algorithm where the horizontal axis is the true success rate and the null hypothesis
+is $\theta_{\rm null}=0.5$. 
+As expected, all have a minimal extremum at the ROPE upper coundary of $\theta=0.55$ (vertical dashed line).
 As seen in Figures TBD and TBD at $\theta_{\rm true}=0.5$ the HDI+ROPE and ePitG are nearly
-100\% conclusive whereas PitG is less than 40\%. HDI+ROPE and ePitG assymptopt
+100\% conclusive whereas PitG is less than 40\%. HDI+ROPE and ePitG assymptote
 to 100\% conclusiveness again at $\theta_{\rm true}=0.6$, whereas for PitG this happens
 at $\theta_{\rm true}=0.65$. Throughout HDI+ROPE is the most conclusive, however, it
 is the most biased.
+
+
+
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=1\textwidth]{success_by_truth_conclusive.png}
+  \caption{Experiment success rates by true values.
+  Left:  Interquartile ranges (IQR).The solid line is parity with $\theta_{\rm true}$. Dotted lines are the ROPE boundaries. Note that in the Inconclusive Experiments those of HDI+ROPE and ePitG are very narrow.
+  Right: Deviations from the truth: Median minus $\theta_{\rm true}$.
+  }
+  \label{fig:success_by_truth_conclusive}
+\end{figure}
+
+
+tbd
+
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=1\textwidth]{stop_conclusiveness_ratios.png}
+  \caption{ePitG vs. PitG vs. iteration stop and conclusiveness rates.
+  }
+  \label{fig:stop_conclusiveness_ratios}
+\end{figure}
+
+
+
+Figure \ref{fig:success_by_truth} illustrates the biases of the algorithms.
+In the left panels we demonstrate for all the experiments. We find it instrumentive
+to split these results into two mutually exclusive subsets: conclusive experiments
+(middle panels) and inconclusive (right panels).
+In the top panels we visualise the interquartile ranges of each algorithm
+and in the bottom panels the deviation of the medians from the true values. The ROPE
+upper boundary is highlighted with a vertical dashed line to indicate an important
+inflection point.
+
 
 
 \begin{figure}[h!]
   \centering
   \includegraphics[width=1\textwidth]{success_by_truth.png}
   \caption{Success Rates Compared to True Rates.
-  Left: Results of Conclusive Experiments (for rates see Figure \ref{fig:conclusiveness_rates}).
-  Right: Results of Inconclusive Experiments.
+  Left: Results for all experiments.
+  Center: Results of subset conclusive experiments (for rates see Figure \ref{fig:conclusiveness_rates}).
+  Right: Results of subset inconclusive experiments.
   Top:  Interquartile ranges (IQR).The solid line is parity with $\theta_{\rm true}$. Dotted lines are the ROPE boundaries. Note that in the Inconclusive Experiments those of HDI+ROPE and ePitG are very narrow.
   Bottom: Deviations from the truth: Median minus $\theta_{\rm true}$.
   }
   \label{fig:success_by_truth}
 \end{figure}
 
+The left panels show that the PitG yields unbiassed results. \cite{kruschke2015doing}
+show this for $\theta_{\rm true}=0.5$ and $0.65$ and we show this for the full range.
+
+If one differentiates between conclusive and inconclusive outcome the PitG yields
+between $\hat{\theta}=0.55-0.63$ positively biassed results. The biases
+
+
+
+The left panels demonstrate that when $\theta_{\rm true}=0.5$ all three algorithms,
+when conclusive, yield unbiased outcomes. This was seen in Figure X and may be explained
+due to the symmetric nature of this particular expriement. For other $\theta_{\rm true}$
+values within the ROPE we see that, in the conclusive case, they, on average, bias towards
+the null hypothesis $\theta_{\rm null}=0.5$ and hence correctly accept it.
+
+The left panels demonstrate that even though HDI+ROPE is the most conclusive when
+$\theta_{\rm true}$ is larger than the ROPE boundary it is much more biassed.
+As explained in Section TBD this is due to outliers that happen to satisfy the location
+condition without satisfying the precision. Even though this approach yields the
+correct answer of rejecting the null hypothesis it raises concern of the quoted
+result $\hat{\theta}$. When accounting for the precision objective we see that beyond
+the ROPE boundary the PitG performs better than
 

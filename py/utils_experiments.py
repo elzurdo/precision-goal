@@ -209,7 +209,7 @@ def iteration_counts_to_df(roperesult_iteration, experiments):
     return df
 
 
-def stop_decision_multiple_experiments_multiple_methods(samples, rope_min, rope_max, precision_goal, binary_accounting=None, min_iter=30, viz=True):
+def stop_decision_multiple_experiments_multiple_methods(samples, rope_min, rope_max, precision_goal, binary_accounting=None, min_iter=30, viz=False):
     # For each method and rope result type creating tally of outcomes
     method_names = ["pitg", "epitg", "hdi_rope"]
     n_samples = samples.shape[1]

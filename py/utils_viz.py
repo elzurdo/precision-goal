@@ -750,11 +750,11 @@ def plot_success_by_truth(algo_stats_df, dsuccess_rate, subset_name = "conclusiv
     assert subset_name in ["conclusive", "inconclusive", "overall"]
 
     if  "conclusive" == subset_name:
-        title = "Conclusive Experiments"
+        title = "Conclusive"
     elif "overall" == subset_name:
         title = "Conclusive + Inconclusive"
     elif "inconclusive" == subset_name:
-        title = "Inconclusive Experiments"
+        title = "Inconclusive"
 
     truth_values = np.array(algo_stats_df[subset_name]["epitg"]["success_median"].index.tolist())
 
@@ -768,25 +768,34 @@ def plot_success_by_truth(algo_stats_df, dsuccess_rate, subset_name = "conclusiv
     }
 
     plt.title(title, fontsize=20)
-    for algo_name in METHOD_SHORT:
+    for algo_name in METHOD_SHORT.keys():
         #this_truths = algo_stats_df[subset_name][algo_name].query("success_p25 == success_p25").index.tolist()
         this_truths = algo_stats_df[subset_name][algo_name].query("count >= 20").index.tolist()
 
         label = f"{METHOD_SHORT[algo_name]}"
-        try:
-            plt.fill_between(this_truths, algo_stats_df[subset_name][algo_name].loc[this_truths, "success_p25"],
-                            algo_stats_df[subset_name][algo_name].loc[this_truths,"success_p75"],
-                            color=ALGO_COLORS[algo_name], alpha=algo_alpha[algo_name], label=label,
-                            hatch=ALGO_HATCH[algo_name]
-                            )
-        except:
-            df_aux = algo_stats_df[subset_name][algo_name].loc[this_truths]
-            df_aux["diff"] = df_aux["success_p75"] - df_aux["success_p25"]
-            display(df_aux[["count", "stop_iter_median" ,"success_p25", "success_median","success_p75","diff" ]])
 
-            plt.plot(this_truths, algo_stats_df[subset_name][algo_name].loc[this_truths, "success_median"], 
-                     color=ALGO_COLORS[algo_name], alpha=algo_alpha[algo_name],
-                     label=label)
+        try:
+            plt.fill_between(
+                this_truths, 
+                algo_stats_df[subset_name][algo_name].loc[this_truths, "success_p25"].astype(float),
+                algo_stats_df[subset_name][algo_name].loc[this_truths,"success_p75"].astype(float),
+                color=ALGO_COLORS[algo_name], 
+                alpha=algo_alpha[algo_name], 
+                label=label,
+                hatch=ALGO_HATCH[algo_name]
+            )
+            
+        except Exception as e:
+            print(f"Error plotting {algo_name}: {e}")
+            df_aux = algo_stats_df[subset_name][algo_name].loc[this_truths]
+            try:
+                df_aux["diff_pcnt"] = (df_aux["success_p75"] - df_aux["success_p25"]) * 100.
+                display(df_aux[["count", "stop_iter_median" ,"success_p25", "success_median","success_p75","diff_pcnt" ]])
+            except:
+                pass
+
+        plt.plot(this_truths, algo_stats_df[subset_name][algo_name].loc[this_truths, "success_p25"], color=ALGO_COLORS[algo_name], alpha=1.)
+        plt.plot(this_truths, algo_stats_df[subset_name][algo_name].loc[this_truths, "success_p75"], color=ALGO_COLORS[algo_name], alpha=1.)
 
 
     #plt.fill_between(truth_values, algo_stats_df[subset_name]["hdi_rope"]["success_p25"], algo_stats_df[subset_name]["hdi_rope"]["success_p75"], color=ALGO_COLORS["hdi_rope"], alpha=0.2, label=f"{METHOD_SHORT['hdi_rope']}")
@@ -807,6 +816,7 @@ def plot_success_by_truth(algo_stats_df, dsuccess_rate, subset_name = "conclusiv
 
 
     plt.grid(alpha=0.3)
+    plt.ylim(0.4, 0.75)
 
 
 ALGO_LINEWIDTH =  {"hdi_rope":1, "pitg": 2, "epitg":3}
@@ -847,6 +857,10 @@ def plot_success_by_truth_diff(algo_stats_df, dsuccess_rate, subset_name="conclu
     plt.legend(title="median - true")
     plt.axvline(x=0.5 + dsuccess_rate, color="black", linestyle="--", alpha=0.5)
 
-    plt.ylim(-dsuccess_rate,dsuccess_rate)
+
+    plt.axhline(-dsuccess_rate, linestyle=":", color="gray")
+    plt.axhline(dsuccess_rate, linestyle=":", color="gray")
+    #plt.ylim(-dsuccess_rate,dsuccess_rate)
+    plt.ylim(-0.1, 0.1)
 
     plt.grid(alpha=0.3)
