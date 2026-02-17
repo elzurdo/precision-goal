@@ -123,9 +123,15 @@ def test_stop_decision_multiple_experiments_multiple_methods_basic():
     # Ensure ePitG iteration is >= PitG iteration
     assert epitg_res['decision_iteration'] >= pitg_res['decision_iteration'], "ePitG should not stop before PitG"
 
+    # Asserting known values
     assert hdi_rope_res["decision_iteration"] == 126
+    assert hdi_rope_res["reject_above"] == True
+
     assert pitg_res["decision_iteration"] == 598
+    assert pitg_res["inconclusive"] == True
+
     assert epitg_res["decision_iteration"] == 804
+    assert epitg_res["accept"] == True
 
 
 def test_stop_decision_determinism():

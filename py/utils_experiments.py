@@ -14,6 +14,41 @@ from utils_viz import (
 )
 
 theta_true_str = r"$\theta_{\rm true}$"
+
+
+def create_decision_correctness_df(method_stats, true_rate, rope_min, rope_max):
+    accept_is_correct = rope_min <= true_rate <= rope_max
+
+    experiment_outcomes = {}
+
+    method_names = ["hdi_rope", "pitg","epitg"]
+
+    for isample in range(len(method_stats[method_names[0]])):
+        experiment_outcomes[isample] = {}
+        for method_name in method_names:
+            None
+            experiment_outcomes[isample][f"{method_name}_decision_iteration"] = method_stats[method_name][isample]["decision_iteration"].copy()
+            experiment_outcomes[isample][f"{method_name}_accept"] = method_stats[method_name][isample]["accept"].copy()
+            experiment_outcomes[isample][f"{method_name}_reject_below"] = method_stats[method_name][isample]["reject_below"].copy()
+            experiment_outcomes[isample][f"{method_name}_reject_above"] = method_stats[method_name][isample]["reject_above"].copy()
+            experiment_outcomes[isample][f"{method_name}_inconclusive"] = method_stats[method_name][isample]["inconclusive"]
+
+            experiment_outcomes[isample][f"{method_name}_success_rate"] = method_stats[method_name][isample]["successes"] / method_stats[method_name][isample]["decision_iteration"]
+
+            if method_stats[method_name][isample]["inconclusive"]:
+                # inconclusive - use expected rate for decision making
+                this_decision_accept = rope_min <= experiment_outcomes[isample][f"{method_name}_success_rate"]  <= rope_max
+            else: # conclusive case
+                this_decision_accept = method_stats[method_name][isample]["accept"].copy()
+
+            experiment_outcomes[isample][f"{method_name}_decision_correct"] = this_decision_accept == accept_is_correct
+
+            
+    df_experiment_outcomes = pd.DataFrame(experiment_outcomes).T
+    df_experiment_outcomes.index.name = "experiment_idx"
+
+    return df_experiment_outcomes
+
 class BinomialHypothesis():
     def __init__(self, success_rate_null=0.5, dsuccess_rate=0.05, rope_precision_fraction=0.8):
         self.success_rate_null =  success_rate_null  # null hypothesis
@@ -114,6 +149,10 @@ class BinomialHypothesis():
 
         if verbose:
             display(self.df_experiments_summary)
+
+    def decision_correctness(self, true_rate):
+        self.df_experiment_correctness = create_decision_correctness_df(self.method_stats, true_rate, self.rope_min, self.rope_max)
+
 
 class BinomialSimulation():
     def __init__(self, success_rate=0.5, n_samples = 1500,  n_experiments = 500, seed=42):
@@ -497,4 +536,3 @@ def run_simulations_and_analysis_report(binary_accounting: BinaryAccounting,
     df_stats = report_success_rates_multiple_algos(hypothesis.method_df_stats.copy(), viz=viz)
 
     return {"synth": synth, "hypothesis": hypothesis, "df_stats": df_stats}
-
