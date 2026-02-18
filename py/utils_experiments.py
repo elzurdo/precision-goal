@@ -534,6 +534,7 @@ def run_simulations_and_analysis_report(binary_accounting: BinaryAccounting,
     synth = BinomialSimulation(success_rate=success_rate_true, n_experiments=n_experiments, n_samples=n_samples,seed=seed)
     hypothesis = BinomialHypothesis(success_rate_null=success_rate_null,dsuccess_rate=dsuccess_rate, rope_precision_fraction=rope_precision_fraction)
     hypothesis.run_hypothesis_on_experiments(synth.experiments, binary_accounting)
+    hypothesis.decision_correctness(success_rate_true)
     if viz:
         hypothesis.plot_decision_rates(synth.success_rate)
         hypothesis.plot_stop_iter_sample_rates(success_rate=synth.success_rate, title=None)
