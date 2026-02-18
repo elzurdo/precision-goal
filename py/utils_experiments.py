@@ -15,7 +15,11 @@ from utils_viz import (
 
 theta_true_str = r"$\theta_{\rm true}$"
 
-
+# TODO: this solves for aboslute decision correctness of accept/reject
+# but not for the direction of rejection (e.g, higher or lower)
+# This most likely should not impace PitG or ePiTG but it might impact HDI+ROPE
+# which is likely to decide on the wrong side of the ROPE.
+# This might be worth vislalising to exmaine prevelance.
 def create_decision_correctness_df(method_stats, true_rate, rope_min, rope_max):
     accept_is_correct = rope_min <= true_rate <= rope_max
 
@@ -27,10 +31,10 @@ def create_decision_correctness_df(method_stats, true_rate, rope_min, rope_max):
         experiment_outcomes[isample] = {}
         for method_name in method_names:
             None
-            experiment_outcomes[isample][f"{method_name}_decision_iteration"] = method_stats[method_name][isample]["decision_iteration"].copy()
-            experiment_outcomes[isample][f"{method_name}_accept"] = method_stats[method_name][isample]["accept"].copy()
-            experiment_outcomes[isample][f"{method_name}_reject_below"] = method_stats[method_name][isample]["reject_below"].copy()
-            experiment_outcomes[isample][f"{method_name}_reject_above"] = method_stats[method_name][isample]["reject_above"].copy()
+            experiment_outcomes[isample][f"{method_name}_decision_iteration"] = method_stats[method_name][isample]["decision_iteration"]
+            experiment_outcomes[isample][f"{method_name}_accept"] = method_stats[method_name][isample]["accept"]
+            experiment_outcomes[isample][f"{method_name}_reject_below"] = method_stats[method_name][isample]["reject_below"]
+            experiment_outcomes[isample][f"{method_name}_reject_above"] = method_stats[method_name][isample]["reject_above"]
             experiment_outcomes[isample][f"{method_name}_inconclusive"] = method_stats[method_name][isample]["inconclusive"]
 
             experiment_outcomes[isample][f"{method_name}_success_rate"] = method_stats[method_name][isample]["successes"] / method_stats[method_name][isample]["decision_iteration"]
@@ -39,7 +43,7 @@ def create_decision_correctness_df(method_stats, true_rate, rope_min, rope_max):
                 # inconclusive - use expected rate for decision making
                 this_decision_accept = rope_min <= experiment_outcomes[isample][f"{method_name}_success_rate"]  <= rope_max
             else: # conclusive case
-                this_decision_accept = method_stats[method_name][isample]["accept"].copy()
+                this_decision_accept = bool(method_stats[method_name][isample]["accept"]) if method_stats[method_name][isample]["accept"] is not None else None
 
             experiment_outcomes[isample][f"{method_name}_decision_correct"] = this_decision_accept == accept_is_correct
 

@@ -2,12 +2,13 @@
 import sys
 import os
 import numpy as np
+import pandas as pd
 import pytest
 
 # Add the 'py' directory to the system path so we can import modules from it
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'py')))
 
-from utils_experiments import stop_decision_multiple_experiments_multiple_methods
+from utils_experiments import stop_decision_multiple_experiments_multiple_methods, create_decision_correctness_df
 
 def test_stop_decision_multiple_experiments_multiple_methods_basic():
     """
@@ -161,3 +162,559 @@ def test_stop_decision_determinism():
     assert 'hdi_max' in res
     assert 'decision_iteration' in res
     assert res['decision_iteration'] <= 10
+
+class TestCreateDecisionCorrectnessDF:
+    """Test suite for create_decision_correctness_df function."""
+    
+    @pytest.fixture
+    def rope_params(self):
+        """Standard ROPE parameters for testing."""
+        return {
+            'rope_min': 0.45,
+            'rope_max': 0.55
+        }
+    
+    def test_conclusive_accept_correct(self, rope_params):
+        """Test conclusive accept decision when true_rate is within ROPE."""
+        # True rate within ROPE -> accepting is correct
+        true_rate = 0.50
+        
+        method_stats = {
+            'pitg': {
+                0: {
+                    'decision_iteration': 100,
+                    'accept': True,
+                    'reject_below': False,
+                    'reject_above': False,
+                    'inconclusive': False,
+                    'successes': 50,
+                    'failures': 50
+                }
+            },
+            'epitg': {
+                0: {
+                    'decision_iteration': 100,
+                    'accept': True,
+                    'reject_below': False,
+                    'reject_above': False,
+                    'inconclusive': False,
+                    'successes': 50,
+                    'failures': 50
+                }
+            },
+            'hdi_rope': {
+                0: {
+                    'decision_iteration': 100,
+                    'accept': True,
+                    'reject_below': False,
+                    'reject_above': False,
+                    'inconclusive': False,
+                    'successes': 50,
+                    'failures': 50
+                }
+            }
+        }
+        
+        df = create_decision_correctness_df(method_stats, true_rate, **rope_params)
+        
+        assert df.loc[0, 'pitg_decision_correct'] == True
+        assert df.loc[0, 'epitg_decision_correct'] == True
+        assert df.loc[0, 'hdi_rope_decision_correct'] == True
+    
+    def test_conclusive_accept_incorrect(self, rope_params):
+        """Test conclusive accept decision when true_rate is outside ROPE (should be incorrect)."""
+        # True rate below ROPE -> accepting is incorrect
+        true_rate = 0.30
+        
+        method_stats = {
+            'pitg': {
+                0: {
+                    'decision_iteration': 100,
+                    'accept': True,
+                    'reject_below': False,
+                    'reject_above': False,
+                    'inconclusive': False,
+                    'successes': 50,
+                    'failures': 50
+                }
+            },
+            'epitg': {
+                0: {
+                    'decision_iteration': 100,
+                    'accept': True,
+                    'reject_below': False,
+                    'reject_above': False,
+                    'inconclusive': False,
+                    'successes': 50,
+                    'failures': 50
+                }
+            },
+            'hdi_rope': {
+                0: {
+                    'decision_iteration': 100,
+                    'accept': True,
+                    'reject_below': False,
+                    'reject_above': False,
+                    'inconclusive': False,
+                    'successes': 50,
+                    'failures': 50
+                }
+            }
+        }
+        
+        df = create_decision_correctness_df(method_stats, true_rate, **rope_params)
+        
+        assert df.loc[0, 'pitg_decision_correct'] == False
+        assert df.loc[0, 'epitg_decision_correct'] == False
+        assert df.loc[0, 'hdi_rope_decision_correct'] == False
+    
+    def test_conclusive_reject_correct(self, rope_params):
+        """Test conclusive reject decision when true_rate is outside ROPE."""
+        # True rate above ROPE -> rejecting is correct
+        true_rate = 0.70
+        
+        method_stats = {
+            'pitg': {
+                0: {
+                    'decision_iteration': 100,
+                    'accept': False,
+                    'reject_below': False,
+                    'reject_above': True,
+                    'inconclusive': False,
+                    'successes': 70,
+                    'failures': 30
+                }
+            },
+            'epitg': {
+                0: {
+                    'decision_iteration': 100,
+                    'accept': False,
+                    'reject_below': True,
+                    'reject_above': False,
+                    'inconclusive': False,
+                    'successes': 30,
+                    'failures': 70
+                }
+            },
+            'hdi_rope': {
+                0: {
+                    'decision_iteration': 100,
+                    'accept': False,
+                    'reject_below': False,
+                    'reject_above': True,
+                    'inconclusive': False,
+                    'successes': 70,
+                    'failures': 30
+                }
+            }
+        }
+        
+        df = create_decision_correctness_df(method_stats, true_rate, **rope_params)
+        
+        # All methods rejected (correctly, since true_rate > rope_max)
+        assert df.loc[0, 'pitg_decision_correct'] == True
+        assert df.loc[0, 'epitg_decision_correct'] == True
+        assert df.loc[0, 'hdi_rope_decision_correct'] == True
+    
+    def test_conclusive_reject_incorrect(self, rope_params):
+        """Test conclusive reject decision when true_rate is within ROPE (should be incorrect)."""
+        # True rate within ROPE -> rejecting is incorrect
+        true_rate = 0.50
+        
+        method_stats = {
+            'pitg': {
+                0: {
+                    'decision_iteration': 100,
+                    'accept': False,
+                    'reject_below': False,
+                    'reject_above': True,
+                    'inconclusive': False,
+                    'successes': 70,
+                    'failures': 30
+                }
+            },
+            'epitg': {
+                0: {
+                    'decision_iteration': 100,
+                    'accept': False,
+                    'reject_below': True,
+                    'reject_above': False,
+                    'inconclusive': False,
+                    'successes': 30,
+                    'failures': 70
+                }
+            },
+            'hdi_rope': {
+                0: {
+                    'decision_iteration': 100,
+                    'accept': False,
+                    'reject_below': False,
+                    'reject_above': True,
+                    'inconclusive': False,
+                    'successes': 70,
+                    'failures': 30
+                }
+            }
+        }
+        
+        df = create_decision_correctness_df(method_stats, true_rate, **rope_params)
+        
+        # All methods rejected (incorrectly, since true_rate is within ROPE)
+        assert df.loc[0, 'pitg_decision_correct'] == False
+        assert df.loc[0, 'epitg_decision_correct'] == False
+        assert df.loc[0, 'hdi_rope_decision_correct'] == False
+    
+    def test_inconclusive_heuristic_accept_correct(self, rope_params):
+        """Test inconclusive case where success_rate heuristic leads to correct accept."""
+        # True rate within ROPE, success_rate also within ROPE -> correct
+        true_rate = 0.50
+        
+        method_stats = {
+            'pitg': {
+                0: {
+                    'decision_iteration': 100,
+                    'accept': False,
+                    'reject_below': False,
+                    'reject_above': False,
+                    'inconclusive': True,
+                    'successes': 48,  # 48/100 = 0.48 (within ROPE)
+                    'failures': 52
+                }
+            },
+            'epitg': {
+                0: {
+                    'decision_iteration': 100,
+                    'accept': False,
+                    'reject_below': False,
+                    'reject_above': False,
+                    'inconclusive': True,
+                    'successes': 52,  # 52/100 = 0.52 (within ROPE)
+                    'failures': 48
+                }
+            },
+            'hdi_rope': {
+                0: {
+                    'decision_iteration': 100,
+                    'accept': False,
+                    'reject_below': False,
+                    'reject_above': False,
+                    'inconclusive': True,
+                    'successes': 50,  # 50/100 = 0.50 (within ROPE)
+                    'failures': 50
+                }
+            }
+        }
+        
+        df = create_decision_correctness_df(method_stats, true_rate, **rope_params)
+        
+        # All success rates within ROPE, true_rate within ROPE -> correct
+        assert df.loc[0, 'pitg_decision_correct'] == True
+        assert df.loc[0, 'epitg_decision_correct'] == True
+        assert df.loc[0, 'hdi_rope_decision_correct'] == True
+    
+    def test_inconclusive_heuristic_reject_correct(self, rope_params):
+        """Test inconclusive case where success_rate heuristic leads to correct reject."""
+        # True rate outside ROPE, success_rate also outside ROPE -> correct
+        true_rate = 0.70
+        
+        method_stats = {
+            'pitg': {
+                0: {
+                    'decision_iteration': 100,
+                    'accept': False,
+                    'reject_below': False,
+                    'reject_above': False,
+                    'inconclusive': True,
+                    'successes': 65,  # 65/100 = 0.65 (above ROPE)
+                    'failures': 35
+                }
+            },
+            'epitg': {
+                0: {
+                    'decision_iteration': 200,
+                    'accept': False,
+                    'reject_below': False,
+                    'reject_above': False,
+                    'inconclusive': True,
+                    'successes': 120,  # 120/200 = 0.60 (above ROPE)
+                    'failures': 80
+                }
+            },
+            'hdi_rope': {
+                0: {
+                    'decision_iteration': 150,
+                    'accept': False,
+                    'reject_below': False,
+                    'reject_above': False,
+                    'inconclusive': True,
+                    'successes': 25,  # 25/150 = 0.167 (below ROPE)
+                    'failures': 125
+                }
+            }
+        }
+        
+        df = create_decision_correctness_df(method_stats, true_rate, **rope_params)
+        
+        # Success rates outside ROPE, true_rate outside ROPE -> correct
+        assert df.loc[0, 'pitg_decision_correct'] == True
+        assert df.loc[0, 'epitg_decision_correct'] == True
+        assert df.loc[0, 'hdi_rope_decision_correct'] == True
+    
+    def test_inconclusive_heuristic_incorrect(self, rope_params):
+        """Test inconclusive case where success_rate heuristic leads to incorrect decision."""
+        # True rate within ROPE, but success_rate outside ROPE -> incorrect
+        true_rate = 0.50
+        
+        method_stats = {
+            'pitg': {
+                0: {
+                    'decision_iteration': 100,
+                    'accept': False,
+                    'reject_below': False,
+                    'reject_above': False,
+                    'inconclusive': True,
+                    'successes': 70,  # 70/100 = 0.70 (above ROPE, but true is within)
+                    'failures': 30
+                }
+            },
+            'epitg': {
+                0: {
+                    'decision_iteration': 100,
+                    'accept': False,
+                    'reject_below': False,
+                    'reject_above': False,
+                    'inconclusive': True,
+                    'successes': 30,  # 30/100 = 0.30 (below ROPE, but true is within)
+                    'failures': 70
+                }
+            },
+            'hdi_rope': {
+                0: {
+                    'decision_iteration': 100,
+                    'accept': False,
+                    'reject_below': False,
+                    'reject_above': False,
+                    'inconclusive': True,
+                    'successes': 70,  # 70/100 = 0.70 (above ROPE, but true is within)
+                    'failures': 30
+                }
+            }
+        }
+        
+        df = create_decision_correctness_df(method_stats, true_rate, **rope_params)
+        
+        # All heuristic decisions wrong (success_rate outside ROPE, but true_rate within)
+        assert df.loc[0, 'pitg_decision_correct'] == False
+        assert df.loc[0, 'epitg_decision_correct'] == False
+        assert df.loc[0, 'hdi_rope_decision_correct'] == False
+    
+    def test_multiple_experiments(self, rope_params):
+        """Test with multiple experiments showing mixed results."""
+        true_rate = 0.50
+        
+        method_stats = {
+            'pitg': {
+                0: {  # Conclusive correct
+                    'decision_iteration': 100,
+                    'accept': True,
+                    'reject_below': False,
+                    'reject_above': False,
+                    'inconclusive': False,
+                    'successes': 50,
+                    'failures': 50
+                },
+                1: {  # Conclusive incorrect
+                    'decision_iteration': 100,
+                    'accept': False,
+                    'reject_below': False,
+                    'reject_above': True,
+                    'inconclusive': False,
+                    'successes': 70,
+                    'failures': 30
+                },
+                2: {  # Inconclusive correct
+                    'decision_iteration': 100,
+                    'accept': False,
+                    'reject_below': False,
+                    'reject_above': False,
+                    'inconclusive': True,
+                    'successes': 48,
+                    'failures': 52
+                },
+                3: {  # Inconclusive incorrect
+                    'decision_iteration': 100,
+                    'accept': False,
+                    'reject_below': False,
+                    'reject_above': False,
+                    'inconclusive': True,
+                    'successes': 70,
+                    'failures': 30
+                }
+            },
+            'epitg': {
+                0: {'decision_iteration': 100, 'accept': True, 'reject_below': False, 
+                    'reject_above': False, 'inconclusive': False, 'successes': 50, 'failures': 50},
+                1: {'decision_iteration': 100, 'accept': False, 'reject_below': False, 
+                    'reject_above': True, 'inconclusive': False, 'successes': 70, 'failures': 30},
+                2: {'decision_iteration': 100, 'accept': False, 'reject_below': False, 
+                    'reject_above': False, 'inconclusive': True, 'successes': 48, 'failures': 52},
+                3: {'decision_iteration': 100, 'accept': False, 'reject_below': False, 
+                    'reject_above': False, 'inconclusive': True, 'successes': 70, 'failures': 30}
+            },
+            'hdi_rope': {
+                0: {'decision_iteration': 100, 'accept': True, 'reject_below': False, 
+                    'reject_above': False, 'inconclusive': False, 'successes': 50, 'failures': 50},
+                1: {'decision_iteration': 100, 'accept': False, 'reject_below': False, 
+                    'reject_above': True, 'inconclusive': False, 'successes': 70, 'failures': 30},
+                2: {'decision_iteration': 100, 'accept': False, 'reject_below': False, 
+                    'reject_above': False, 'inconclusive': True, 'successes': 48, 'failures': 52},
+                3: {'decision_iteration': 100, 'accept': False, 'reject_below': False, 
+                    'reject_above': False, 'inconclusive': True, 'successes': 70, 'failures': 30}
+            }
+        }
+        
+        df = create_decision_correctness_df(method_stats, true_rate, **rope_params)
+        
+        assert len(df) == 4
+        
+        # Experiment 0: correct
+        assert df.loc[0, 'pitg_decision_correct'] == True
+        assert df.loc[0, 'epitg_decision_correct'] == True
+        assert df.loc[0, 'hdi_rope_decision_correct'] == True
+        
+        # Experiment 1: incorrect
+        assert df.loc[1, 'pitg_decision_correct'] == False
+        assert df.loc[1, 'epitg_decision_correct'] == False
+        assert df.loc[1, 'hdi_rope_decision_correct'] == False
+        
+        # Experiment 2: correct (via heuristic)
+        assert df.loc[2, 'pitg_decision_correct'] == True
+        assert df.loc[2, 'epitg_decision_correct'] == True
+        assert df.loc[2, 'hdi_rope_decision_correct'] == True
+        
+        # Experiment 3: incorrect (via heuristic)
+        assert df.loc[3, 'pitg_decision_correct'] == False
+        assert df.loc[3, 'epitg_decision_correct'] == False
+        assert df.loc[3, 'hdi_rope_decision_correct'] == False
+    
+    def test_rope_boundary_cases(self):
+        """Test edge cases at ROPE boundaries."""
+        rope_min = 0.45
+        rope_max = 0.55
+        
+        # Test true_rate exactly at rope_min (should be accepted)
+        true_rate = 0.45
+        
+        method_stats = {
+            'pitg': {
+                0: {
+                    'decision_iteration': 100,
+                    'accept': True,
+                    'reject_below': False,
+                    'reject_above': False,
+                    'inconclusive': False,
+                    'successes': 50,
+                    'failures': 50
+                }
+            },
+            'epitg': {
+                0: {
+                    'decision_iteration': 100,
+                    'accept': True,
+                    'reject_below': False,
+                    'reject_above': False,
+                    'inconclusive': False,
+                    'successes': 50,
+                    'failures': 50
+                }
+            },
+            'hdi_rope': {
+                0: {
+                    'decision_iteration': 100,
+                    'accept': True,
+                    'reject_below': False,
+                    'reject_above': False,
+                    'inconclusive': False,
+                    'successes': 50,
+                    'failures': 50
+                }
+            }
+        }
+        
+        df = create_decision_correctness_df(method_stats, true_rate, rope_min, rope_max)
+        assert df.loc[0, 'pitg_decision_correct'] == True
+        
+        # Test true_rate exactly at rope_max (should be accepted)
+        true_rate = 0.55
+        df = create_decision_correctness_df(method_stats, true_rate, rope_min, rope_max)
+        assert df.loc[0, 'pitg_decision_correct'] == True
+        
+        # Test true_rate just below rope_min (should be rejected)
+        true_rate = 0.44999
+        df = create_decision_correctness_df(method_stats, true_rate, rope_min, rope_max)
+        assert df.loc[0, 'pitg_decision_correct'] == False  # accepts when should reject
+        
+        # Test true_rate just above rope_max (should be rejected)
+        true_rate = 0.55001
+        df = create_decision_correctness_df(method_stats, true_rate, rope_min, rope_max)
+        assert df.loc[0, 'pitg_decision_correct'] == False  # accepts when should reject
+    
+    def test_dataframe_structure(self, rope_params):
+        """Test that output DataFrame has correct structure and columns."""
+        true_rate = 0.50
+        
+        method_stats = {
+            'pitg': {
+                0: {
+                    'decision_iteration': 100,
+                    'accept': True,
+                    'reject_below': False,
+                    'reject_above': False,
+                    'inconclusive': False,
+                    'successes': 50,
+                    'failures': 50
+                }
+            },
+            'epitg': {
+                0: {
+                    'decision_iteration': 100,
+                    'accept': True,
+                    'reject_below': False,
+                    'reject_above': False,
+                    'inconclusive': False,
+                    'successes': 50,
+                    'failures': 50
+                }
+            },
+            'hdi_rope': {
+                0: {
+                    'decision_iteration': 100,
+                    'accept': True,
+                    'reject_below': False,
+                    'reject_above': False,
+                    'inconclusive': False,
+                    'successes': 50,
+                    'failures': 50
+                }
+            }
+        }
+        
+        df = create_decision_correctness_df(method_stats, true_rate, **rope_params)
+        
+        # Check index
+        assert df.index.name == "experiment_idx"
+        
+        # Check columns for each method
+        for method in ['pitg', 'epitg', 'hdi_rope']:
+            assert f'{method}_decision_iteration' in df.columns
+            assert f'{method}_accept' in df.columns
+            assert f'{method}_reject_below' in df.columns
+            assert f'{method}_reject_above' in df.columns
+            assert f'{method}_inconclusive' in df.columns
+            assert f'{method}_success_rate' in df.columns
+            assert f'{method}_decision_correct' in df.columns
+        
+        # TODO: explore this in notebook and resolve
+        # Check data types
+        # assert df['pitg_decision_correct'].dtype == bool
+        #assert df['pitg_success_rate'].dtype == float
