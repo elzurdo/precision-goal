@@ -6,6 +6,14 @@ from utils_stats import (
     successes_failures_to_hdi_ci_limits
 )
 
+from utils_experiments_shared import (
+    stats_dict_to_df,
+    iteration_counts_to_df,
+    report_success_rates,
+    report_success_rates_multiple_algos,
+    create_decision_correctness_df,
+)
+
 from utils_viz import (
     plot_multiple_decision_rates_separate,
     scatter_stop_iter_sample_rate,
@@ -15,43 +23,6 @@ from utils_viz import (
 
 theta_true_str = r"$\theta_{\rm true}$"
 
-# TODO: this solves for aboslute decision correctness of accept/reject
-# but not for the direction of rejection (e.g, higher or lower)
-# This most likely should not impace PitG or ePiTG but it might impact HDI+ROPE
-# which is likely to decide on the wrong side of the ROPE.
-# This might be worth vislalising to exmaine prevelance.
-def create_decision_correctness_df(method_stats, true_rate, rope_min, rope_max):
-    accept_is_correct = rope_min <= true_rate <= rope_max
-
-    experiment_outcomes = {}
-
-    method_names = ["hdi_rope", "pitg","epitg"]
-
-    for isample in range(len(method_stats[method_names[0]])):
-        experiment_outcomes[isample] = {}
-        for method_name in method_names:
-            None
-            experiment_outcomes[isample][f"{method_name}_decision_iteration"] = method_stats[method_name][isample]["decision_iteration"]
-            experiment_outcomes[isample][f"{method_name}_accept"] = method_stats[method_name][isample]["accept"]
-            experiment_outcomes[isample][f"{method_name}_reject_below"] = method_stats[method_name][isample]["reject_below"]
-            experiment_outcomes[isample][f"{method_name}_reject_above"] = method_stats[method_name][isample]["reject_above"]
-            experiment_outcomes[isample][f"{method_name}_inconclusive"] = method_stats[method_name][isample]["inconclusive"]
-
-            experiment_outcomes[isample][f"{method_name}_success_rate"] = method_stats[method_name][isample]["successes"] / method_stats[method_name][isample]["decision_iteration"]
-
-            if method_stats[method_name][isample]["inconclusive"]:
-                # inconclusive - use expected rate for decision making
-                this_decision_accept = rope_min <= experiment_outcomes[isample][f"{method_name}_success_rate"]  <= rope_max
-            else: # conclusive case
-                this_decision_accept = bool(method_stats[method_name][isample]["accept"]) if method_stats[method_name][isample]["accept"] is not None else None
-
-            experiment_outcomes[isample][f"{method_name}_decision_correct"] = this_decision_accept == accept_is_correct
-
-            
-    df_experiment_outcomes = pd.DataFrame(experiment_outcomes).T
-    df_experiment_outcomes.index.name = "experiment_idx"
-
-    return df_experiment_outcomes
 
 class BinomialHypothesis():
     def __init__(self, success_rate_null=0.5, dsuccess_rate=0.05, rope_precision_fraction=0.8):
@@ -155,7 +126,9 @@ class BinomialHypothesis():
             display(self.df_experiments_summary)
 
     def decision_correctness(self, true_rate):
-        self.df_experiment_correctness = create_decision_correctness_df(self.method_stats, true_rate, self.rope_min, self.rope_max)
+        self.df_experiment_correctness = create_decision_correctness_df(
+            self.method_stats, true_rate, self.rope_min, self.rope_max, data_type='binomial'
+        )
 
 
 class BinomialSimulation():
@@ -224,32 +197,6 @@ def successes_failures_caculate_hdi_limits(successes, failures):
     hdi_min, hdi_max = successes_failures_to_hdi_ci_limits(aa, bb)
 
     return hdi_min, hdi_max
-
-
-def stats_dict_to_df(method_stats):
-    df = pd.DataFrame(method_stats).T
-    df.index.name = "experiment_number"
-    df["hdi_max"] = df["hdi_max"].astype(float)
-    df["hdi_min"] = df["hdi_min"].astype(float)
-    df["decision_iteration"] = df["decision_iteration"].astype(float)
-    df["reject"] = df["reject_below"] + df["reject_above"]
-    df["precision"] = df["hdi_max"] - df["hdi_min"]
-    df["success_rate"] = df["successes"] / (df["successes"] + df["failures"])
-    return df
-
-
-def iteration_counts_to_df(roperesult_iteration, experiments):
-    df = pd.DataFrame({
-        "iteration": list(roperesult_iteration["within"].keys()),
-        "accept": list(roperesult_iteration["within"].values()),
-        "reject_below": list(roperesult_iteration["below"].values()),
-        "reject_above": list(roperesult_iteration["above"].values())
-    })
-
-    df['reject'] = df['reject_above'] + df['reject_below']
-    df['inconclusive'] = experiments - df['accept'] - df['reject']
-
-    return df
 
 
 def stop_decision_multiple_experiments_multiple_methods(samples, rope_min, rope_max, precision_goal, binary_accounting=None, min_iter=30, viz=False):
@@ -439,88 +386,6 @@ def sample_all_iterations_results(sample, precision_goal, rope_min, rope_max, it
     return df_sample_results
 
 
-def report_success_rates(df_stats):
-    """
-    Computes summary statistics for success_rate across different decision subgroups.
-    """
-    subgroups = {
-        "overall": df_stats,
-        "conclusive": df_stats.query("conclusive"),
-        "inconclusive": df_stats.query("inconclusive"),
-        "accept": df_stats.query("accept"),
-        "reject": df_stats.query("reject")
-    }
-
-    records = []
-    for group_name, df_group in subgroups.items():
-        if len(df_group) == 0:
-            continue
-
-        sr_success_rate = df_group['success_rate']
-        sr_stop_iter = df_group['decision_iteration']
-        sr_conclusive = df_group['conclusive'].astype(int) # convert boolean to int for stats
-        sr_accept = df_group['accept'].astype(int) # convert boolean to int for stats
-        sr_reject = df_group['reject'].astype(int) # convert boolean to int for stats
-
-        records.append({
-            "group": group_name,
-            "count": int(sr_success_rate.count()),
-            "success_frac": sr_success_rate.count() / len(df_stats),
-            # success rate statistics
-            "success_mean": sr_success_rate.mean(),
-            "success_std": sr_success_rate.std(),
-            "success_p25": sr_success_rate.quantile(0.25),
-            "success_median": sr_success_rate.median(),
-            "success_p75": sr_success_rate.quantile(0.75),
-            # stop iteration statistics
-            "stop_iter_mean": sr_stop_iter.mean(),
-            "stop_iter_std": sr_stop_iter.std(),
-            "stop_iter_p25": sr_stop_iter.quantile(0.25),
-            "stop_iter_median": sr_stop_iter.median(),
-            "stop_iter_p75": sr_stop_iter.quantile(0.75),
-            # conclusive statistics
-            "conclusive_mean": sr_conclusive.mean(),
-            # accept/reject statistics
-            "accept_mean": sr_accept.mean(),
-            "reject_mean": sr_reject.mean()
-        })
-
-    return pd.DataFrame(records).set_index("group")
-
-
-def report_success_rates_multiple_algos(method_df_stats, viz=True):
-    """
-    Aggregates success rate statistics for multiple algorithms into a single DataFrame.
-    """
-    all_reports = []
-
-    for algo_name, df_stats in method_df_stats.items():
-        # Get stats for this algorithm
-        df_report = report_success_rates(df_stats)
-
-        # We generally care most about the 'overall' statistics for comparison, 
-        # or we might want a multi-index (Algo, Group). 
-        # Based on the user request "each row is a different algo_name", 
-        # it implies comparing apples-to-apples (likely 'overall' or weighted stats).
-        # However, information about 'conclusive' vs 'inconclusive' is vital.
-        # Let's create a MultiIndex DataFrame to capture everything cleanly.
-
-        df_report["algorithm"] = algo_name
-        all_reports.append(df_report)
-
-    if not all_reports:
-        return pd.DataFrame()
-
-    df_combined = pd.concat(all_reports).reset_index().set_index(["algorithm", "group"])
-
-    from IPython.display import display
-
-    if viz:
-        display(df_combined)
-
-    return df_combined
-
-
 def run_simulations_and_analysis_report(binary_accounting: BinaryAccounting,
                                         success_rate_true: float=0.5,
                                         success_rate_null: float=0.5,
@@ -538,6 +403,6 @@ def run_simulations_and_analysis_report(binary_accounting: BinaryAccounting,
     if viz:
         hypothesis.plot_decision_rates(synth.success_rate)
         hypothesis.plot_stop_iter_sample_rates(success_rate=synth.success_rate, title=None)
-    df_stats = report_success_rates_multiple_algos(hypothesis.method_df_stats.copy(), viz=viz)
+    df_stats = report_success_rates_multiple_algos(hypothesis.method_df_stats.copy(), data_type='binomial', viz=viz)
 
     return {"synth": synth, "hypothesis": hypothesis, "df_stats": df_stats}

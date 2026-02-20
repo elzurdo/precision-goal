@@ -1,5 +1,5 @@
 from scipy.optimize import fmin
-from scipy.stats import beta, binom_test # binom_test is binomtest (in later versions ...)
+from scipy.stats import beta, binom_test, t as student_t # binom_test is binomtest (in later versions ...)
 import numpy as np
 import pandas as pd
 
@@ -49,6 +49,55 @@ def hdi_ci_limits(p, n, ci_fraction=CI_FRACTION):
 
 def successes_failures_to_hdi_ci_limits(a, b, ci_fraction=CI_FRACTION):
     return HDIofICDF(beta, a=a, b=b, ci_fraction=ci_fraction)
+
+
+def continuous_hdi_ci_limits(sample_mean, sample_std, n, ci_fraction=CI_FRACTION):
+    """
+    Calculate HDI for the mean of a continuous distribution using Student-t distribution.
+    
+    Based on Central Limit Theorem: the posterior of the mean is Student-t distributed
+    when the population variance is unknown and estimated from the sample.
+    
+    Parameters:
+    -----------
+    sample_mean : float
+        Sample mean (x̄)
+    sample_std : float
+        Sample standard deviation (s)
+    n : int
+        Sample size
+    ci_fraction : float
+        Credible interval fraction (default 0.95 for 95% HDI)
+    
+    Returns:
+    --------
+    tuple : (hdi_min, hdi_max)
+        Lower and upper bounds of the HDI
+    
+    Raises:
+    -------
+    ValueError : If n < 2 (cannot compute std with n=1, df=0 undefined for t-distribution)
+    
+    Notes:
+    ------
+    Uses Student-t distribution with:
+    - degrees of freedom: df = n - 1
+    - location: sample_mean
+    - scale: sample_std / sqrt(n) (standard error)
+    
+    Example:
+    --------
+    >>> continuous_hdi_ci_limits(sample_mean=100, sample_std=15, n=30)
+    (94.44, 105.56)  # approximate 95% HDI
+    """
+    if n < 2:
+        raise ValueError(f"Sample size must be at least 2 for t-distribution HDI calculation. Got n={n}")
+    
+    df = n - 1  # degrees of freedom
+    se = sample_std / np.sqrt(n)  # standard error of the mean
+    
+    # Use existing HDIofICDF with Student-t distribution
+    return HDIofICDF(student_t, df=df, loc=sample_mean, scale=se, ci_fraction=ci_fraction)
 
 
 def get_success_rates(d_success = 0.00001, min_range=0., max_range=1., including_max=False):

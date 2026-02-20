@@ -8,7 +8,8 @@ import pytest
 # Add the 'py' directory to the system path so we can import modules from it
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'py')))
 
-from utils_experiments import stop_decision_multiple_experiments_multiple_methods, create_decision_correctness_df
+from utils_experiments import stop_decision_multiple_experiments_multiple_methods
+from utils_experiments_shared import create_decision_correctness_df
 
 def test_stop_decision_multiple_experiments_multiple_methods_basic():
     """
@@ -215,7 +216,7 @@ class TestCreateDecisionCorrectnessDF:
             }
         }
         
-        df = create_decision_correctness_df(method_stats, true_rate, **rope_params)
+        df = create_decision_correctness_df(method_stats, true_rate, data_type='binomial', **rope_params)
         
         assert df.loc[0, 'pitg_decision_correct'] == True
         assert df.loc[0, 'epitg_decision_correct'] == True
@@ -711,7 +712,7 @@ class TestCreateDecisionCorrectnessDF:
             assert f'{method}_reject_below' in df.columns
             assert f'{method}_reject_above' in df.columns
             assert f'{method}_inconclusive' in df.columns
-            assert f'{method}_success_rate' in df.columns
+            assert f'{method}_param_value' in df.columns
             assert f'{method}_decision_correct' in df.columns
         
         # TODO: explore this in notebook and resolve

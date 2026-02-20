@@ -756,7 +756,7 @@ def plot_success_by_truth(algo_stats_df, dsuccess_rate, subset_name = "conclusiv
     elif "inconclusive" == subset_name:
         title = "Inconclusive"
 
-    truth_values = np.array(algo_stats_df[subset_name]["epitg"]["success_median"].index.tolist())
+    truth_values = np.array(algo_stats_df[subset_name]["epitg"]["param_median"].index.tolist())
 
     rope_min = success_null - dsuccess_rate
     rope_max = success_null + dsuccess_rate
@@ -769,7 +769,7 @@ def plot_success_by_truth(algo_stats_df, dsuccess_rate, subset_name = "conclusiv
 
     plt.title(title, fontsize=20)
     for algo_name in METHOD_SHORT.keys():
-        #this_truths = algo_stats_df[subset_name][algo_name].query("success_p25 == success_p25").index.tolist()
+        #this_truths = algo_stats_df[subset_name][algo_name].query("param_p25 == param_p25").index.tolist()
         this_truths = algo_stats_df[subset_name][algo_name].query("count >= 20").index.tolist()
 
         label = f"{METHOD_SHORT[algo_name]}"
@@ -777,8 +777,8 @@ def plot_success_by_truth(algo_stats_df, dsuccess_rate, subset_name = "conclusiv
         try:
             plt.fill_between(
                 this_truths, 
-                algo_stats_df[subset_name][algo_name].loc[this_truths, "success_p25"].astype(float),
-                algo_stats_df[subset_name][algo_name].loc[this_truths,"success_p75"].astype(float),
+                algo_stats_df[subset_name][algo_name].loc[this_truths, "param_p25"].astype(float),
+                algo_stats_df[subset_name][algo_name].loc[this_truths,"param_p75"].astype(float),
                 color=ALGO_COLORS[algo_name], 
                 alpha=algo_alpha[algo_name], 
                 label=label,
@@ -789,18 +789,18 @@ def plot_success_by_truth(algo_stats_df, dsuccess_rate, subset_name = "conclusiv
             print(f"Error plotting {algo_name}: {e}")
             df_aux = algo_stats_df[subset_name][algo_name].loc[this_truths]
             try:
-                df_aux["diff_pcnt"] = (df_aux["success_p75"] - df_aux["success_p25"]) * 100.
-                display(df_aux[["count", "stop_iter_median" ,"success_p25", "success_median","success_p75","diff_pcnt" ]])
+                df_aux["diff_pcnt"] = (df_aux["param_p75"] - df_aux["param_p25"]) * 100.
+                display(df_aux[["count", "stop_iter_median" ,"param_p25", "param_median","param_p75","diff_pcnt" ]])
             except:
                 pass
 
-        plt.plot(this_truths, algo_stats_df[subset_name][algo_name].loc[this_truths, "success_p25"], color=ALGO_COLORS[algo_name], alpha=1.)
-        plt.plot(this_truths, algo_stats_df[subset_name][algo_name].loc[this_truths, "success_p75"], color=ALGO_COLORS[algo_name], alpha=1.)
+        plt.plot(this_truths, algo_stats_df[subset_name][algo_name].loc[this_truths, "param_p25"], color=ALGO_COLORS[algo_name], alpha=1.)
+        plt.plot(this_truths, algo_stats_df[subset_name][algo_name].loc[this_truths, "param_p75"], color=ALGO_COLORS[algo_name], alpha=1.)
 
 
-    #plt.fill_between(truth_values, algo_stats_df[subset_name]["hdi_rope"]["success_p25"], algo_stats_df[subset_name]["hdi_rope"]["success_p75"], color=ALGO_COLORS["hdi_rope"], alpha=0.2, label=f"{METHOD_SHORT['hdi_rope']}")
-    #plt.fill_between(truth_values, algo_stats_df[subset_name]["pitg"]["success_p25"], algo_stats_df[subset_name]["pitg"]["success_p75"], color=ALGO_COLORS["pitg"], alpha=0.5, label=f"{METHOD_SHORT['pitg']}", hatch="/")
-    #plt.fill_between(truth_values, algo_stats_df[subset_name]["epitg"]["success_p25"], algo_stats_df[subset_name]["epitg"]["success_p75"], color=ALGO_COLORS["epitg"], alpha=0.5, label=f"{METHOD_SHORT['epitg']}", hatch="\\")
+    #plt.fill_between(truth_values, algo_stats_df[subset_name]["hdi_rope"]["param_p25"], algo_stats_df[subset_name]["hdi_rope"]["param_p75"], color=ALGO_COLORS["hdi_rope"], alpha=0.2, label=f"{METHOD_SHORT['hdi_rope']}")
+    #plt.fill_between(truth_values, algo_stats_df[subset_name]["pitg"]["param_p25"], algo_stats_df[subset_name]["pitg"]["param_p75"], color=ALGO_COLORS["pitg"], alpha=0.5, label=f"{METHOD_SHORT['pitg']}", hatch="/")
+    #plt.fill_between(truth_values, algo_stats_df[subset_name]["epitg"]["param_p25"], algo_stats_df[subset_name]["epitg"]["param_p75"], color=ALGO_COLORS["epitg"], alpha=0.5, label=f"{METHOD_SHORT['epitg']}", hatch="\\")
 
 
     plt.axhline(rope_min, linestyle=":", color="gray")
@@ -821,10 +821,10 @@ def plot_success_by_truth(algo_stats_df, dsuccess_rate, subset_name = "conclusiv
 
 ALGO_LINEWIDTH =  {"hdi_rope":1, "pitg": 2, "epitg":3}
 
-def plot_success_by_truth_diff(algo_stats_df, dsuccess_rate, subset_name="conclusive", success_metrics=["success_median"]):
-    METRIC_LINESTYLE = {"success_median": None, "success_mean": "--"}
+def plot_success_by_truth_diff(algo_stats_df, dsuccess_rate, subset_name="conclusive", success_metrics=["param_median"]):
+    METRIC_LINESTYLE = {"param_median": None, "param_mean": "--"}
 
-    truth_values = np.array(algo_stats_df[subset_name]["epitg"]["success_median"].index.tolist())
+    truth_values = np.array(algo_stats_df[subset_name]["epitg"]["param_median"].index.tolist())
 
     for success_metric in success_metrics:
         for algo_name in METHOD_SHORT.keys():
