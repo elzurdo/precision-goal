@@ -83,11 +83,11 @@ Table \ref{tab:comparison} provides a high-level comparison of the three algorit
 \begin{table}[h!]
     \begin{center}
       \begin{tabular}{l|c|l|l}
-        \textbf{Algorithm} & \textbf{Pre-Survey} & \textbf{Stop Criterion} &  \textbf{Decision Logic} \\
+        \textbf{Algorithm} & \textbf{Pre-Survey} & \textbf{Stop Criterion} &  \textbf{Stop/Decision Logic} \\
         \hline
-        HDI + ROPE & $N_\mathrm{min}$ & Decision is conclusive & Stop $\to$ Decision \\
-        Precision is the Goal & Goal & Precision $\le$ Goal & Stop $\to$ Decision \\
-        Enhanced PitG & Goal & Precision $\le$ Goal \textbf{AND} & Stop $\to$ Decision \\
+        HDI + ROPE & $N_\mathrm{min}$ & Decision is conclusive & Stop $\&$ Decision \\
+        Precision is the Goal & Goal & Precision $\le$ Goal & Stop then Decision \\
+        Enhanced PitG & Goal & Precision $\le$ Goal \textbf{AND} & Stop $\&$ Decision \\
          & & Decision is conclusive & \\
       \end{tabular}
       \caption{Comparison of stopping algorithms. `Decision is conclusive' means the HDI is fully inside or fully outside the ROPE.}
@@ -205,15 +205,10 @@ we employ a synthetic data simulation based on Bernoulli trials (dichotomous dat
 While these methods are applicable to continuous data, we focus on the Bernoulli case
 to maintain comparability with the work of \cite{kruschke2015doing}.\footnote{We apply a similar setup to that in section 3.13 of \cite{kruschke2015doing}, with some modifications if visualisations to better illustrate the differences between the algorithms.}
 
-We generate $M=500$ independent sequences of $N_{\rm max}=1,500$ trials each. This maximum sample size is chosen to simulate a typical medium-sized survey or experiment.
+We generate $M=2,000$ independent sequences of $N_{\rm max}=1,500$ trials each. This maximum sample size is chosen to simulate a typical medium-sized survey or experiment.
 
-We test three scenarios for the ground truth probability $\theta_{\rm true}$ against a null hypothesis of $\theta_{\rm null}=0.5$:
-\begin{enumerate}
-    \item \textbf{Fair Coin ($\theta_{\rm true}=0.5$)}: The null hypothesis is true.
-    \item \textbf{High Loading ($\theta_{\rm true}=0.6$)}: A strong effect exists.
-    \item \textbf{Slight Loading ($\theta_{\rm true}=0.52$)}: A weak effect exists, challenging the sensitivity of the algorithms.
-\end{enumerate}
 
+We test multiple scenarios for the ground truth probability between $0.5 \le \theta_{\rm true} \le 0.8$ against a null hypothesis of $\theta_{\rm null}=0.5$.
 \subsubsection{Algorithm Configuration}
 
 Unless stated otherwise, we utilize the following default parameters, chosen to reflect detailed but realistic experimental conditions (e.g., opinion polling):
@@ -222,8 +217,9 @@ Unless stated otherwise, we utilize the following default parameters, chosen to 
     \item \textbf{ROPE Width ($\Delta_{\rm ROPE}=0.1$)}: We define the Region of Practical Equivalence as $\theta_{\rm null} \pm 0.05$. This implies that any result within the range $[0.45, 0.55]$ is considered practically equivalent to the null.
     \item \textbf{Precision Goal}: We set the target precision (HDI width) to 80\% of the ROPE width ($\mathrm{Goal}=0.08$).
     \item \textbf{Minimum Sample Size ($N_{\rm min}=30$)}: A practical lower bound to prevent premature stopping due to early stochastic noise, particularly relevant for the location-based HDI+ROPE algorithm.
+    \item \textbf{Maximum Sample Size ()$N_{\rm max}=1,500$}): An upper bound for budgetary considerations. Experiments that are not decisive by this iteration are flagged as {\it indecisive}.
 \end{itemize}
 
 In the following section, we present the results of these simulations, first under these default settings and subsequently by varying key parameters to explore robustness.
 
-
+NOTE TO SELF: This paper might not vary the parameters. Go back and revise.
