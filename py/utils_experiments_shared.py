@@ -209,3 +209,75 @@ def report_success_rates_multiple_algos(method_df_stats, data_type='binomial', v
         display(df_combined)
 
     return df_combined
+
+
+def create_decision_correctness_df(method_stats, true_value, rope_min, rope_max, data_type='binomial'):
+    """
+    Evaluate decision correctness for all experiments.
+    
+    TODO: This solves for absolute decision correctness of accept/reject
+          but not for the direction of rejection (e.g, higher or lower).
+          This most likely should not impact PitG or ePiTG but it might impact HDI+ROPE
+          which is likely to decide on the wrong side of the ROPE.
+          This might be worth visualizing to examine prevalence.
+    
+    Parameters:
+    -----------
+    method_stats : dict
+        Dictionary of method statistics from stop_decision_*_multiple_methods
+    true_value : float
+        True parameter value (success_rate for binomial, mean for continuous)
+    rope_min : float
+        Lower ROPE boundary
+    rope_max : float
+        Upper ROPE boundary
+    data_type : str
+        'binomial' or 'continuous'
+    
+    Returns:
+    --------
+    pd.DataFrame
+        DataFrame with decision correctness for each experiment and method
+    """
+    accept_is_correct = rope_min <= true_value <= rope_max
+
+    experiment_outcomes = {}
+    method_names = ["hdi_rope", "pitg", "epitg"]
+
+    for isample in range(len(method_stats[method_names[0]])):
+        experiment_outcomes[isample] = {}
+        for method_name in method_names:
+            experiment_outcomes[isample][f"{method_name}_decision_iteration"] = \
+                method_stats[method_name][isample]["decision_iteration"]
+            experiment_outcomes[isample][f"{method_name}_accept"] = \
+                method_stats[method_name][isample]["accept"]
+            experiment_outcomes[isample][f"{method_name}_reject_below"] = \
+                method_stats[method_name][isample]["reject_below"]
+            experiment_outcomes[isample][f"{method_name}_reject_above"] = \
+                method_stats[method_name][isample]["reject_above"]
+            experiment_outcomes[isample][f"{method_name}_inconclusive"] = \
+                method_stats[method_name][isample]["inconclusive"]
+
+            # Extract parameter value (type-specific)
+            if data_type == 'binomial':
+                param_value = method_stats[method_name][isample]["successes"] / \
+                             method_stats[method_name][isample]["decision_iteration"]
+            else:  # continuous
+                param_value = method_stats[method_name][isample]["sample_mean"]
+            
+            experiment_outcomes[isample][f"{method_name}_param_value"] = param_value
+
+            if method_stats[method_name][isample]["inconclusive"]:
+                # inconclusive - use expected value for decision making
+                this_decision_accept = rope_min <= param_value <= rope_max
+            else:  # conclusive case
+                this_decision_accept = bool(method_stats[method_name][isample]["accept"]) \
+                    if method_stats[method_name][isample]["accept"] is not None else None
+
+            experiment_outcomes[isample][f"{method_name}_decision_correct"] = \
+                this_decision_accept == accept_is_correct
+
+    df_experiment_outcomes = pd.DataFrame(experiment_outcomes).T
+    df_experiment_outcomes.index.name = "experiment_idx"
+
+    return df_experiment_outcomes

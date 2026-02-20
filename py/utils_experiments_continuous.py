@@ -7,6 +7,7 @@ from utils_experiments_shared import (
     stats_dict_to_df, 
     iteration_counts_to_df,
     report_success_rates_multiple_algos,
+    create_decision_correctness_df,
 )
 from utils_viz_continuous import viz_one_sample_results_continuous
 
@@ -134,9 +135,9 @@ class ContinuousHypothesis():
         true_mean : float
             True population mean
         """
-        # TODO: Implement continuous version of create_decision_correctness_df
-        # For now, placeholder
-        print(f"TODO: Implement decision_correctness for continuous (true_mean={true_mean})")
+        self.df_experiment_correctness = create_decision_correctness_df(
+            self.method_stats, true_mean, self.rope_min, self.rope_max, data_type='continuous'
+        )
     
     # TODO: Plotting methods - implement later
     def plot_decision_rates(self, true_mean=None, viz_epitg="separate"):
