@@ -1,9 +1,11 @@
-We examine simulation results for three scenarios:
+We start by examining in detail simulation results for three scenarios:
 \begin{enumerate}
   \item \textbf{Fair Coin ($\theta_{\rm true}=0.5$)}: The null hypothesis is true.
   \item \textbf{Highly Loaded Coin ($\theta_{\rm true}=0.6$)}: A strong effect exists.
-  \item \textbf{Slightly Loaded Coins ($\theta_{\rm true}=0.53, 0.57$)}: Weak effects exist near the ROPE boundary.  challenging the sensitivity of the algorithms
+  \item \textbf{Loaded Coin ($\theta_{\rm true}=0.57$)}: A reasonable effect exists near the ROPE boundary, challenging the sensitivity of the algorithms.
 \end{enumerate}
+
+We then conclude by examining trends across the full range of $\theta_{\rm true}$ values from 0.5 to 0.65, which encompasses the ROPE and its boundaries.
 
 \subsection{Fair Coin ($\theta_{\rm true}=0.5$)}\label{sec:fair_coin}
 
@@ -23,16 +25,29 @@ Finally, for \textit{Enhanced Precision is the Goal} (ePitG), the stop criterion
   \label{fig:iterations}
 \end{figure}
 
-We expand this analysis to $M=500$ experiments, displaying outcomes in Figure \ref{fig:fair_iter_vs_rate} and summarizing key statistics in Table \ref{tab:fair_iter_vs_rate}. \footnote{This visual is inspired by \cite{kruschke2015doing}, Figure 13.6.}
+We expand this analysis to $M=2,000$ experiments, displaying outcomes in Figure \ref{fig:fair_iter_vs_rate} and summarizing key statistics in Table \ref{tab:fair_iter_vs_rate}. \footnote{This visual is inspired by \cite{kruschke2015doing}, Figure 13.6.}
 
 \begin{figure}[h!]
   \centering
   \includegraphics[width=1\textwidth]{fair_experiments_iter_vs_rate.png}
-  \caption{Outcomes of 500 experiments. Small symbols represent individual experiment stops; large symbols represent means. Red squares: HDI+ROPE. Blue circles: PitG. Green Xs: ePitG. Solid line: $\theta_{\rm true}$. Dashed lines: ROPE boundaries. \textcolor{red}{\textbf{[TK: analytical results]}}}
+  \caption{Outcomes of 2,000 experiments.
+  Bottom panel: histograms of stop iterations $N$ color coded for each algorithm.
+  Left panel: histograms of observed success rate $\hat{\theta}(N)$ at the iteration when the stop criterion is met color coded for each algorithm.
+  Main panel: scatter plot of $\hat{\theta}(N)$. Each symbol represents individual experiment stops;
+  Red squares: HDI+ROPE.
+  Blue circles: PitG. Green Xs: ePitG.
+  Solid line: $\theta_{\rm true}$.
+  Dashed lines: ROPE boundaries.
+  \textcolor{red}{\textbf{[TK: analytical results]}}
+  Note that whereas the scatter plots show the trends this histograms visualise where most of the results are distributed.
+  }
   \label{fig:fair_iter_vs_rate}
 \end{figure}
 
-In Figure \ref{fig:fair_iter_vs_rate}, the large symbols representing the means of 500 experiments show that, on average, all methods yield unbiased outcomes (see the $\overline{\theta}$ column in Table \ref{tab:fair_iter_vs_rate}).
+Figure \ref{fig:fair_iter_vs_rate} visualises results of
+2,000 experiments show that, on average,
+all methods yield unbiased outcomes
+(see the $\overline{\theta}$ column in Table \ref{tab:fair_iter_vs_rate}).
 
 TODO: consider using median and percentiles instead of mean and standard deviation, as these are more robust to outliers. This is especially relevant for the HDI+ROPE method, which has a large variance in stop iteration due to early stopping on extreme samples.
 
@@ -56,7 +71,13 @@ TODO: consider using median and percentiles instead of mean and standard deviati
 
 However, HDI+ROPE falsely rejects $\theta_{\rm null}$ at a rate of 6\%, whereas the precision-based methods exhibit zero False Positives (see Reject column in Table \ref{tab:fair_iter_vs_rate}).\footnote{If we relax the minimum sample size ($N_{\rm min}=0$) for HDI+ROPE, the False Positive Rate increases to \textcolor{red}{\textbf{[TK\%]}}.}
 
-Precision is the Goal (blue circles) stops on average at iteration $\sim 598$, but 61\% of decisions remain inconclusive. For ePitG (green Xs), achieving conclusiveness requires additional sampling, resulting in only 1.6\% inconclusive outcomes by the final iteration ($N_{\rm max}=1,500$). This manifests as an average of $732.2\pm 210$ samples per experiment for ePitG compared to $598.3\pm 1.4$ for PitG---an average increase of 22.4\%.
+Precision is the Goal (blue circles) stops on median iteration of $\sim 599$
+(and very narrow IQR 598-599),
+but 61\% of decisions remain inconclusive. For ePitG (green Xs),
+achieving conclusiveness requires additional sampling,
+resulting in only 1.6\% inconclusive outcomes by the final iteration
+($N_{\rm max}=1,500$). This manifests as a median 627 (IQR of 598-794) samples per
+which is only a 4.7\% median increase compared to PitG.\footnote{The ePitG $N$ 75th percentile is 794, which is a 32.5\% increase compared to the 599 of PitG. This highlights that while the median increase is small, there is a long tail of experiments that require significantly more samples to achieve conclusiveness with ePitG.}
 
 Figure \ref{fig:fair_iter_vs_rate} highlights that after the ``Precision barrier'' at calcuated at 599.2, ePitG and HDI+ROPE become effectively the same algorithm, as the precision goal has been satisfied.
 
@@ -68,6 +89,8 @@ In Figure \ref{fig:fair_decisions}, we explore the decision rates over time.\foo
   \caption{Cumulative distribution of decisions. Left: HDI+ROPE. Right: Precision-based methods. Vertical axis: Proportion of decisions. Sum of Reject (red dashed), Accept (green solid), and Inconclusive (gray dot-dashed) is 100\% at each iteration.}
   \label{fig:fair_decisions}
 \end{figure}
+
+TODO: mention that the ePitG results is a hybrid of the other two.
 
 The left panel of Figure \ref{fig:fair_decisions} shows that for low $n$, HDI+ROPE may reject $\theta_{\rm null}$ (6\% FPR), which precision methods avoid (right panel). Around iteration 400 \textcolor{red}{\textbf{[TK: to be calculated]}}, HDI+ROPE gradually shifts toward accepting $\theta_{\rm null}$. In Figure \ref{fig:fair_iter_vs_rate}, this appears as red squares centering on $\theta_{\rm true}=0.5$ and then spreading toward the ROPE boundaries. This occurs because while the posterior mode may deviate slightly from truth, the narrowing interval eventually falls entirely within the ROPE.
 
