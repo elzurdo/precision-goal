@@ -667,7 +667,7 @@ def plot_pdf(sr_experiment_stats, rope_min, rope_max, xlim=None, xtitle=r"succes
 METHOD_FULL = {
     "hdi_rope": "HDI + ROPE",
     "pitg": "Precision is the Goal",
-    "epitg": "Enhance Precision is the Goal",
+    "epitg": "Enhanced Precision is the Goal",
 
 }
 
