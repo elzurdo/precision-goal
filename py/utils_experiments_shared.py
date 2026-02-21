@@ -310,3 +310,36 @@ def sims_hypo_dict_to_algo_stats_dfs(sims_hypo_dict):
             algo_stats_df[subset_name][algo_name]  = algo_stats_df[subset_name][algo_name].sort_index()
 
     return algo_stats_df
+
+
+def correctness_stats(df_experiment_correctness):
+    q_pitg_inc = "pitg_inconclusive == True"
+    cols_inconclusive = ['hdi_rope_inconclusive', 'pitg_inconclusive', 'epitg_inconclusive']
+    cols_correctness = ['hdi_rope_decision_correct', 'pitg_decision_correct', 'epitg_decision_correct']
+
+    return {
+        "inconclusive_rates": df_experiment_correctness[cols_inconclusive].astype(int).mean(),
+        "correctness_rates": df_experiment_correctness[cols_correctness].astype(int).mean(),
+        "correctness_rates_pitg_inconclusive": df_experiment_correctness.query(q_pitg_inc)[cols_correctness].astype(int).mean()
+    }
+
+def sims_hypo_to_correctness_stats(sims_hypo_results):
+    inconclusive_rates = {}
+    correctness_rates = {}
+    correctness_rates_pitg_inconclusive = {}
+
+    for theta_true in sims_hypo_results.keys():
+        correctness_ = correctness_stats(sims_hypo_results[theta_true]['hypothesis'].df_experiment_correctness)
+
+        inconclusive_rates[theta_true] = correctness_['inconclusive_rates']
+        correctness_rates[theta_true] = correctness_['correctness_rates']
+        correctness_rates_pitg_inconclusive[theta_true] = correctness_['correctness_rates_pitg_inconclusive']
+
+
+    df_inconclusive_rates = pd.DataFrame(inconclusive_rates).T.sort_index()
+    df_correctness_rates = pd.DataFrame(correctness_rates).T.sort_index()
+    df_correctness_rates_pitg_inconclusive = pd.DataFrame(correctness_rates_pitg_inconclusive).T.sort_index()
+
+    return {"df_inconclusive_rates": df_inconclusive_rates,
+            "df_correctness_rates": df_correctness_rates,
+            "df_correctness_rates_pitg_inconclusive": df_correctness_rates_pitg_inconclusive}

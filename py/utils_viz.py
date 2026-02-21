@@ -890,3 +890,68 @@ def plot_stop_and_conclusive_ratios(algo_stats_df, subset_name = "overall", para
     if param_null > 0.5:
         plt.axvline(x=param_null - dsuccess_rate, color="black", linestyle="--", alpha=0.5, label="ROPE\nlower boundary")
     plt.legend()
+
+def plot_conclusiveness_decisions_and_correctness_rates(algo_stats_df, df_correctness_rates, dsuccess_rate, method_names=None, n_experiments=None, subset_name = "overall", param_null=0.5):
+    ylabel = f"Fraction of all {n_experiments:,} Experiments" if n_experiments is not None else "Fraction of all Experiments"
+
+    if method_names is None:
+        method_names = list(METHOD_SHORT.keys())
+
+    plt.figure(figsize=(3 * FIG_WIDTH, FIG_HEIGHT))
+
+    # Conclusive Rates
+    plt.subplot(1, 3, 1)
+    for algo_name in METHOD_SHORT:
+        plt.plot(algo_stats_df[subset_name][algo_name]["conclusive_mean"],
+        color=ALGO_COLORS[algo_name], label=METHOD_SHORT[algo_name], linewidth=ALGO_LINEWIDTH[algo_name])
+
+    plt.grid(alpha=0.3)
+    plt.xlabel(r"$\theta_{\rm true}$")
+    plt.legend()
+    plt.axvline(x=param_null + dsuccess_rate, color="black", linestyle="--", alpha=0.5)
+    if param_null > 0.5:
+        plt.axvline(x=param_null - dsuccess_rate, color="black", linestyle="--", alpha=0.5)
+
+    plt.title("Conclusive Rates = Acceptence + Rejection")
+    plt.ylabel(ylabel)
+
+    plt.ylim(0.,1)
+
+    # Acceptence + Rejection Rates
+    plt.subplot(1, 3, 2)
+    for algo_name in METHOD_SHORT:
+        plt.plot(algo_stats_df[subset_name][algo_name]["accept_mean"],
+        color=ALGO_COLORS[algo_name], label=METHOD_SHORT[algo_name], linewidth=ALGO_LINEWIDTH[algo_name])
+
+        plt.plot(algo_stats_df[subset_name][algo_name]["reject_mean"],
+            color=ALGO_COLORS[algo_name], linewidth=ALGO_LINEWIDTH[algo_name], linestyle="-.")
+
+    plt.grid(alpha=0.3)
+    plt.xlabel(r"$\theta_{\rm true}$")
+    plt.ylabel(ylabel)
+    plt.title("Acceptence (solid), Rejection (dashed)")
+    plt.legend()
+    plt.axvline(x=param_null + dsuccess_rate, color="black", linestyle="--", alpha=0.5)
+    if param_null > 0.5:
+        plt.axvline(x=param_null - dsuccess_rate, color="black", linestyle="--", alpha=0.5)
+
+    plt.ylim(0.,1)
+
+    # Correctness Rates
+    plt.subplot(1, 3, 3)
+    for algo_name in method_names:
+        plt.plot(df_correctness_rates[f"{algo_name}_decision_correct"], color=ALGO_COLORS[algo_name], label=f"{METHOD_SHORT[algo_name]}", linewidth=ALGO_LINEWIDTH[algo_name])
+
+    plt.ylim(0., 1.)
+    plt.grid(alpha=0.3)
+    plt.legend()
+
+    plt.xlabel(r"$\theta_{\rm true}$")
+    plt.axvline(x=param_null + dsuccess_rate, color="black", linestyle="--", alpha=0.5)
+    if param_null > 0.5:
+        plt.axvline(x=param_null - dsuccess_rate, color="black", linestyle="--", alpha=0.5)
+
+    plt.title("Decision Correctness Rates")
+    plt.ylabel(ylabel)
+
+    plt.tight_layout()
