@@ -865,3 +865,28 @@ def plot_success_by_truth_absolute_and_diff(algo_stats_df, dsuccess_rate, subset
     plt.suptitle(f"Bias Assessments of {subset_name.capitalize()} Experiments", fontsize=20)
 
     plt.tight_layout()
+
+
+def plot_stop_and_conclusive_ratios(algo_stats_df, subset_name = "overall", param_null=0.5, dsuccess_rate=0.1, viz_mean=False):
+    
+    # stop ratio
+    stop_ratio = algo_stats_df[subset_name]["epitg"]["stop_iter_median"] / algo_stats_df[subset_name]["pitg"]["stop_iter_median"]
+    stop_ratio_mean = algo_stats_df[subset_name]["epitg"]["stop_iter_mean"] / algo_stats_df[subset_name]["pitg"]["stop_iter_mean"]
+    
+    # conclusive ratio
+    conclusive_ratio = algo_stats_df[subset_name]["epitg"]["conclusive_mean"] / algo_stats_df[subset_name]["pitg"]["conclusive_mean"]
+
+    plt.plot(stop_ratio, color="purple", linewidth=2, label="Median Stop Iteration Ratio")
+    if viz_mean:
+        plt.plot(stop_ratio_mean, color="gray", linewidth=1, label="Mean Stop Iteration Ratio")
+    plt.plot(conclusive_ratio, color="purple", linewidth=2, linestyle="-.", label="Conclusiveness Ratio")
+    plt.ylim(0,None)
+    plt.grid(alpha=0.3)
+    plt.xlabel(r"$\theta_{\rm true}$")
+    plt.ylabel("Ratio EPitG/PitG")
+
+    # TODO: generalise plotting boundaries for binary vs. continuous
+    plt.axvline(x=param_null + dsuccess_rate, color="black", linestyle="--", alpha=0.5, label="ROPE\nupper boundary")
+    if param_null > 0.5:
+        plt.axvline(x=param_null - dsuccess_rate, color="black", linestyle="--", alpha=0.5, label="ROPE\nlower boundary")
+    plt.legend()
