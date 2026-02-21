@@ -281,3 +281,32 @@ def create_decision_correctness_df(method_stats, true_value, rope_min, rope_max,
     df_experiment_outcomes.index.name = "experiment_idx"
 
     return df_experiment_outcomes
+
+
+def sims_hypo_dict_to_algo_stats_dfs(sims_hypo_dict):
+    algo_stats_df = {}
+
+    l_stats_viz = ["count","stop_iter_p25", 'stop_iter_median', "stop_iter_p75", "stop_iter_mean",
+    "param_mean", "param_p25", "param_median", "param_p75",
+    "conclusive_mean", "accept_mean", "reject_mean"]
+
+    for subset_name in ["overall", "conclusive", "inconclusive"]:
+        algo_stats_df[subset_name] = {}
+        for algo_name in [ 'hdi_rope','pitg', 'epitg']:
+            result_summary = {}
+            for theta_true, experiment_result in sims_hypo_dict.items():
+                if (algo_name, subset_name) in experiment_result['df_stats'].index:
+                    result_summary[theta_true] = experiment_result['df_stats'].loc[(algo_name, subset_name), l_stats_viz]
+                else:
+                    result_summary[theta_true] = pd.Series({metric_:None for metric_ in l_stats_viz})
+                    result_summary[theta_true]["count"] = 0
+
+
+            algo_stats_df[subset_name][algo_name] = pd.DataFrame(result_summary)
+            algo_stats_df[subset_name][algo_name].columns.name = 'theta_true'
+            algo_stats_df[subset_name][algo_name].index.name = 'stat'
+            algo_stats_df[subset_name][algo_name] = algo_stats_df[subset_name][algo_name].T
+
+            algo_stats_df[subset_name][algo_name]  = algo_stats_df[subset_name][algo_name].sort_index()
+
+    return algo_stats_df
