@@ -1,0 +1,112 @@
+\section*{Appendix A: Detailed Binomial Experiments}
+
+We start by examining in detail simulation results for three scenarios:
+\begin{enumerate}
+  \item \textbf{Fair Coin ($\theta_{\rm true}=0.5$)}: The null hypothesis is true.
+  \item \textbf{Highly Loaded Coin ($\theta_{\rm true}=0.6$)}: A strong effect exists.
+  \item \textbf{Loaded Coin ($\theta_{\rm true}=0.57$)}: A reasonable effect exists near the ROPE boundary, challenging the sensitivity of the algorithms.
+\end{enumerate}
+
+\subsection{Loaded Coin ($\theta_{\rm true}=0.6$)}\label{sec:loaded_coin}
+
+This experiment represents a case where the null hypothesis is false and there is a fairly strong effect. Results for these experiments are displayed in Figures \ref{fig:loaded0pt6_iter_vs_rate} and \ref{fig:loaded0pt6_decisions}, as well as Table \ref{tab:loaded0pt6_iter_vs_rate}, which are similar to those presented for the fair coin case in Section \ref{sec:fair_coin}.
+
+We observe that for all three algorithms, there is a 0\% False Negative Rate (see Accept column in Table \ref{tab:loaded0pt6_iter_vs_rate}); none of the experiments incorrectly accepted the null hypothesis.
+
+The \textit{HDI+ROPE} algorithm, however, is highly biased, with a mean success rate at stopping of $\overline{\theta} \approx 0.644$. This bias arises because many experiments stop very early, resulting in a mean stop iteration of $\overline{n} \approx 268$ (with a large standard deviation of $\sigma_n=291$), which is less than half the expected precision goal value of $N_{\theta_{\rm true}}=575.2$.
+
+Both precision-based algorithms yield unbiased outcomes. However, \textit{Precision is the Goal} (PitG) remains somewhat indecisive, with 29.2\% of experiments ending as inconclusive. In contrast, \textit{Enhanced Precision is the Goal} (ePitG) is significantly more decisive, clarifying the outcome in 99.8\% of cases (compared to 98.4\% for the fair coin). In this scenario, ePitG requires only 10.7\% more samples than PitG on average.
+
+The symmetry observed in the fair coin case (Figure \ref{fig:fair_iter_vs_rate}) around $\theta_{\rm true}=0.5$ is, as expected, absent here. In Figure \ref{fig:loaded0pt6_iter_vs_rate}, this manifests in the sharp slope of the PitG results (blue circles), which asymptote towards the precision goal value of $N_{\theta_{\rm true}}=575.2$ (dashed vertical line) from above ($\hat{\theta} \ge \theta_{\rm true}$) and not from the bottom.
+That said, symmetry of this problem dicates that results for a loaded coine with value $\theta_{\rm true}=0.4$ would be the mirror image of those for $\theta_{\rm true}=0.6$.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=1\textwidth]{loaded0pt6_experiments_iter_vs_rate.png}
+  \caption{Outcomes of 500 experiments with loaded coin $\theta_{\rm true}=0.6$. Layout and symbols follow Figure \ref{fig:fair_iter_vs_rate}.}
+  \label{fig:loaded0pt6_iter_vs_rate}
+\end{figure}
+
+\begin{table}[h!]\label{tab:loaded0pt6_iter_vs_rate}
+  \begin{center}
+  \begin{tabular}{c|c|c|c|c|c|c|c|c}
+    \hline
+    Algorithm & Accept & Reject & Conclusive & Inconclusive & $\overline{n}$ & $\sigma_n$ & $\overline{\theta}$ & $\sigma_{\hat{\theta}}$\\
+    \hline
+    HDI+ROPE & 0.0	& 0.998	& 0.998 &	0.002	& 268.3 &	290.8 & 0.6441 &	0.0539 \\
+    PitG & 0.0 &	0.708 &	0.708 &	0.292	& 573.7	& 10.2 &	0.6011 &	0.02038 \\
+    ePitG & 0.0	& 0.998	& 0.998	& 0.002	& 634.9	& 149	& 0.6034	 & 0.0174 \\
+    \hline
+  \end{tabular}
+  \caption{Statistical summaries of 500 loaded coin experiments ($\theta_{\rm true}=0.6$). Compare with the fair coin baseline in Table \ref{tab:fair_iter_vs_rate}.
+  Note: \textit{Accept} + \textit{Reject} = \textit{Conclusive}; \textit{Conclusive} + \textit{Inconclusive} = 1.}
+\end{center}
+\end{table}
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=1\textwidth]{loaded0pt6_experiment_decision_rates.png}
+  \caption{Cumulative distribution of decisions for $\theta_{\rm true}=0.6$. Compare with Figure \ref{fig:fair_decisions}. Note the high decisiveness of ePitG (green, right panel) compared to PitG (blue, right panel) and the early stopping bias of HDI+ROPE (red, left panel).}
+  \label{fig:loaded0pt6_decisions}
+\end{figure}
+
+\subsection{Close to the ROPE ($\theta_{\rm true}=0.53, 0.57$)}
+
+We now explore the cases of $\theta_{\rm true}=0.57$ and $0.53$
+where we expect a lot of inconclusive outcomes due to straddlers of the ROPE.
+
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=1\textwidth]{loaded0pt57_experiments_iter_vs_rate.png}
+  \caption{Similar to Figure \ref{fig:fair_iter_vs_rate} but with
+  loaded coin $\theta_{\rm true}=0.57$.
+  Small symbols are individual experiment outcomes. Large are experiments
+  mean values. When using HDI+ROPE as the stop criterion results in the red squares.
+  Precision is the Goal as the criterion results in the blue circles
+  and the Enhanced PitG as the green Xs. $\theta_{\rm true}$ is the solid horizontal line and
+  the ROPE is the horizontaldashed lines. Summary stats are in Table \ref{tab:fair_iter_vs_rate}. TK: analytical results
+  }
+  \label{fig:loaded0pt57_iter_vs_rate}
+\end{figure}
+
+
+\begin{table}[h!]\label{tab:loaded0pt57_iter_vs_rate}
+  \begin{center}
+  \begin{tabular}{c|c|c|c|c|c|c|c|c}
+    \hline
+    Algorithm & Accept & Reject & Conclusive & Inconclusive & $\overline{n}$ & $\sigma_n$ & $\overline{\theta}$ & $\sigma_{\hat{\theta}}$\\
+    \hline
+    HDI+ROPE & 0.0080	& 0.648 &	0.656 &	0.344 &	804.6	& 611.0	& 0.605	& 0.058 \\
+    PitG & 0.0005 &	0.157 &	0.158 &	0.843	& 586.5	& 7.1 &	0.570 &	0.020\\
+    ePitG & 0.0035 &	0.542 &	0.545 & 	0.455 &	1127.2 &	395.9	& 0.576 &	0.017  \\
+    \hline
+  \end{tabular}
+  \caption{Similar to Table \ref{tab:fair_iter_vs_rate} but for $\theta_{\rm true}=0.57$ Statistic summaries of 500 experiments of the three stop criteria shown in
+  Figure \ref{fig:fair_iter_vs_rate}. {\it Accept}
+  is the fraction of experiments which results in acceptence of $\theta_{\rm null}$,
+  and similar in reverse for {\it Reject}. {\it Conclusive} is the sum of Accept
+  and Reject and {\it Inconclusive} is its complementary.
+  The mean stop iteration is $\overline{n}$ and the standard deviation $\sigma_n$
+  The mean sample rate when the stop is triggered is $\overline{\theta}$ and its standard deviation is $\sigma_{\hat{\theta}}$.
+  }
+\end{center}
+\end{table}
+
+% hdi_rope	0.0080	& 0.6480 &	0.6560 &	0.3440 &	804.6165	& 611.021115	& 0.604697	& 0.058295
+% pitg	0.0005 &	0.1570 &	0.1575 &	0.8425	& 586.4470	& 7.116144 &	0.570288 &	0.020308
+% epitg	0.0035 &	0.5415 &	0.5450 & 	0.4550 &	1127.1755 &	395.941462	& 0.575583 &	0.017217
+
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=1\textwidth]{loaded0pt57_experiment_decision_rates.png}
+  \caption{Similar information as in Figure \ref{fig:fair_iter_vs_rate} but focusing on
+  the distribution of decisions. Left panel is for HDI+ROPE. Right panel are both
+  precision based methods. Horizontal axis- iteration. Vertical axis- proportion of
+  decisions made up to (and including) each iteration. The sum of Reject (red dashed),
+  Accept (green solid) and Inconclusive/Collect-more- (gray dot-dashed) decisions at
+  each iteration is 100\%.
+  }
+  \label{fig:loaded0pt57_decisions}
+\end{figure}

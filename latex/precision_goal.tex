@@ -60,7 +60,39 @@ Aspects not addressed in the paper:
   \item non analytiucal solutions - would require sampling methods like MCMC which would take much longer to calculate (may be less of an issue with future computer power, e.g, quantum computers)
 \end{itemize}
 
+
+\section{Discussion}
+TODO: rephrase the following:
+
+While our focus is on single-sample hypothesis testing,
+the precision-goal framework extends naturally to A/B testing.
+For comparing two binomial proportions $\theta_1 - \theta_2$,
+the normal approximation provides an analytical solution for
+the posterior when sample sizes exceed $\sim$30. The HDI width (standard error) serves as the precision metric,
+enabling sequential A/B testing without MCMC.
+
+The precision-goal framework extends naturally to two-sample comparisons (A/B testing).
+For binomial proportion $\theta_1 - \theta_2$
+the normal approximation provides analytical posteriors when samples exceed $\sim 30$
+For continuous data comparing means $\mu_1 - \mu_2$ Welch's t-test yields exact analytical solutions regardless of sample size, avoiding MCMC entirely.
+In both cases, the standard error of the difference serves as the precision metric,
+enabling sequential A/B testing under the same HDI+ROPE decision framework.
+
+the normal approximation also provides analytical posteriors when samples exceed $\sim 30$.
+
+TODO: see if Agresti \& Caffo (2000) is relevant: "Simple and Effective Confidence Intervals for Proportions and Differences of Proportions Result from Adding Two Successes and Two Failures"
+(Classic reference for improved normal approximation)
+
+TODO: power analysis
+
+TODO: multiple hypothesis testing
+
 \section{Conclusion}
+
+
+
+\appendix
+\input precision_goal_appendix_binomial
 
 \section{Useful Equations}
 \input precision_goal_useful_equations
