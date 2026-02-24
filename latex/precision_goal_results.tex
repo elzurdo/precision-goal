@@ -1,15 +1,8 @@
-We setup the problem being addressed by examining in detail the specific case
-when the null hypothesis is  and the ROPE is $[0.5, 0.55]$.
-We then present general trends across the full range of $\theta_{\rm true}$ values
-which encompasses the ROPE and its boundaries.
-Detailed analyses of $\theta_{\rm true}=0.6$ and $\theta_{\rm true}=0.57$
-scenarios are provided in Appendix A.
-
-
-We begin with a detailed examination of the fair coin case to establish the problem and solution ($\theta_{\rm null}=0.5$).
+We begin with a detailed examination of the fair coin case to establish the problem and
+proposed solution ($\theta_{\rm null}=0.5$).
 We then present general trends across the full range of $\theta_{\rm true}$ values 
 which encompasses the ROPE and its boundaries. Detailed analyses of $\theta_{\rm true}=0.6$ and $\theta_{\rm true}=0.57$
-scenarios are provided in Appendix A (TODO Reference).
+scenarios are provided in Appendix \ref{sec:binomial_appendix}.
 
 \subsection{Fair Coin ($\theta_{\rm true}=0.5$)}\label{sec:fair_coin}
 
@@ -17,11 +10,14 @@ Figure \ref{fig:iterations} presents the results of a hand-picked fair coin expe
 It was chosen to highlight potential stark differences in outcomes between the three algorithms.
 Note that the posteriors shown in Figure \ref{fig:posteriors} correspond to three specific iterations of this single experiment.
 
-As seen in Figure \ref{fig:iterations}, at iteration 126, the 95\% HDI of the \textit{HDI+ROPE} algorithm falls fully outside the ROPE, causing it to confidently---though incorrectly---reject $\theta_{\rm null}$.
+As seen in Figure \ref{fig:iterations}, at iteration 126 (marked as a vertical red dashed line), the 95\% HDI of the \textit{HDI+ROPE} algorithm falls fully outside the ROPE, causing it to confidently---though incorrectly---reject $\theta_{\rm null}$.
 
-In contrast, the \textit{Precision is the Goal} (PitG) stop criterion is met at iteration 598, when the HDI width becomes narrower than the precision goal of 0.08. However, because the HDI still straddles the ROPE boundary, the decision is inconclusive.
+In contrast, the \textit{Precision is the Goal} (PitG) stop criterion is met at iteration 598 (marked as the first pair of purple dots), when the HDI width becomes narrower than the precision goal of 0.08. However, because the HDI still straddles the ROPE boundary, the decision is inconclusive.
 
-Finally, for \textit{Enhanced Precision is the Goal} (ePitG), the stop criterion is only met at iteration 804, when the HDI satisfies both conditions: it is narrower than the precision goal \textit{and} falls fully within the ROPE. This results in a correct acceptance of $\theta_{\rm null}$.
+Finally, for \textit{Enhanced Precision is the Goal} (ePitG), the stop criterion is only
+met at iteration 804 (marked as the green vertical line), 
+when the HDI satisfies both conditions: it is narrower than the precision goal \textit{and} falls fully within the ROPE.
+This results in a correct acceptance of $\theta_{\rm null}$.
 
 \begin{figure}[h!]
   \centering
@@ -35,7 +31,8 @@ We expand this analysis to $M=2,000$ experiments, displaying outcomes in Figures
 and summarizing key statistics in Tables \ref{tab:fair_overall}, \ref{tab:fair_conclusive}.
 
 
-Figure \ref{fig:fair_iter_vs_rate} visualises results of 2,000 experiments.\footnote{This visual is inspired by \cite{kruschke2015doing}, Figure 13.6.} 
+Figure \ref{fig:fair_iter_vs_rate} displays results of both individual experiments and their aggregated statistics,
+with a focus on the distribution of stop iterations $N$ and success rates at the stop iteration $\hat{\theta}(N)$.\footnote{This visual is inspired by \cite{kruschke2015doing}, Figure 13.6.} 
 
 \begin{figure}[h!]
   \centering
@@ -55,11 +52,20 @@ Figure \ref{fig:fair_iter_vs_rate} visualises results of 2,000 experiments.\foot
 
 We notice that the HDI+ROPE (red squares) yields a wide range of stop iterations and success rates,
 with a significant portion of results falling outside the ROPE, leading to incorrect rejections of $\theta_{\rm null}$.
-In contrast, PitG (blue circles) consistently stops around iteration 599 with success rates tightly clustered around $\theta_{\rm true}=0.5$,
-but, as we will see below in Figure \ref{fig:fair_decisions}, with a high rate of inconclusive outcomes.
-ePitG (green Xs) shows a similar distribution to PitG but extends to later iterations, achieving more conclusive results while maintaining unbiased estimates.
+Its distribution of $N$ shows both a skewness towards early stopping at $\sim 400$, much
+earlier than the precision stop criterion of $N_{\theta_{\rm true}}\sim 600$ (dashed vertical line), and a long tail extending to later iterations.
 
-Figure \ref{fig:fair_decisions} displays the cumulative distribution of decisions for the three algorithms.\footnote{Display inspired by top panels of Figure 13.6 in \cite{kruschke2015doing}.}
+In contrast, PitG (blue circles) consistently stops around iteration $N_{\theta_{\rm true}}$
+with success rates clustered around $\theta_{\rm true}=0.5$.
+However, many of these stops occur when the HDI straddles the ROPE boundary, resulting in a high rate of inconclusive decisions (see Figure \ref{fig:fair_decisions} and Table \ref{tab:fair_overall}).
+ePitG (green Xs) shows a narrower $\hat{\theta}(N)$ distribution than PitG but extends to later iterations,
+achieving more conclusive results while maintaining unbiased estimates.
+
+Figure \ref{fig:fair_decisions} foceses our attention to the distrbituion of decisions
+made up to (and including) each iteration with the three discussed options: 
+reject $\theta_{\rm null}$ (red dashed line), accept $\theta_{\rm null}$ (green solid line),
+and inconclusive (gray dot-dashed line).
+For each panel the sum of these proportions is 100\%.\footnote{Display inspired by top panels of Figure 13.6 in \cite{kruschke2015doing}.}
 
 \begin{figure}[h!]
   \centering
@@ -71,24 +77,23 @@ Figure \ref{fig:fair_decisions} displays the cumulative distribution of decision
   \label{fig:fair_decisions}
 \end{figure}
 
-The rejection rate of HDI+ROPE (red dashed line in left panel) quickly assymptotes at 6\%,
-while the acceptance rate (green solid line) increases, reflecting a shift from incorrect rejections to correct acceptances as more data is collected.
-The gray dot-dashed line indicates the proportion of inconclusive decisions, which decreases over time as more experiments yield conclusive outcomes.
-Both the precision based methods demonstrate a zero rejection rate (red dashed lines in middle and right panels), as they are designed to avoid false positives by requiring precision criteria to be met before making a decision.
-For PitG (middle panel), the acceptance rate (green solid line) is appears as a Heaviside step function at iteration 598, where it jumps to 36.7\%,
-while the inconclusive rate (gray dot-dashed line) drops to 63.3\%. ePitG (right panel) shows a steady increase in acceptance rate, reaching 98.4\% by iteration 1,500, with a corresponding decrease in inconclusive decisions.
-The decision rates of ePitG appear to be a hybrid of the other two algorithms,
-as it maintains the unbiased nature of PitG while achieving a high conclusiveness
-rate similar to HDI+ROPE, albeit with a more gradual transition from inconclusive to
-conclusive outcomes.
+The rejection rate of HDI+ROPE (left panel) quickly assymptotes at 6\%,
+while the acceptance rate starts its increase at $N\sim 400$, reflecting a shift from incorrect rejections to correct acceptances as more data is collected.
+The proportion of inconclusive decisions drops accordingly.
+
+Both of the precision based methods demonstrate a correct zero rejection rate (middle and right panels), as they are designed to avoid false positives by requiring precision criteria to be met before making a decision.
+For PitG (middle panel), the acceptance rate appears as a Heaviside step function, where it jumps at $N_{\theta_{\rm true}}$ to 36.7\%,
+while the inconclusive rate drops to 63.3\% and stays there. 
+
+The results of ePitG (right panel) appears to be a hybrid of the other two algorithms 
+(as per its design), as it maintains the unbiased nature of PitG starting to accept
+$\theta_{\rm null}$ at $N_{\theta_{\rm true}}$ while achieving a high conclusiveness rate
+similar to HDI+ROPE, albeit with a more gradual transition from inconclusive to conclusive outcomes.
 
 
 Table \ref{tab:fair_overall} summarises the overall conclusiveness rates and stop iterations
 statistics for the 2,000 experiments. Table \ref{tab:fair_conclusive} focuses on the subset of conclusive experiments,
 detailing the success rates at stopping points.
-
-
-
 
 \begin{table}[h!]\label{tab:fair_overall}
   \begin{center}
