@@ -91,11 +91,11 @@ $\theta_{\rm null}$ at $N_{\theta_{\rm true}}$ while achieving a high conclusive
 similar to HDI+ROPE, albeit with a more gradual transition from inconclusive to conclusive outcomes.
 
 
-Table \ref{tab:fair_overall} summarises the overall conclusiveness rates and stop iterations
-statistics for the 2,000 experiments. Table \ref{tab:fair_conclusive} focuses on the subset of conclusive experiments,
-detailing the success rates at stopping points.
+Table \ref{tab:fair_overall} summarises key statistics of all 2,000 experiments:
+conclusiveness rates, stop iteration statistics. Table \ref{tab:fair_conclusive} focuses
+on the subset of conclusive experiments detailing the success rates at stopping points $\hat{\theta}(N)$.
 
-\begin{table}[h!]\label{tab:fair_overall}
+\begin{table}[h!]
   \begin{center}
   \begin{tabular}{c|c|c|c}
     \hline
@@ -112,6 +112,7 @@ detailing the success rates at stopping points.
   Median sample rate at stop $\hat{\theta}_{\rm 50\%}$;
   Interquartile range of sample rate at stop $\hat{\theta}_{\rm 25\%} - \hat{\theta}_{\rm 75\%}$.
  }
+  \label{tab:fair_overall}
 \end{center}
 \end{table}
 
@@ -125,7 +126,7 @@ EPitG results in substantially more conclusive outcomes, with a median stop iter
 This can be quiatified as only a 4.7\% increase in the median stop iteration compared to PitG.\footnote{The ePitG $N$ 75th percentile is 794, which is a 32.5\% increase compared to the 599 of PitG. This highlights that while the median increase is small, there is a long tail of experiments that require significantly more samples to achieve conclusiveness with ePitG.}
 
 
-\begin{table}[h!]\label{tab:fair_conclusive}
+\begin{table}[h!]
   \begin{center}
   \begin{tabular}{c|c|c|c|c|c}
     \hline
@@ -141,6 +142,7 @@ This can be quiatified as only a 4.7\% increase in the median stop iteration com
   Interquartile range of sample rate at stop $\hat{\theta}_{\rm 25\%} - \hat{\theta}_{\rm 75\%}$.
   Note:  The sum of the Acceptence and Rejection rates are 1 due to conditioning on conclusive experiments.
   }
+  \label{tab:fair_conclusive}
 \end{center}
 \end{table}
 
@@ -163,11 +165,16 @@ which encompasses the ROPE and its boundaries. \textcolor{red}{\textbf{[TK: Note
 
 \subsection{General Trends Across $\theta_{\rm true}$ Values}
 
-We next examine trends of these algorithms when conducting the experiments between
-$\theta_{\rm true}=0.5$ through $0.65$ at intervals of $0.1$. \footnote{Due to symmetry of the problem the results between $\theta_{\rm true}=0.35$ through $0.5$ would mirror the ones shown here.}
-Assuming a null hypothesis of $\theta_{\rm true}=0.5$ we find that the PitG and ePitG
-are effectively the same algorithm as they yields the same results. Below we demonstrate
-where they differ.
+We next examine trends of these algorithms when conducting the experiments from
+$\theta_{\rm true}=0.5$ onwards at intervals of $0.1$. \footnote{Due to symmetry of the problem the results between $\theta_{\rm true}=0.35$ through $0.5$ would mirror the ones shown here.}
+
+Figure \ref{fig:conclusiveness_rates} illustrates the conclusiveness rates of each
+algorithm (left panel), the acceptance and rejections rates (middle panel)
+where the horizontal axis is the true success rate $\theta_{\rm true}$ and the null hypothesis
+is $\theta_{\rm null}=0.5$.
+The ROPE top boundary is highlighted with a vertical dashed line to indicate an important inflection point.
+In the case of the acceptence and rejection rates - left of the ROP top boundary acceptence is correct
+and rejection incorrect, and right of it vice versa.
 
 \begin{figure}[h!]
   \centering
@@ -177,16 +184,37 @@ where they differ.
   \label{fig:conclusiveness_rates}
 \end{figure}
 
-Figure \ref{fig:conclusiveness_rates} illustrates the conclusiveness rates of each
-algorithm where the horizontal axis is the true success rate and the null hypothesis
-is $\theta_{\rm null}=0.5$. 
-As expected, all have a minimal extremum at the ROPE upper coundary of $\theta=0.55$ (vertical dashed line).
-As seen in Figures TBD and TBD at $\theta_{\rm true}=0.5$ the HDI+ROPE and ePitG are nearly
-100\% conclusive whereas PitG is less than 40\%. HDI+ROPE and ePitG assymptote
-to 100\% conclusiveness again at $\theta_{\rm true}=0.6$, whereas for PitG this happens
-at $\theta_{\rm true}=0.65$. Throughout HDI+ROPE is the most conclusive, however, it
-is the most biased.
+As detailed in Section \ref{sec:fair_coin} the conclusiveness rate of HDI+ROPE (red)
+and ePitG (green) both start at near 100\% for $\theta_{\rm true}=0.5$, where PitG (blue)
+at 36.7\%. From there they all decrease to $\theta_{\rm true}$ at the upper bound of the ROPE
+which serves as a minimal point in which they rise again. Whereas HDI+ROPE and ePitG
+return to near 100\% at $\theta_{\rm true}=0.6$, PitG assymptotes to 100\% only at
+$\theta_{\rm true}=0.65$ at which ePitG and PitG are effectively the same algorithm
+(assuming the fair coin case of $\theta_{\rm null}=0.5$).
 
+The acceptence and rejection rates follow similar patterns, since we consider these
+only for the conclusive experiments. As seen in Section \ref{sec:fair_coin}
+the HDI+ROPE start with a false positive rate of $\sim 6\%$ at $\theta_{\rm true}=0.5$
+(manifested in the middle panel as the red dashed line) an reaches a max of 30\%
+at the inflection point. Examining its acceptence rate (red solid line) we
+see that at the inflection point it is at $\sim$10\% but quickly drops to the correct 0\%
+by $\theta_{\rm true}=0.57$.
+
+Both of the precision based methods start at no false positives at $\theta_{\rm true}=0.5$,
+and there is a small rise to the inflection point which is similarly dropped quickly.
+
+TODO: mention that the inflection point is tricky ...
+
+In the right panel of Figure \ref{fig:conclusiveness_rates} we examine one manner of
+dealing with inconclusive experiments. For each inconclusive experiment we assign a
+decision of accept or reject $\theta_{\rm null}$ by checking whether the mean of the posterior ($N_{\rm success}/N_{\rm total}$)
+is inside or outside the ROPE, respectively. This is a common approach to dealing with inconclusive experiments, but it is important
+to note that it is not the only one and it may not be the most appropriate in all cases.
+For the conclusive experiments we keep the decisions as they are.
+We then calculate the overall acceptence and rejection rates by $\theta_{\rm true}$ values and
+then flag them as \textit{correct} or \textit{incorrect} by comparing them to the ROPE boundaries.
+Finally the \textit{Decision Correctness Rates} are calculated as the proportion of correct decisions (accept or reject) out of all decisions (correct and incorrect) for each $\theta_{\rm true}$ value.
+The results of all 2,000 experiments shows TBD.
 
 
 
