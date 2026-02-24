@@ -140,13 +140,6 @@ This can be quiatified as only a 4.7\% increase in the median stop iteration com
 \end{table}
 
 
-
-The left panel of Figure \ref{fig:fair_decisions} shows that for low $n$, HDI+ROPE may reject $\theta_{\rm null}$ (6\% FPR), which precision methods avoid (right panel). Around iteration 400 \textcolor{red}{\textbf{[TK: to be calculated]}}, HDI+ROPE gradually shifts toward accepting $\theta_{\rm null}$. In Figure \ref{fig:fair_iter_vs_rate}, this appears as red squares centering on $\theta_{\rm true}=0.5$ and then spreading toward the ROPE boundaries. This occurs because while the posterior mode may deviate slightly from truth, the narrowing interval eventually falls entirely within the ROPE.
-
-The right panel of Figure \ref{fig:fair_decisions} confirms that Precision is the Goal triggers at iteration 598 with extremely low variance ($\sigma_n=1.4$). Consequently, only 39\% of results are decisive (all correctly accepting $\theta_{\rm null}$).
-
-Enhanced PitG (green Xs) extends the unbiased promise of PitG but is significantly more decisive. The ``accept'' curve in the right panel grows steadily to 98.4\% by $N_{\rm max}=1,500$.
-
 As this binomial setup is well-defined, we observe trends that can be described analytically. We discuss this in Section \textcolor{red}{\textbf{[TK]}}, but note here that the expected stop iteration for Precision is the Goal is approximated by:
 \begin{equation}\label{eq:pitg_stop_iteration}
 n \approx \frac{4 z_{*}^2}{\rm{CI}^2}p(1-p) - 1
@@ -159,6 +152,9 @@ where:
 \end{itemize}
 
 For this fair coin instance ($p=0.5$), we obtain $n \approx 599.2$, indicated by the dashed vertical line in Figure \ref{fig:fair_iter_vs_rate}.
+
+We next move on to examine the general trends across the full range of $\theta_{\rm true}$ values,
+which encompasses the ROPE and its boundaries. \textcolor{red}{\textbf{[TK: Note to self - repetitive from above, revise ...]}}
 
 \subsection{General Trends Across $\theta_{\rm true}$ Values}
 

@@ -198,6 +198,40 @@ As seen in Algorithm \ref{alg:epitg}, strictly enforcing both conditions ensures
 
 Note that all stopping algorithms (\ref{alg:hdi_rope}--\ref{alg:epitg}) assume the collection of one data point at a time, though this is easily modified in the increment step ($N \mathrel{+}= 1$) to accommodate batch collection.
 
+\subsection{Approximate Expected Stop Iteration (CLT)}\label{sec:expected_stop_iteration}
+
+To complement the algorithmic definitions above, we provide a large-sample approximation for the expected stopping iteration of precision-based methods. The derivation relies on a normal approximation to the posterior (or sampling distribution of the estimator) and is therefore intended as an analytical guide rather than an exact finite-sample identity.
+
+Assume an estimator $\hat\theta_N$ with asymptotic form
+\begin{equation}
+\hat\theta_N \approx \mathcal{N}\!\left(\theta,\,\frac{V(\theta)}{N}\right),
+\end{equation}
+where $V(\theta)$ is the per-observation variance contribution. For a symmetric central interval with critical value $z_{*}$, the interval width is approximately
+\begin{equation}
+w \approx 2 z_{*}\sqrt{\frac{V(\theta)}{N}}.
+\end{equation}
+Solving for $N$ yields
+\begin{equation}\label{eq:expected_stop_iteration_clt}
+N \approx \frac{4 z_{*}^{2}}{w^{2}}V(\theta).
+\end{equation}
+
+For Bernoulli outcomes, $V(\theta)=\theta(1-\theta)$, giving
+\begin{equation}\label{eq:expected_stop_iteration_binomial}
+N \approx \frac{4 z_{*}^{2}}{w^{2}}\theta(1-\theta).
+\end{equation}
+Using the manuscript notation $\mathrm{CI}\equiv w$ and $p\equiv\theta$, this is the same functional form used for PitG in the binomial case.
+
+For continuous outcomes when the estimand is a mean, $V(\mu)=\sigma^{2}$ (or a plug-in estimate $\hat\sigma^{2}$), giving
+\begin{equation}\label{eq:expected_stop_iteration_mean}
+N \approx \frac{4 z_{*}^{2}\sigma^{2}}{w^{2}}.
+\end{equation}
+
+Finally, if one indexes updates by $n=0,1,2,\dots$ while sample size is $N=n+1$, then rewriting Equation \ref{eq:expected_stop_iteration_clt} in terms of $n$ gives
+\begin{equation}
+n \approx \frac{4 z_{*}^{2}}{w^{2}}V(\theta)-1,
+\end{equation}
+which explains the ``$-1$'' form used elsewhere. This is an indexing convention; asymptotically, the distinction is negligible.
+
 \subsection{Experimental Design}
 
 To evaluate and compare the performance of the three algorithms,
