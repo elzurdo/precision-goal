@@ -492,7 +492,7 @@ def stop_decision_multiple_experiments_nhst(
             
             p_value = binomtest(successes, n=this_iteration, p=success_rate_null, alternative=alternative).pvalue
             
-            if p_value < p_value_thresh:
+            if p_value <= p_value_thresh:
                 for iteration in range(this_iteration, n_observations+1):
                     iteration_stopping_on_or_prior[iteration] += 1
                     
