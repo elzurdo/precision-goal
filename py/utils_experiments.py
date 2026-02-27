@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from IPython.display import display
+from scipy.stats import binom_test
 
 from utils_stats import (
     successes_failures_to_hdi_ci_limits
@@ -22,7 +23,7 @@ from utils_viz import (
 )
 
 theta_true_str = r"$\theta_{\rm true}$"
-
+SEQUENCE_HANDPICKED = "101101000110010000101111111110010101101110001111110010100110111111110111001111001110011110001010001011110101111110001111111111100000101001001100000001101000100010000000010010111001110100111000010010110011010000101011110011111111011100101011011100100101010011110101001111011100101110010011001010010001001011010101010100111100110011011011101110010100010110011001100101111001111101110101010001101110111100010110101010101010111100001000111011001010101100100110010001101101111100111000010011001000001010110010101101000001100101000110101110010101101000100110100100100110110100101011100001101000111111001001111100100011100011000101001010101110010000110111101111011100111011010010001001001111011100100000100011100000010010111111011110101000110110010001100101011110000001001101111100000001010011001001110001010100000101111100101110011011010111001000011110010011111110011111111100111011010000101110110001100111001000010011101100111000110010100000001101110000110011100111011100101001101010011001010100011000000011001100101100101000001101100111000000101010000110100100111110101101110010000100011101011011001110011100111011101010100101100001101100010111010010101000011000100111111010010111001100001001000110111011001011100100001001011111010011111101111001010000110011010101111001011110100001000100000010000011001110100110100100101000001100110111011011111010100111101111101010001010110010001000110111000101000010001011000100001101111011000000111010011000101001011110111101111010011101010111001111010101111011000110"
 
 class BinomialHypothesis():
     def __init__(self, success_rate_null=0.5, dsuccess_rate=0.05, rope_precision_fraction=0.8):
@@ -406,3 +407,68 @@ def run_simulations_and_analysis_report(binary_accounting: BinaryAccounting,
     df_stats = report_success_rates_multiple_algos(hypothesis.method_df_stats.copy(), data_type='binomial', viz=viz)
 
     return {"synth": synth, "hypothesis": hypothesis, "df_stats": df_stats}
+
+
+def sequence_to_sequential_pvalues(sequence, success_rate_null=0.5, alternative='two-sided'):
+    assert alternative in ['two-sided', 'greater', 'less'], "alternative must be one of 'two-sided', 'greater', or 'less'"
+
+    p_values = []
+
+    for idx, successes in enumerate(sequence.cumsum()):
+        p_value = binom_test(successes, n=idx + 1, p=success_rate_null, alternative=alternative)
+        p_values.append(p_value)
+
+    p_values = np.array(p_values)
+
+    return p_values
+
+
+def stop_decision_multiple_experiments_nhst__slow(samples, p_value_thresh=0.05, success_rate_null=0.5):
+    # TEST THIS! GEnerate by autocomplete based on function name!
+    n_samples = samples.shape[1]
+    n_experiments = samples.shape[0]
+
+    iteration_stopping_on_or_prior = np.zeros(n_experiments)
+
+    for isample, sample in enumerate(samples):
+        p_values = sequence_to_sequential_pvalues(sample, success_rate_null=success_rate_null)
+
+        stopping_iterations = np.where(p_values < p_value_thresh)[0]
+        if len(stopping_iterations) > 0:
+            iteration_stopping_on_or_prior[isample] = stopping_iterations[0] + 1  # +1 because iterations are 1-indexed
+
+    return iteration_stopping_on_or_prior
+
+
+# TODO: raname: 'samples' --> 'sequences' or 'experiments'
+# TODO: unit test
+def stop_decision_multiple_experiments_nhst(samples, p_value_thresh=0.05, success_rate_null=0.5, alternative = 'two-sided'):
+    n_samples = samples.shape[1]
+
+    experiment_stop_results = {'successes': [], 'trials': [], 'p_value': []}
+    iteration_stopping_on_or_prior = {iteration: 0 for iteration in range(1, n_samples + 1)}
+
+    # TODO consider doing sample.cumsum() instead of "successes += toss" in the loop
+    for sample in samples:
+        successes = 0
+        this_iteration = 0
+        for toss in sample:
+            successes += toss
+            this_iteration += 1
+            
+            p_value = binom_test(successes, n=this_iteration, p=success_rate_null, alternative=alternative)
+            
+            if p_value < p_value_thresh:
+                for iteration in range(this_iteration, n_samples+1):
+                    iteration_stopping_on_or_prior[iteration] += 1
+                    
+                break
+        experiment_stop_results['successes'].append(successes)
+        experiment_stop_results['trials'].append(this_iteration)
+        experiment_stop_results['p_value'].append(p_value)
+
+
+    return {
+        "iteration_stopping_on_or_prior": iteration_stopping_on_or_prior,
+        "experiment_stop_results": experiment_stop_results,
+    }

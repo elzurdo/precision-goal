@@ -9,7 +9,8 @@
 
 * `binomial_pvalue.py` - used to conduct p-value tests of NHST hypothesis testing
 of binomial data. It is used to show the lack of power of the p-value to accept
-the null hypothesis when it is correct.
+the null hypothesis when it is correct. Used in talk "Everything you wanted to know
+about p-values but were afraid to ask". TODO: convert to `ipynb`.
 
 * `notebook_coin_toss.py` - used to conduct hypothesis testing for binomial testing
 using different types of stop criterion: nhst, hdi+rope, percision is the goal
