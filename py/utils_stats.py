@@ -1,5 +1,5 @@
 from scipy.optimize import fmin
-from scipy.stats import beta, binom_test, t as student_t # binom_test is binomtest (in later versions ...)
+from scipy.stats import beta, binom_test, t as student_t # binom_test is binomtest (in later versions ...) # used to be binom_test but that is deprecated in scipy 1.7.0 and will be removed in scipy 1.12.0
 import numpy as np
 import pandas as pd
 

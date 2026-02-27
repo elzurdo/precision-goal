@@ -1,7 +1,9 @@
+from typing import Dict, List, Union
+
 import numpy as np
 import pandas as pd
 from IPython.display import display
-from scipy.stats import binom_test
+from scipy.stats import binomtest  # used to be binom_test but that is deprecated in scipy 1.7.0 and will be removed in scipy 1.12.0
 
 from utils_stats import (
     successes_failures_to_hdi_ci_limits
@@ -415,7 +417,7 @@ def sequence_to_sequential_pvalues(sequence, success_rate_null=0.5, alternative=
     p_values = []
 
     for idx, successes in enumerate(sequence.cumsum()):
-        p_value = binom_test(successes, n=idx + 1, p=success_rate_null, alternative=alternative)
+        p_value = binomtest(successes, n=idx + 1, p=success_rate_null, alternative=alternative).pvalue
         p_values.append(p_value)
 
     p_values = np.array(p_values)
@@ -442,24 +444,56 @@ def stop_decision_multiple_experiments_nhst__slow(samples, p_value_thresh=0.05, 
 
 # TODO: raname: 'samples' --> 'sequences' or 'experiments'
 # TODO: unit test
-def stop_decision_multiple_experiments_nhst(samples, p_value_thresh=0.05, success_rate_null=0.5, alternative = 'two-sided'):
-    n_samples = samples.shape[1]
+def stop_decision_multiple_experiments_nhst(
+    experiments: np.ndarray,
+    p_value_thresh: float = 0.05,
+    success_rate_null: float = 0.5,
+    alternative: str = 'two-sided',
+) -> Dict[str, Union[Dict[int, int], Dict[str, List]]]:
+    """Run sequential NHST (optional stopping) on multiple binary experiments.
 
-    experiment_stop_results = {'successes': [], 'trials': [], 'p_value': []}
-    iteration_stopping_on_or_prior = {iteration: 0 for iteration in range(1, n_samples + 1)}
+    For each experiment (row), iterates through observations computing a binomial
+    test p-value at each step. Stops early if p-value < p_value_thresh.
+
+    Parameters
+    ----------
+    experiments : np.ndarray
+        2D array of shape (num_experiments, sequence_length) with binary (0/1) values.
+        Each row is one experiment; each column is one observation.
+    p_value_thresh : float
+        Significance threshold for early stopping (default 0.05).
+    success_rate_null : float
+        Null hypothesis success rate (default 0.5).
+    alternative : str
+        Direction of the test: 'two-sided', 'greater', or 'less'.
+
+    Returns
+    -------
+    dict with keys:
+        "iteration_stopping_on_or_prior" : dict[int, int]
+            Maps iteration (1-indexed) to count of experiments that stopped
+            at or before that iteration.
+        "experiment_stop_results" : dict[str, list]
+            Lists of 'successes', 'trials', and 'p_value' per experiment
+            (at the stopping point, or at the final iteration if no early stop).
+    """
+    n_observations = experiments.shape[1]
+
+    experiment_stop_results = {'successes': [], 'trials': [], 'p_value': []}  # type: Dict[str, List]
+    iteration_stopping_on_or_prior = {iteration: 0 for iteration in range(1, n_observations + 1)}  # type: Dict[int, int]
 
     # TODO consider doing sample.cumsum() instead of "successes += toss" in the loop
-    for sample in samples:
+    for sequence in experiments:
         successes = 0
         this_iteration = 0
-        for toss in sample:
+        for toss in sequence:
             successes += toss
             this_iteration += 1
             
-            p_value = binom_test(successes, n=this_iteration, p=success_rate_null, alternative=alternative)
+            p_value = binomtest(successes, n=this_iteration, p=success_rate_null, alternative=alternative).pvalue
             
             if p_value < p_value_thresh:
-                for iteration in range(this_iteration, n_samples+1):
+                for iteration in range(this_iteration, n_observations+1):
                     iteration_stopping_on_or_prior[iteration] += 1
                     
                 break
