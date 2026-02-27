@@ -1,5 +1,12 @@
 # Notebooks
 
+## `notebooks` folder
+
+* `notebooks/binomial_experiment_analysis.ipynb` - binomial results for paper are here
+* `notebooks/continuous_experiment_analysis.ipynb` - same but for continuous
+
+## py folder
+
 * `binomial_pvalue.py` - used to conduct p-value tests of NHST hypothesis testing
 of binomial data. It is used to show the lack of power of the p-value to accept
 the null hypothesis when it is correct.

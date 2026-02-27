@@ -246,19 +246,23 @@ That said, we see that the PitG bias is much smaller than the ROPE width. Consid
 should be accepted as the null hypothesis one should consider \dots (TODO: continue this line of thought later and reference JK)
 
 
-
 \begin{figure}[h!]
   \centering
   \includegraphics[width=1\textwidth]{success_by_truth_conclusive.png}
   \caption{Experiment success rates by true values.
   Left:  Interquartile ranges (IQR).The solid line is parity with $\theta_{\rm true}$. Dotted lines are the ROPE boundaries. Note that in the Inconclusive Experiments those of HDI+ROPE and ePitG are very narrow.
-  Right: Deviations from the truth: Median minus $\theta_{\rm true}$.
+  Right: Deviations from the truth: Median minus $\theta_{\rm true}$.f
   }
   \label{fig:success_by_truth_conclusive}
 \end{figure}
 
 
-tbd
+So far we've demonstrated for the binomial case that the ePitG is both more decisive and
+and is moderately less biased than PitG, but it also may come at the cost of more samples.
+In Figure \ref{fig:stop_conclusiveness_ratios} we address the issue of the benefit of
+decisiveness vs. the cost of more samples by visualising the ratio of stop iterations
+and conclusiveness rates between ePitG and PitG across $\theta_{\rm true}$ values.
+We find that ...
 
 
 \begin{figure}[h!]

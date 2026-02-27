@@ -18,6 +18,8 @@ FIG_HEIGHT = 6
 theta_str = r"$\theta$"
 theta_null_str = r"$\theta_{\rm null}$"
 theta_true_str = r"$\theta_{\rm true}$"
+delta_rope_str = r"$\Delta_{\rm ROPE}$"
+goal_str = r"$\omega_{\rm goal}$"
 
 ALGO_COLORS = {"pitg": "blue", "epitg": "lightgreen", "hdi_rope": "red"}
 ALGO_LINEWIDTH =  {"hdi_rope":1, "pitg": 2, "epitg":3}
@@ -867,29 +869,34 @@ def plot_success_by_truth_absolute_and_diff(algo_stats_df, dsuccess_rate, subset
     plt.tight_layout()
 
 
-def plot_stop_and_conclusive_ratios(algo_stats_df, subset_name = "overall", param_null=0.5, dsuccess_rate=0.1, viz_mean=False):
+def plot_stop_and_conclusive_ratios(algo_stats_df, subset_name = "overall", param_null=0.5, dsuccess_rate=0.1, viz_mean=False, goal_val=0.08):
     
     # stop ratio
     stop_ratio = algo_stats_df[subset_name]["epitg"]["stop_iter_median"] / algo_stats_df[subset_name]["pitg"]["stop_iter_median"]
     stop_ratio_mean = algo_stats_df[subset_name]["epitg"]["stop_iter_mean"] / algo_stats_df[subset_name]["pitg"]["stop_iter_mean"]
-    
-    # conclusive ratio
-    conclusive_ratio = algo_stats_df[subset_name]["epitg"]["conclusive_mean"] / algo_stats_df[subset_name]["pitg"]["conclusive_mean"]
+    stop_ratio_p25 = algo_stats_df[subset_name]["epitg"]["stop_iter_p25"] / algo_stats_df[subset_name]["pitg"]["stop_iter_p25"]
+    stop_ratio_p75 = algo_stats_df[subset_name]["epitg"]["stop_iter_p75"] / algo_stats_df[subset_name]["pitg"]["stop_iter_p75"]
 
-    plt.plot(stop_ratio, color="purple", linewidth=2, label="Median Stop Iteration Ratio")
+    # conclusive ratio
+    conclusive_ratio = algo_stats_df["overall"]["epitg"]["conclusive_mean"] / algo_stats_df["overall"]["pitg"]["conclusive_mean"]
+
+    
+    plt.plot(stop_ratio, color="purple", linewidth=1, linestyle="-.", label="Stop Iteration Median Ratio")
+    plt.fill_between(algo_stats_df[subset_name]["epitg"].index, stop_ratio_p25, stop_ratio_p75, color="purple", alpha=0.2, label="Stop Iteration IQR Ratio")
     if viz_mean:
-        plt.plot(stop_ratio_mean, color="gray", linewidth=1, label="Mean Stop Iteration Ratio")
-    plt.plot(conclusive_ratio, color="purple", linewidth=2, linestyle="-.", label="Conclusiveness Ratio")
+        plt.plot(stop_ratio_mean, color="gray", linewidth=0.5, label="Stop Iteration Mean Ratio")
+    plt.plot(conclusive_ratio, color="purple", linewidth=2, label="Conclusiveness Ratio")
     plt.ylim(0,None)
     plt.grid(alpha=0.3)
     plt.xlabel(r"$\theta_{\rm true}$")
-    plt.ylabel("Ratio EPitG/PitG")
+    plt.ylabel("EPitG/PitG ratio")
 
     # TODO: generalise plotting boundaries for binary vs. continuous
     plt.axvline(x=param_null + dsuccess_rate, color="black", linestyle="--", alpha=0.5, label="ROPE\nupper boundary")
     if param_null > 0.5:
         plt.axvline(x=param_null - dsuccess_rate, color="black", linestyle="--", alpha=0.5, label="ROPE\nlower boundary")
     plt.legend()
+    plt.title(f"{theta_null_str}={param_null}, {delta_rope_str}={2 * dsuccess_rate}, {goal_str}={goal_val:0.2f}")
 
 def plot_conclusiveness_decisions_and_correctness_rates(algo_stats_df, df_correctness_rates, dsuccess_rate, method_names=None, n_experiments=None, subset_name = "overall", param_null=0.5):
     ylabel = f"Fraction of all {n_experiments:,} Experiments" if n_experiments is not None else "Fraction of all Experiments"
