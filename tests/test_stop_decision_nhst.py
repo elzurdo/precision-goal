@@ -1,6 +1,7 @@
 import sys
 import os
 import numpy as np
+import pytest
 from scipy.stats import binomtest
 
 # Ensure the py/ directory is on the path
@@ -39,6 +40,11 @@ def test_handpicked_sequence_consistency():
     stop_trial = exp["trials"][0]
     recorded_successes = exp["successes"][0]
     recorded_pvalue = exp["p_value"][0]
+
+    # Gold-master: known outcome for SEQUENCE_HANDPICKED must not change
+    assert recorded_successes == 45
+    assert stop_trial == 72
+    assert recorded_pvalue == pytest.approx(0.04437092000802569)
 
     # Successes must match the cumulative sum up to stop_trial
     expected_successes = int(sequence_array[:stop_trial].sum())
