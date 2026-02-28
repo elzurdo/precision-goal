@@ -9,6 +9,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'py'))
 
 from utils_experiments import (
     stop_decision_multiple_experiments_nhst,
+    BinaryPvalueAccounting,
     SEQUENCE_HANDPICKED,
 )
 
@@ -249,3 +250,147 @@ def test_identical_experiments_produce_identical_results():
     n = len(SEQUENCE_HANDPICKED)
     for it in range(1, n + 1):
         assert result["iteration_stopping_on_or_prior"][it] == 3 * single["iteration_stopping_on_or_prior"][it]
+
+
+# ---------------------------------------------------------------------------
+# BinaryPvalueAccounting tests
+# ---------------------------------------------------------------------------
+
+def test_bpva_pvalue_matches_binomtest():
+    """successes_n_to_pvalue should return the same value as a direct binomtest call."""
+    acct = BinaryPvalueAccounting(success_rate_null=0.5, alternative='two-sided')
+    successes, n = 45, 72
+    expected = binomtest(successes, n=n, p=0.5, alternative='two-sided').pvalue
+    assert acct.successes_n_to_pvalue(successes, n) == pytest.approx(expected)
+
+
+def test_bpva_first_call_populates_cache():
+    """After the first call the pair should be in the cache with counter == 1."""
+    acct = BinaryPvalueAccounting(success_rate_null=0.5, alternative='two-sided')
+    pair = (10, 20)
+    assert pair not in acct.dict_successes_n_pvalue
+
+    acct.successes_n_to_pvalue(*pair)
+
+    assert pair in acct.dict_successes_n_pvalue
+    assert acct.dict_successes_n_counter[pair] == 1
+
+
+def test_bpva_repeated_call_increments_counter():
+    """Calling with the same pair twice should increment the counter, not recompute."""
+    acct = BinaryPvalueAccounting(success_rate_null=0.5, alternative='two-sided')
+    pair = (10, 20)
+
+    acct.successes_n_to_pvalue(*pair)
+    acct.successes_n_to_pvalue(*pair)
+    acct.successes_n_to_pvalue(*pair)
+
+    assert acct.dict_successes_n_counter[pair] == 3
+
+
+def test_bpva_repeated_call_returns_same_value():
+    """The cached value must equal the freshly computed one."""
+    acct = BinaryPvalueAccounting(success_rate_null=0.5, alternative='two-sided')
+    pair = (15, 30)
+
+    first = acct.successes_n_to_pvalue(*pair)
+    second = acct.successes_n_to_pvalue(*pair)
+
+    assert first == second
+
+
+def test_bpva_distinct_pairs_cached_independently():
+    """Different (successes, n) pairs must have independent cache entries."""
+    acct = BinaryPvalueAccounting(success_rate_null=0.5, alternative='two-sided')
+    pair_a = (10, 20)
+    pair_b = (11, 20)
+
+    pv_a = acct.successes_n_to_pvalue(*pair_a)
+    pv_b = acct.successes_n_to_pvalue(*pair_b)
+
+    assert pair_a in acct.dict_successes_n_pvalue
+    assert pair_b in acct.dict_successes_n_pvalue
+    assert pv_a != pv_b  # different counts → different p-values
+    assert acct.dict_successes_n_counter[pair_a] == 1
+    assert acct.dict_successes_n_counter[pair_b] == 1
+
+
+def test_bpva_alternative_greater():
+    """alternative='greater' should produce a different p-value than 'two-sided'."""
+    pair = (15, 20)
+    acct_two = BinaryPvalueAccounting(success_rate_null=0.5, alternative='two-sided')
+    acct_gt = BinaryPvalueAccounting(success_rate_null=0.5, alternative='greater')
+
+    pv_two = acct_two.successes_n_to_pvalue(*pair)
+    pv_gt = acct_gt.successes_n_to_pvalue(*pair)
+
+    expected_two = binomtest(*pair, p=0.5, alternative='two-sided').pvalue
+    expected_gt = binomtest(*pair, p=0.5, alternative='greater').pvalue
+
+    assert pv_two == pytest.approx(expected_two)
+    assert pv_gt == pytest.approx(expected_gt)
+    assert pv_two != pv_gt
+
+
+def test_bpva_integration_same_results_as_without():
+    """stop_decision_multiple_experiments_nhst with BinaryPvalueAccounting must
+    produce identical results to calling without it."""
+    sequence_array = _str_sequence_to_array(SEQUENCE_HANDPICKED)
+    experiments = sequence_array.reshape(1, -1)
+
+    result_plain = stop_decision_multiple_experiments_nhst(
+        experiments, p_value_thresh=0.05, success_rate_null=0.5,
+    )
+
+    acct = BinaryPvalueAccounting(success_rate_null=0.5, alternative='two-sided')
+    result_cached = stop_decision_multiple_experiments_nhst(
+        experiments, p_value_thresh=0.05, success_rate_null=0.5,
+        binary_pvalue_accounting=acct,
+    )
+
+    assert result_plain["experiment_stop_results"] == result_cached["experiment_stop_results"]
+    assert result_plain["iteration_stopping_on_or_prior"] == result_cached["iteration_stopping_on_or_prior"]
+
+
+def test_bpva_integration_cache_populated_after_run():
+    """After a run the cache should contain entries for every (successes, n) pair seen."""
+    sequence_array = _str_sequence_to_array(SEQUENCE_HANDPICKED)
+    experiments = sequence_array.reshape(1, -1)
+
+    acct = BinaryPvalueAccounting(success_rate_null=0.5, alternative='two-sided')
+    stop_decision_multiple_experiments_nhst(
+        experiments, p_value_thresh=0.05, success_rate_null=0.5,
+        binary_pvalue_accounting=acct,
+    )
+
+    # Cache should be non-empty
+    assert len(acct.dict_successes_n_pvalue) > 0
+
+    # Every cached p-value must match a fresh binomtest call
+    for (successes, n), cached_pv in acct.dict_successes_n_pvalue.items():
+        expected = binomtest(successes, n=n, p=0.5, alternative='two-sided').pvalue
+        assert cached_pv == pytest.approx(expected)
+
+
+def test_bpva_integration_second_run_uses_cache():
+    """Running the same experiments twice with one accounting object should
+    result in hit counts > 0 for at least some pairs on the second run."""
+    sequence_array = _str_sequence_to_array(SEQUENCE_HANDPICKED)
+    experiments = sequence_array.reshape(1, -1)
+
+    acct = BinaryPvalueAccounting(success_rate_null=0.5, alternative='two-sided')
+
+    stop_decision_multiple_experiments_nhst(
+        experiments, p_value_thresh=0.05, success_rate_null=0.5,
+        binary_pvalue_accounting=acct,
+    )
+    counts_after_first = dict(acct.dict_successes_n_counter)
+
+    stop_decision_multiple_experiments_nhst(
+        experiments, p_value_thresh=0.05, success_rate_null=0.5,
+        binary_pvalue_accounting=acct,
+    )
+
+    # Every pair seen in the first run should have its counter incremented in the second
+    for pair, count in counts_after_first.items():
+        assert acct.dict_successes_n_counter[pair] > count

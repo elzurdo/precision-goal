@@ -173,6 +173,40 @@ class BinaryAccounting():
         return self.dict_successes_failures_hdi_limits[pair]
 
 
+class BinaryPvalueAccounting():
+    """Memoised binomial p-value calculator.
+
+    Caches p-values keyed by (successes, n) so that repeated calls with the
+    same counts — common when running many experiments of the same length —
+    avoid redundant `binomtest` evaluations.
+
+    Parameters
+    ----------
+    success_rate_null : float
+        Null-hypothesis success rate (fixed for the lifetime of the object).
+    alternative : str
+        'two-sided', 'greater', or 'less' (fixed for the lifetime of the object).
+    """
+
+    def __init__(self, success_rate_null: float = 0.5, alternative: str = 'two-sided'):
+        self.success_rate_null = success_rate_null
+        self.alternative = alternative
+        self.dict_successes_n_pvalue = {}   # type: Dict[tuple, float]
+        self.dict_successes_n_counter = {}  # type: Dict[tuple, int]
+
+    def successes_n_to_pvalue(self, successes: int, n: int) -> float:
+        pair = (successes, n)
+        if pair not in self.dict_successes_n_pvalue:
+            self.dict_successes_n_pvalue[pair] = binomtest(
+                successes, n=n, p=self.success_rate_null, alternative=self.alternative
+            ).pvalue
+            self.dict_successes_n_counter[pair] = 1
+        else:
+            self.dict_successes_n_counter[pair] += 1
+
+        return self.dict_successes_n_pvalue[pair]
+
+
 def _update_iteration_tally(iteration_dict, iteration):
     for this_iteration in range(iteration, len(iteration_dict)+1):
         iteration_dict[this_iteration] += 1
@@ -449,11 +483,12 @@ def stop_decision_multiple_experiments_nhst(
     p_value_thresh: float = 0.05,
     success_rate_null: float = 0.5,
     alternative: str = 'two-sided',
+    binary_pvalue_accounting: 'BinaryPvalueAccounting' = None,
 ) -> Dict[str, Union[Dict[int, int], Dict[str, List]]]:
     """Run sequential NHST (optional stopping) on multiple binary experiments.
 
     For each experiment (row), iterates through observations computing a binomial
-    test p-value at each step. Stops early if p-value < p_value_thresh.
+    test p-value at each step. Stops early if p-value <= p_value_thresh.
 
     Parameters
     ----------
@@ -466,6 +501,10 @@ def stop_decision_multiple_experiments_nhst(
         Null hypothesis success rate (default 0.5).
     alternative : str
         Direction of the test: 'two-sided', 'greater', or 'less'.
+    binary_pvalue_accounting : BinaryPvalueAccounting, optional
+        If provided, p-values are looked up from its cache before computing.
+        Must be constructed with matching success_rate_null and alternative.
+        Speeds up runs with many experiments by avoiding redundant binomtest calls.
 
     Returns
     -------
@@ -482,16 +521,18 @@ def stop_decision_multiple_experiments_nhst(
     experiment_stop_results = {'successes': [], 'trials': [], 'p_value': []}  # type: Dict[str, List]
     iteration_stopping_on_or_prior = {iteration: 0 for iteration in range(1, n_observations + 1)}  # type: Dict[int, int]
 
-    # TODO consider doing sample.cumsum() instead of "successes += toss" in the loop
     for sequence in experiments:
         successes = 0
         this_iteration = 0
         for toss in sequence:
             successes += toss
             this_iteration += 1
-            
-            p_value = binomtest(successes, n=this_iteration, p=success_rate_null, alternative=alternative).pvalue
-            
+
+            if binary_pvalue_accounting is not None:
+                p_value = binary_pvalue_accounting.successes_n_to_pvalue(successes, this_iteration)
+            else:
+                p_value = binomtest(successes, n=this_iteration, p=success_rate_null, alternative=alternative).pvalue
+
             if p_value <= p_value_thresh:
                 for iteration in range(this_iteration, n_observations+1):
                     iteration_stopping_on_or_prior[iteration] += 1
