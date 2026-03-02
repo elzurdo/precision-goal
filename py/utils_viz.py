@@ -19,6 +19,8 @@ theta_str = r"$\theta$"
 theta_null_str = r"$\theta_{\rm null}$"
 theta_true_str = r"$\theta_{\rm true}$"
 delta_rope_str = r"$\Delta_{\rm ROPE}$"
+n_true_str = r"$N_{\rm true}$"
+n_stop_str = r"$N_{\rm stop}$"
 goal_str = r"$\omega_{\rm goal}$"
 
 ALGO_COLORS = {"pitg": "blue", "epitg": "lightgreen", "hdi_rope": "red"}
@@ -868,6 +870,50 @@ def plot_success_by_truth_absolute_and_diff(algo_stats_df, dsuccess_rate, subset
 
     plt.tight_layout()
 
+
+def plot_stop_iterations_by_truth(algo_stats_df, dsuccess_rate, subset_name = "overall", param_null=0.5, ylim=(0,1500), xlim=(0.498, 0.652), precision_goal=0.08):
+
+    algos_viz = list( METHOD_SHORT.keys())
+    nrows = len(algos_viz)
+    plt.figure(figsize=(FIG_WIDTH, FIG_HEIGHT))
+
+
+    for iplot, algo_name in enumerate(algos_viz): #  ["pitg", "epitg"]:
+        plt.subplot(nrows, 1, iplot + 1)
+
+        plt.plot(algo_stats_df[subset_name][algo_name]["param_mean"],
+                 algo_stats_df[subset_name][algo_name]["stop_iter_mean"],
+                 color=ALGO_COLORS[algo_name], label="mean",
+                 linewidth=ALGO_LINEWIDTH[algo_name])
+        
+        plt.fill_between(algo_stats_df[subset_name][algo_name].index.tolist(),
+                         algo_stats_df[subset_name][algo_name]["stop_iter_p25"],
+                         algo_stats_df[subset_name][algo_name]["stop_iter_p75"],
+                         color=ALGO_COLORS[algo_name], alpha=0.2, label="IQR")
+
+        if iplot == 0:
+            label_ntruths = f"{n_true_str}({theta_true_str}|{goal_str}={precision_goal:0.2f})"
+        else:
+            label_ntruths = None
+        n_truths = [binomial_rate_ci_width_to_sample_size(true_rate, precision_goal) for true_rate in algo_stats_df[subset_name][algo_name].index.tolist()]
+        plt.plot(algo_stats_df[subset_name][algo_name].index.tolist(), n_truths, color="orange", linestyle=":", label=label_ntruths)
+
+        plt.subplot(nrows, 1, iplot + 1)
+        plt.axvline(x=param_null + dsuccess_rate, color="black", linestyle="--", alpha=0.5)
+        if param_null > 0.5:
+            plt.axvline(x=param_null - dsuccess_rate, color="black", linestyle="--", alpha=0.5)
+
+        if iplot == len(algos_viz) - 1:
+            plt.xlabel(theta_true_str)
+        
+        plt.ylabel(n_stop_str)
+        plt.legend(title=METHOD_SHORT[algo_name], loc="upper right", fontsize=10)
+        plt.grid(alpha=0.3)
+        plt.ylim(ylim)
+        plt.xlim(xlim)
+
+    plt.suptitle(f"Stop Iteration {n_stop_str}({theta_true_str}|{theta_null_str}={param_null},{goal_str}={precision_goal:0.2f}) for {subset_name.capitalize() if subset_name is not 'overall' else 'All'} Experiments")
+    plt.tight_layout()
 
 def plot_stop_and_conclusive_ratios(algo_stats_df, subset_name = "overall", param_null=0.5, dsuccess_rate=0.1, viz_mean=False, goal_val=0.08):
     
