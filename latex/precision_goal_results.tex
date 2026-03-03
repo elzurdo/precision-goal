@@ -166,7 +166,7 @@ which encompasses the ROPE and its boundaries. \textcolor{red}{\textbf{[TK: Note
 \subsection{General Trends Across $\theta_{\rm true}$ Values}
 
 We next examine trends of these algorithms when conducting the experiments from
-$\theta_{\rm true}=0.5$ onwards at intervals of $0.1$.\footnote{Due to symmetry of the problem the results between $0.5$ downwards would mirror the ones shown here.}
+$\theta_{\rm true}=0.5$ onwards.\footnote{Due to symmetry of the problem the results between $0.5$ downwards would mirror the ones shown here.}
 
 Figure \ref{fig:conclusiveness_rates} illustrates the conclusiveness rates of each
 algorithm (left panel), the acceptance and rejections rates (middle panel)
@@ -184,15 +184,16 @@ The ROPE top boundary is highlighted with vertical dashed lines to indicate an i
 
 As detailed in Section \ref{sec:fair_coin} the conclusiveness rate of HDI+ROPE (red)
 and ePitG (green) both start at near 100\% for $\theta_{\rm true}=0.5$, where PitG (blue)
-at 36.7\%. In the left panel of Figure \ref{fig:conclusiveness_rates} they all decrease as $\theta_{\rm true}$ nears the ROPE boundary
+at 36.7\%. In the left panel of Figure \ref{fig:conclusiveness_rates} they all decrease as
+$\theta_{\rm true}$ nears the ROPE boundary
 which serves as a minimal point afterwhich they rise again. Whereas HDI+ROPE and ePitG
 return to near 100\% at $\theta_{\rm true}=0.6$, PitG assymptotes to 100\% only at
-$\theta_{\rm true}=0.65$ at which ePitG and PitG are effectively the same algorithm
+$\theta_{\rm true}=0.64$ at which ePitG and PitG are effectively the same algorithm
 (assuming the fair coin case of $\theta_{\rm null}=0.5$).
 
 In the middle panel of Figure \ref{fig:conclusiveness_rates} the conclusiveness rate
-is broken down to its two components: the acceptence  and rejection rates. As
-such we similar trends. In this case of $\theta_{\rm null}=0.5$ accepting the null hypothesis at
+is broken down to its two components: the acceptence  and rejection rates.
+Here we similar trends. In this case of $\theta_{\rm null}=0.5$ accepting the null hypothesis at
 $\theta_{\rm true} \le 0.55$ is correct and rejecting is incorrect and vice versa for
 $\theta_{\rm true} \ge 0.55$.
 
@@ -203,10 +204,15 @@ at the inflection point. Examining its acceptence rate (red solid line) we
 see that at the inflection point it has $\sim$10\% false negative/acceptance rate but quickly drops to the correct 0\%
 by $\theta_{\rm true}=0.57$.
 
-Both of the precision based methods start at no false positives/rejections at $\theta_{\rm true}=0.5$,
+Both of the precision based methods start at zero false positives/rejections at $\theta_{\rm true}=0.5$,
 and there is a small rise to the inflection point at which both have small false negative/acceptence rates that similarly drop quickly.
 
-TODO: mention that the inflection point is tricky ...
+Due to the nature of the ROPE setup the its boundaries are inflection points for the algorithms,
+as they are designed to accept $\theta_{\rm null}$ within the ROPE and reject it outside the ROPE.
+The precision based methods (PitG and ePitG) are designed to be more conservative around the ROPE boundaries,
+which is reflected in their lower conclusiveness rates compared to HDI+ROPE in this region.
+If $\theta_{\rm true}$ is equal to the ROPE boundary (or fairly close) the ePitG method shown
+here is only 19\% likely to be conclusive whereas the PitG is only 5\% likely.
 
 In the right panel of Figure \ref{fig:conclusiveness_rates} we address the issue of
 experiements with inconclusive decisions.
@@ -223,16 +229,18 @@ Finally the \textit{Decision Correctness Rates} are calculated as the proportion
 TODO: pseudo algorithm in Appendix.
 
 We find that the lowest Decison Correctness Rate (TODO: rename to Accuracy)
-is at the ROPE boudary. Within the ROPE we see that the fastest climber
-is ePitG whereas PitG is somewhat lower even when the null hypothesis is true
-($\theta_{\rm true}=\theta_{\rm null}=0.5$). Outside the ROPE we see that HDI+ROPE
-grows as fast as ePitG at yield 100\% accuracy by $\theta_{\rm true}=0.58$, whereas
-this happens for PitG only at $\theta_{\rm true}=0.61$.
+is at the ROPE boundary. Within the ROPE, i.e, $0.5 \le \theta_{\rm true} \le 0.55$
+ePitG grows the fastest assympoting at 99.5\% at $\theta_{\rm true}=0.5$
+whereas PitG assymptotes slightly lower at 98.5\%.
 
-The fact that HDI+ROPE yields 100\% at $\theta_{\rm true}=0.58$ accuracy, not not mean
-that it does not yield bias results, which we examine in Figure \ref{fig:success_by_truth_conclusive}
-which visualises the parameter value at the stop for each true value $\hat{\theta}(\theta_{\rm true})$.
-In the left panel we visuliae the IQR of each algorithm and in the right panel we visualise
+Outside the ROPE we see that HDI+ROPE
+grows as fast as ePitG and assymptotes 100\% accuracy by $\theta_{\rm true}=0.58$, whereas
+this happens for PitG only at $\theta_{\rm true}=0.60$.
+
+Even though the HDI+ROPE yields 100\% accuracy at $\theta_{\rm true}=0.58$ in terms of the decision
+made it actually results in biassed results.
+Figure \ref{fig:success_by_truth_conclusive} visualises the parameter value at the stop for each true value $\hat{\theta}(\theta_{\rm true})$.
+In the left panel we visualise the IQR of each algorithm and in the right panel we visualise
 the median difference  $\hat{\theta}(\theta_{\rm true}) - \theta_{\rm true}$.\footnote{We find similar trends for the mean, but do not show to reduce clutter.} 
 
 The clearest signal is the the HDI+ROPE highly deviates from $\theta_{\rm true}$, especially outside the ROPE.
@@ -246,19 +254,34 @@ That said, we see that the PitG bias is much smaller than the ROPE width. Consid
 should be accepted as the null hypothesis one should consider \dots (TODO: continue this line of thought later and reference JK)
 
 
+So far we've demonstrated for the binomial case that the ePitG is both more decisive and
+and is moderately less biased than PitG, but it also may come at the cost of more samples.
+In Figure \ref{fig:stop_iterations_by_truth_conclusive} we visualise stop iteration statistics of each algorithm across $\theta_{\rm true}$ values.
+
 \begin{figure}[h!]
   \centering
   \includegraphics[width=1\textwidth]{success_by_truth_conclusive.png}
   \caption{Experiment success rates by true values.
   Left:  Interquartile ranges (IQR).The solid line is parity with $\theta_{\rm true}$. Dotted lines are the ROPE boundaries. Note that in the Inconclusive Experiments those of HDI+ROPE and ePitG are very narrow.
-  Right: Deviations from the truth: Median minus $\theta_{\rm true}$.f
+  Right: Deviations from the truth: Median minus $\theta_{\rm true}$.
   }
   \label{fig:success_by_truth_conclusive}
 \end{figure}
 
 
-So far we've demonstrated for the binomial case that the ePitG is both more decisive and
-and is moderately less biased than PitG, but it also may come at the cost of more samples.
+
+
+
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=1\textwidth]{stop_iterations_by_truth_conclusive.png}
+  \caption{ePitG vs. PitG vs. iteration stop and conclusiveness rates.
+  }
+  \label{fig:stop_iterations_by_truth_conclusive}
+\end{figure}
+
+
 In Figure \ref{fig:stop_conclusiveness_ratios} we address the issue of the benefit of
 decisiveness vs. the cost of more samples by visualising the ratio of stop iterations
 and conclusiveness rates between ePitG and PitG across $\theta_{\rm true}$ values.
@@ -272,8 +295,6 @@ We find that ...
   }
   \label{fig:stop_conclusiveness_ratios}
 \end{figure}
-
-
 
 Figure \ref{fig:success_by_truth} illustrates the biases of the algorithms.
 In the left panels we demonstrate for all the experiments. We find it instrumentive
