@@ -285,3 +285,23 @@ Unless stated otherwise, we utilize the following default parameters, chosen to 
 In the following section, we present the results of these simulations, first under these default settings and subsequently by varying key parameters to explore robustness.
 
 NOTE TO SELF: This paper might not vary the parameters. Go back and revise.
+
+More text likely to delete:
+
+
+As this binomial setup is well-defined, we observe trends that can be described analytically. We discuss this in Section \textcolor{red}{\textbf{[TK]}}, but note here that the expected stop iteration for Precision is the Goal is approximated by:
+\begin{equation}\label{eq:pitg_stop_iteration}
+n \approx \frac{4 z_{*}^2}{\rm{CI}^2}p(1-p) - 1
+\end{equation}
+where:
+\begin{itemize}
+  \item $p$ is the success rate. \textcolor{red}{\textbf{[TK: Perhaps this should be $\theta_{\rm true}$?]}}
+  \item ${\rm CI}$ is the precision goal (here 0.08).
+  \item $z_{*}$ is the critical value (e.g., $z_{0.05}=1.96$). \textcolor{red}{\textbf{[TK: confirm variable. For some reason I wote "E.g, for 95\% quantile of the standard normal distribution"]}}
+\end{itemize}
+
+For this fair coin instance ($p=0.5$), we obtain $n \approx 599.2$, indicated by the dashed vertical line in Figure \ref{fig:fair_iter_vs_rate}.
+
+We next move on to examine the general trends across the full range of $\theta_{\rm true}$ values,
+which encompasses the ROPE and its boundaries. \textcolor{red}{\textbf{[TK: Note to self - repetitive from above, revise ...]}}
+
