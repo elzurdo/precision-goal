@@ -275,18 +275,22 @@ That said, we see that the PitG bias is much smaller than the ROPE width. Consid
 should be accepted as the null hypothesis one should consider \dots (TODO: continue this line of thought later and reference JK)
 
 
-So far we've demonstrated for the binomial one-group case that the ePitG is both more decisive and
-and is moderately less biased than PitG, but it also may come at the cost of more samples.
-In Figure \ref{fig:stop_iterations_by_truth_conclusive} we visualise stop iteration
+So far we've demonstrated that the ePitG is significantly more decisive
+than PitG and that when the truth is close to the ROPE boundary it more accurate in its
+decision of accepting and rejection. The tradeoff, of course, is that this
+comes, on average, with a cost of a larger sample size.
+To address this in Figure \ref{fig:stop_iterations_by_truth_conclusive} we the visualise stop iteration
 statistics of each algorithm across $\theta_{\rm true}$ values. This analysis is limited
 only to experiments that resulted in conclusive outcomes, as the stop iteration of inconclusive
 experiments is not informative. In the left panel we visualise statistics
 for the fair coin setup $\theta_{\rm null}=0.5$ analysed in this section and in Section \ref{sec:fair_coin}.
 In order to demonstrate the generality of these results we also show in the right panel
-similar statistics for a different setup of a loaded coin case of $\theta_{\rm null}=0.7$.
+similar statistics for a similar setup but with a higher null hypothesis at $\theta_{\rm null}=0.7$.
 In each panel we visualise the $N_{\rm stop}$ statistics in the form of the IQR (band)
-as well as the mean (solid line). The dotted line throuhgout is the minimal stop iteration
-to reach the precision goal $N_{\rm goal}(\theta_{\rm true}, \omega_{\rm goal})$.
+and demonstrate the skewneess via the mean (solid line). The dotted line throughout is the minimal stop iteration
+to reach the precision goal $N_{\rm goal}(\theta_{\rm true}, \omega_{\rm goal})$ as per equation [TODO: reference].
+The horizontal dashed lines represent $N_{\rm goal}(\theta_{\rm null}, \omega_{\rm goal})$, i.e,
+the minimum sample size the researcher should consider in advance prior to deciding if to stop collecting data.
 
 \begin{figure}[h!]
   \centering
@@ -298,60 +302,69 @@ to reach the precision goal $N_{\rm goal}(\theta_{\rm true}, \omega_{\rm goal})$
   \label{fig:success_by_truth_conclusive}
 \end{figure}
 
-The stop iteration for HDI+ROPE has different signatures depending on its relationship
+The HDI+ROPE $N_{\rm stop}$ stats (top panels) have different signatures depending on its relationship
 to the ROPE. Within the ROPE it tends to loosely track $N_{\rm goal}$, albeit with a
 wide IQR. 
 Once $\theta_{\rm true}$ is outside the ROPE the $N_{\rm stop}$ of HDI+ROPE
 is much lower than $N_{\rm goal}$ required for the precision goal, indicating that it is
 correctly rejecting $\theta_{\rm null}$ much faster than the precision based methods,
-albeit with a strong bias as seen in Figure \ref{fig:success_by_truth_conclusive}.
+although with a strong bias as seen in Figure \ref{fig:success_by_truth_conclusive} due to strong outlier samples.
 
-The PitG $N_{\rm stop}$ is tightly clustered around $N_{\rm goal}$ across all $\theta_{\rm true}$ values,
+The PitG $N_{\rm stop}$ stats (middle panels) are tightly clustered around $N_{\rm goal}$ across all $\theta_{\rm true}$ values,
 reflecting its design to stop when the precision goal is met.
-In and around the ROPE boundaries, the ePitG $N_{\rm stop}$ is generally higher than
-that of PitG, indicating that it requires more samples to
-achieve conclusiveness while maintaining unbiased estimates.
-However, when $\theta_{\rm true}$ moves to about $\pm0.05$ away from the ROPE boundaries,
-the $N_{\rm stop}$ of ePitG converges towards that of PitG,
-suggesting that the additional precision criteria have less impact on
-stopping decisions when the true parameter is clearly outside the ROPE.
 
-In Figure \ref{fig:stop_conclusiveness_ratios} we address the trade-off between the benefits of
-decisiveness vs. the cost of more samples by visualising the ratio of stop iterations
-and conclusiveness rates between ePitG and PitG across $\theta_{\rm true}$ values.
+The ePitG $N_{\rm stop}$ stats (bottom panels) are generally equal or larger than that of PitG
+in the ROPE and near the boundaries outside of it which enables the higher conclusiveness. Once fare enough from the ROPE, as discussed,
+it converges with PitG. 
+
+[TODO: position somewhere else? Perhaps Discussion with a larger plot?]
+The main takeaway from the bottom panels is the distribution of $N_{\rm stop}$ in practice
+compared to that hypothised by the researcher $N_{\rm goal}(\theta_{\rm null})$. E.g,
+the researcher that assume a null hypothesis and requires a precision goal of 8\% should plan
+at least 599 samples and set an upper goal of $N_{\rm max}$ according to their budget.
+Depending on their location relative to the ROPE this gives an indication of how many samples
+more (if close to or in the ROPE) or less (if far from the ROPE). 
+
 
 \begin{figure}[h!]
   \centering
   \includegraphics[width=1\textwidth]{stop_iterations_by_truth_conclusive.png}
-  \caption{ePitG vs. PitG vs. iteration stop and conclusiveness rates.
+  \caption{ePitG vs. PitG vs. iteration stop and conclusiveness ratesb.
   }
   \label{fig:stop_iterations_by_truth_conclusive}
 \end{figure}
 
-We find that for all $\theta_{\rm true}$ values of conclusiveness rate ratio is much higher
-than that of PitG. In the fair coin case of $\theta_{\rm true}=0.5$ the conclusiveness
-rate of ePitG is 2.66 times higher than that of PitG, whereas the stop iteration is only
-is beetween XX-YY\% higher. Interestingly we see that even though the $N_{\rm stop}$
-ratio is equal at $\theta_{\rm true}=0.6$ the ePtiG is still more conclusive than PitG
-until $\theta_{\rm true}=0.63$. These trends are consistent when examining similar
-ratios for the loaded coin case of $\theta_{\rm null}=0.7$ (not shown).
+
+We address the trade-off between the benefits of decisiveness vs. the cost of more samples.
+In Figure \ref{fig:stop_conclusiveness_ratios} we visualise across multiple values of
+$\theta_{\rm true}$ the conclusiveness ratios of ePitG to PitG (from Figure [Refer])
+and the $N_{\rm stop}$ stats of these algorithms (from Figure [Refer]). The median
+of the $N_{\rm stop}$ ratio is displayed in dot-dashed and the IQR is the band.
+
 
 \begin{figure}[h!]
   \centering
   \includegraphics[width=1\textwidth]{stop_conclusiveness_ratios.png}
-  \caption{ePitG vs. PitG vs. iteration stop and conclusiveness rates.
+  \caption{ePitG vs. PitG vs. iteration stop and conclusiveness ratesf.
   }
   \label{fig:stop_conclusiveness_ratios}
 \end{figure}
 
-Figure \ref{fig:success_by_truth} illustrates the biases of the algorithms.
-In the left panels we demonstrate for all the experiments. We find it instrumentive
-to split these results into two mutually exclusive subsets: conclusive experiments
-(middle panels) and inconclusive (right panels).
-In the top panels we visualise the interquartile ranges of each algorithm
-and in the bottom panels the deviation of the medians from the true values. The ROPE
-upper boundary is highlighted with a vertical dashed line to indicate an important
-inflection point.
+The ePitG to PitG conclusivness ratio is shown to be substantially larger than
+the correpsonding $N_{\rm stop}$, esepcially within the ROPE and immediately outside of it.
+This conclusiveness ratio is even higher than the  $N_{\rm stop}$ ratio even when the
+latter is a value 1 (i.e, $N_{\rm stop}$ of both algorithms is the same) between
+$\theta_{0.6<\rm true}<0.63$. Also interesting, the lower band of the IQR demonstrates that
+a large portion of the $N_{\rm stop}$ of ePitG is at the $N_{\rm goal}$ value that
+PitG stops at. For the fair coin case the conclusive ratio 
+is 2.66 compared to that of the $N_{\rm stop}$ ratio which has an IQR of 1-1.29
+(median value of 1.04 and mean of 1.21). The flattening of both conclusiveness
+and $N_{\rm stop}$ ratios at the ROPE boundary and its immediate surrounding is
+artificially due to our $N_{\rm max}=1,500$ criterion. If this was to be extended
+further we would see a pointed tip in both at the boundary.
+We have also examined this for other experiments with $\theta_{\rm null}=0.7$ (not shown) 
+as well as with more stringent
+goal of $\omega_{\rm goal}=0.06$ and have found similar trends (not shown here). 
 
 
 \subsection{Application to Other Data Types and Tests}

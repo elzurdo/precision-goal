@@ -973,9 +973,17 @@ def plot_stop_iterations_by_truth_two_panel(
                 label_ntruths = f"{n_true_str}({theta_true_str}|{goal_str}={precision_goal:0.2f})"
             else:
                 label_ntruths = None
+            if icol == 0:
+                this_param_null = float(param_null_1)
+            else:
+                this_param_null = float(param_null_2)
+            n_null = binomial_rate_ci_width_to_sample_size(this_param_null, precision_goal)
             n_truths = [binomial_rate_ci_width_to_sample_size(true_rate, precision_goal) for true_rate in df_plot.index.tolist()]
             plt.plot(df_plot.index.tolist(), n_truths, color="orange", linestyle=":", label=label_ntruths)
 
+            plt.axhline(y=n_null, color="black", linestyle="--", alpha=0.2)
+            n_null_str = r"$N_{\rm goal}(\theta_{\rm null})$"
+            plt.annotate(f"{n_null_str}={n_null:0.0f}", xy=(xlim[-1] - 0.15, n_null+ 20), color="black", alpha=0.6, fontsize=10)
             plt.axvline(x=param_null + dsuccess_rate, color="black", linestyle="--", alpha=0.5)
             if param_null > 0.5:
                 plt.axvline(x=param_null - dsuccess_rate, color="black", linestyle="--", alpha=0.5)
@@ -997,33 +1005,48 @@ def plot_stop_iterations_by_truth_two_panel(
 
 
 def plot_stop_and_conclusive_ratios(algo_stats_df, subset_name = "overall", param_null=0.5,
-                                    dsuccess_rate=0.1, viz_mean=False, goal_val=0.08, xlim=(0.498, 0.702)):
+                                    dsuccess_rate=0.1, viz_mean=False, goal_val=0.08, xlim=(0.498, 0.702), denominator_type="goal"):
     
+    
+    theta_trues = algo_stats_df[subset_name]["epitg"]["stop_iter_median"].index.tolist()
+    n_goals = np.array([binomial_rate_ci_width_to_sample_size(true_rate, goal_val) for true_rate in theta_trues])
+    
+
     # stop ratio
-    stop_ratio = algo_stats_df[subset_name]["epitg"]["stop_iter_median"] / algo_stats_df[subset_name]["pitg"]["stop_iter_median"]
-    stop_ratio_mean = algo_stats_df[subset_name]["epitg"]["stop_iter_mean"] / algo_stats_df[subset_name]["pitg"]["stop_iter_mean"]
-    stop_ratio_p25 = algo_stats_df[subset_name]["epitg"]["stop_iter_p25"] / algo_stats_df[subset_name]["pitg"]["stop_iter_p25"]
-    stop_ratio_p75 = algo_stats_df[subset_name]["epitg"]["stop_iter_p75"] / algo_stats_df[subset_name]["pitg"]["stop_iter_p75"]
+    if denominator_type == "pitg":
+        stop_ratio = algo_stats_df[subset_name]["epitg"]["stop_iter_median"] / algo_stats_df[subset_name]["pitg"]["stop_iter_median"]
+        stop_ratio_mean = algo_stats_df[subset_name]["epitg"]["stop_iter_mean"] / algo_stats_df[subset_name]["pitg"]["stop_iter_mean"]
+        stop_ratio_p25 = algo_stats_df[subset_name]["epitg"]["stop_iter_p25"] / algo_stats_df[subset_name]["pitg"]["stop_iter_p25"]
+        stop_ratio_p75 = algo_stats_df[subset_name]["epitg"]["stop_iter_p75"] / algo_stats_df[subset_name]["pitg"]["stop_iter_p75"]
+    elif denominator_type == "goal":
+        print("Using goal as denominator")
+        stop_ratio = algo_stats_df[subset_name]["epitg"]["stop_iter_median"] / n_goals
+        stop_ratio_mean = algo_stats_df[subset_name]["epitg"]["stop_iter_mean"] / n_goals
+        stop_ratio_p25 = algo_stats_df[subset_name]["epitg"]["stop_iter_p25"] / n_goals
+        stop_ratio_p75 = algo_stats_df[subset_name]["epitg"]["stop_iter_p75"] / n_goals
+
 
     # conclusive ratio
     conclusive_ratio = algo_stats_df["overall"]["epitg"]["conclusive_mean"] / algo_stats_df["overall"]["pitg"]["conclusive_mean"]
 
-    
-    plt.plot(stop_ratio, color="purple", linewidth=1, linestyle="-.", label="Stop Iteration Median Ratio")
-    plt.fill_between(algo_stats_df[subset_name]["epitg"].index, stop_ratio_p25, stop_ratio_p75, color="purple", alpha=0.2, label="Stop Iteration IQR Ratio")
+    n_stop_str = r"$N_{\rm goal}$" #(\theta_{\rm true},\omega)$"
+    n_stop_epitg_str = r"$N_{\rm ePitG}$"
+    ratio_str = f"{n_stop_epitg_str}/{n_stop_str}"
+    plt.plot(stop_ratio, color="purple", linewidth=1, linestyle="-.", label=f"{ratio_str} Median")
+    plt.fill_between(algo_stats_df[subset_name]["epitg"].index, stop_ratio_p25, stop_ratio_p75, color="purple", alpha=0.2, label=f"{ratio_str} IQR")
     if viz_mean:
-        plt.plot(stop_ratio_mean, color="gray", linewidth=0.5, label="Stop Iteration Mean Ratio")
-    plt.plot(conclusive_ratio, color="purple", linewidth=2, label="Conclusiveness Ratio")
+        plt.plot(stop_ratio_mean, color="gray", linewidth=0.5, label=f"{ratio_str} Mean")
+    plt.plot(conclusive_ratio, color="purple", linewidth=2, label="Conclusiveness ePitG/PitG")
     plt.ylim(0,None)
     plt.grid(alpha=0.3)
     plt.xlabel(r"$\theta_{\rm true}$")
-    plt.ylabel("EPitG/PitG ratio")
+    plt.ylabel("Ratio")
     plt.xlim(xlim)
 
     # TODO: generalise plotting boundaries for binary vs. continuous
-    plt.axvline(x=param_null + dsuccess_rate, color="black", linestyle="--", alpha=0.5, label="ROPE\nupper boundary")
+    plt.axvline(x=param_null + dsuccess_rate, color="black", linestyle="--", alpha=0.5, label=r"ROPE$_{\rm max}$")
     if param_null > 0.5:
-        plt.axvline(x=param_null - dsuccess_rate, color="black", linestyle="--", alpha=0.5, label="ROPE\nlower boundary")
+        plt.axvline(x=param_null - dsuccess_rate, color="black", linestyle="--", alpha=0.5, label=r"ROPE$_{\rm min}$")
     plt.legend()
     plt.title(f"{theta_null_str}={param_null}, {delta_rope_str}={2 * dsuccess_rate}, {goal_str}={goal_val:0.2f}")
 
