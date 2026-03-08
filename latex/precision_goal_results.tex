@@ -210,11 +210,9 @@ $\theta_{\rm true}$ increases from $0.5$ upwards, spanning the ROPE and its
 boundaries.\footnote{By symmetry, results for $\theta_{\rm true}<0.5$ mirror those shown
 here.}
 
-Figure \ref{fig:conclusiveness_rates} illustrates the conclusiveness rates of each
-algorithm (left panel), the acceptance and rejections rates (middle panel) as well
-as the decision correctness (right panel) where the horizontal axis is the true success rate $\theta_{\rm true}$ and the null hypothesis
-is $\theta_{\rm null}=0.5$.
-The ROPE top boundary is highlighted with vertical dashed lines to indicate an important inflection point.
+Figure~\ref{fig:conclusiveness_rates} shows how all three algorithms perform as
+$\theta_{\rm true}$ varies across and beyond the ROPE, with ${\rm ROPE}_{\rm max}=0.55$
+serving as a key inflection point in all three panels.
 
 \begin{figure}[h!]
   \centering
@@ -226,104 +224,88 @@ The ROPE top boundary is highlighted with vertical dashed lines to indicate an i
   \textit{Left}: conclusiveness rates.
   \textit{Middle}: acceptance (solid lines) and rejection (dashed lines) rates;
   at each $\theta_{\rm true}$ their sum equals the conclusiveness rate.
-  \textit{Right}: decision correctness rates (proportion of correct decisions out of all
+  \textit{Right}: accuracy rates (proportion of correct decisions out of all
   $M$ experiments); inconclusive experiments are assigned a decision based on whether
   $\hat{\theta}$ falls inside or outside the ROPE
   (cf.\ Section~\ref{sec:trends}).}
   \label{fig:conclusiveness_rates}
 \end{figure}
 
-As detailed in Section \ref{sec:fair_coin} the conclusiveness rate of HDI+ROPE (red)
-and ePitG (green) both start at near 100\% for $\theta_{\rm true}=0.5$, where PitG (blue)
-is at 36.7\%. Note that these results are a manifestation of the current setting with
-$\omega_{\rm goal}=0.08$. If, e.g, we use a more stringent goal of $\omega_{\rm goal}=0.06$
-the conclusiveness at  $\theta_{\rm true}=0.5$ of PitG increases drastically to 82.5\%
-at the expense of substantially larger $N_{\rm goal}=1065$ (1.8 larger). That said,
-the general trends seen here may be replicated to different extents for varying values of $\omega_{\rm goal}$.
+As established in Section~\ref{sec:fair_coin}, HDI+ROPE and ePitG open near 100\%
+conclusiveness at $\theta_{\rm true}=0.5$, while PitG sits at only 36.7\%. We have
+verified that these qualitative trends generalise across values of
+$\omega_{\rm goal}$.\footnote{For example, tightening to $\omega_{\rm goal}=0.06$ raises
+PitG's conclusiveness at $\theta_{\rm true}=0.5$ to 82.5\%, but at the cost of a
+substantially larger $N_{\rm goal}=1{,}065$ --- a $1.8\times$ increase.}
 
-In the left panel of Figure \ref{fig:conclusiveness_rates} the conclusiveness of all
-the algorithms decrease as $\theta_{\rm true}$ nears the ROPE boundary
-which serves as a minimal point afterwhich they rise again. Whereas HDI+ROPE and ePitG
-return to near 100\% at $\theta_{\rm true}=0.6$, PitG assymptotes to 100\% only at
-$\theta_{\rm true}=0.64$ at which ePitG and PitG are effectively the same algorithm
-(assuming the fair coin case of $\theta_{\rm null}=0.5$).
+All three algorithms show a dip in conclusiveness as $\theta_{\rm true}$ approaches
+${\rm ROPE}_{\rm max}$, after which conclusiveness rises again. HDI+ROPE and ePitG
+recover to near 100\% by $\theta_{\rm true}=0.6$; PitG only asymptotes to 100\% at
+$\theta_{\rm true}\approx 0.64$, at which point ePitG and PitG become effectively
+equivalent (for $\theta_{\rm null}=0.5$).
 
-In the middle panel of Figure \ref{fig:conclusiveness_rates} the conclusiveness rate
-is broken down to its two components: the acceptence  and rejection rates (their sum at
-each point is the conclusiveness rate). In this case of $\theta_{\rm null}=0.5$ accepting the null hypothesis at
-$\theta_{\rm true} \le 0.55$ is correct and rejecting is incorrect and vice versa for
-$\theta_{\rm true} > 0.55$. As seen in Section \ref{sec:fair_coin}
-the HDI+ROPE starts with a false positive/rejection rate of $\sim 6\%$ at $\theta_{\rm true}=0.5$
-(manifested in the middle panel as the red dashed line in the middle panel of Figure \ref{fig:conclusiveness_rates}) and reaches a max of $\sim 30\%$
-at the inflection point. Examining its acceptence rate (red solid line) we
-see that at the inflection point it has $\sim$10\% false negative/acceptance rate but quickly drops to the correct 0\%
-by $\theta_{\rm true}=0.57$. As seen above both of the precision based methods start at zero false positives/rejections at $\theta_{\rm true}=0.5$,
-and there is a small rise to the inflection point at which both have small false negative/acceptence rates that similarly drop quickly.
+This dip is by design: the ROPE boundaries are natural inflection points, as algorithms
+are constructed to accept $\theta_{\rm null}$ within the ROPE and reject it outside.
+The precision-based methods are deliberately conservative near these boundaries, yielding
+lower conclusiveness rates than HDI+ROPE in this region. At the boundary itself, ePitG
+is conclusive in only 19\% of experiments and PitG in only 5\%.
 
-Due to the nature of the ROPE setup the its boundaries are inflection points for the algorithms,
-as they are designed to accept $\theta_{\rm null}$ within the ROPE and reject it outside the ROPE.
-The precision based methods (PitG and ePitG) are designed to be more conservative around the ROPE boundaries,
-which is reflected in their lower conclusiveness rates compared to HDI+ROPE in this region.
-If $\theta_{\rm true}$ is equal to the ROPE boundary (or fairly close) the ePitG method shown
-here is only 19\% likely to be conclusive whereas the PitG is only 5\% likely.
+Breaking the conclusiveness into its acceptance and rejection components (middle panel)
+reveals the error structure. For $\theta_{\rm null}=0.5$, acceptance is the correct
+decision within the ROPE ($\theta_{\rm true}\le 0.55$) and rejection is correct outside
+it. HDI+ROPE's false positive rate (i.e, rejecting $\theta_{\rm null}$ when it is true) of $\sim\!6\%$ at $\theta_{\rm true}=0.5$ climbs to
+$\sim\!30\%$ at ${\rm ROPE}_{\rm max}$; its false negative rate (i.e, accepting $\theta_{\rm null}$ when it is false)
+peaks at $\sim\!10\%$ at
+the boundary before dropping to 0\% by $\theta_{\rm true}=0.57$. Both precision-based
+methods maintain zero false positives throughout, with only a small false negative rate
+near the ROPE boundary that similarly drops quickly. %% that peaks at the ROPE boundary and drops to zero by $\theta_{\rm true}=0.57$.
 
-In the right panel of Figure \ref{fig:conclusiveness_rates} we address the issue of
-experiements with inconclusive decisions.
-For each inconclusive experiment (i.e, when an algorithm determines "inconclusiveness" when
-its stop criterion is met) one needs to assign a decision of acceptance or rejection of
-$\theta_{\rm null}$. We defer an examination of different types of risk or utility based decisions
-and apply here a simplistic, and we believe, a popular method. We assign the decision
-based on the mean of the posterior ($\hat{\theta}=N_{\rm success}/N_{\rm total}$)
-is inside or outside the ROPE, respectively. This is a common approach to dealing with inconclusive experiments, but it is important
-to note that it is not the only one and it may not be the most appropriate in all cases.
-For the conclusive experiments we keep the decisions as they are.
-At each $\theta_{\rm true}$ value we then calculate the overall acceptence and rejection
-rates for all 2,000 experiments (conclusive and inconclusive) and then flag them as
-\textit{correct} or \textit{incorrect} by comparing them to the ROPE boundaries (i.e, True/False positives/negatives).
-Finally the \textit{Decision Correctness Rates} (This is effectively what is called Accuracy, right?) are calculated as the proportion of correct decisions (accept or reject) out of all decisions (correct and incorrect) for each $\theta_{\rm true}$ value.
+The right panel shows overall \textit{accuracy}, the proportion of correct decisions
+across all $M$ experiments, after assigning each inconclusive experiment a decision
+based on whether $\hat{\theta}$ lies within the ROPE (accept) or outside it (reject).
+Alternative risk- or utility-based assignment rules exist but are deferred to future
+work.
 
-TODO: pseudo algorithm in Appendix.
+All three algorithms reach their minimum accuracy at ${\rm ROPE}_{\rm max}$. Within
+the ROPE, ePitG consistently leads PitG, reaching 99.5\% at $\theta_{\rm true}=0.5$
+compared to PitG's 98.5\%. Outside the ROPE, HDI+ROPE and ePitG reach 100\% by
+$\theta_{\rm true}=0.58$, whereas PitG achieves this only at
+$\theta_{\rm true}\approx 0.60$.
 
-We find that the lowest Decison Correctness Rate (TODO: considering to rename to Accuracy if this is the same)
-is at the ROPE boundary. Within the ROPE, i.e, $0.5 \le \theta_{\rm true} \le 0.55$
-ePitG grows the fastest assympoting at 99.5\% at $\theta_{\rm true}=0.5$
-whereas PitG assymptotes slightly lower at 98.5\%.
+That HDI+ROPE reaches 100\% accuracy at $\theta_{\rm true}=0.58$ while simultaneously
+producing biased $\hat{\theta}$ estimates motivates a closer look at the observed
+success rate $\hat{\theta}$ statistics. Figure~\ref{fig:success_by_truth_conclusive} shows, for conclusive
+experiments, the IQR of $\hat{\theta}(N_{\rm stop})$ (left panel) and the median bias
+$\hat{\theta}_{\rm 50\%}-\theta_{\rm true}$ (right panel).\footnote{We find similar
+trends for the mean, but omit it to reduce clutter.}
 
-Outside the ROPE we see that HDI+ROPE
-grows as fast as ePitG and assymptotes 100\% accuracy by $\theta_{\rm true}=0.58$, whereas
-this happens for PitG only at $\theta_{\rm true}=0.60$.
+Before examining per-algorithm bias, it is worth recalling what an accept or reject
+decision means in this framework. Following \cite{kruschke2018}, accepting
+$\theta_{\rm null}$ for practical purposes does not mean that $\theta_{\rm null}$ is
+itself the most credible value of the posterior; it means merely that \textit{all} the
+most credible values---the entire HDI---are practically equivalent to $\theta_{\rm null}$.
+The relevant quantity for an accept/reject decision is therefore the posterior HDI, not
+the point estimate $\hat{\theta}$. A small bias in $\hat{\theta}$ does not invalidate
+the decision so long as the HDI falls cleanly within the ROPE.
 
-Even though the HDI+ROPE yields 100\% accuracy at $\theta_{\rm true}=0.58$ in
-terms of the decision made it actually manifests in biassed $\hat{\theta}$ results.
-Figure \ref{fig:success_by_truth_conclusive} visualises the parameter value at the stop for each true value $\hat{\theta}(\theta_{\rm true})$
-for conclusive experiments. 
-In the left panel we visualise the IQR of each algorithm and in the right panel we visualise
-the median difference  $\hat{\theta}(\theta_{\rm true}) - \theta_{\rm true}$.\footnote{We find similar trends for the mean, but do not show to reduce clutter.} 
+With this in mind, the $\hat{\theta}$ bias of HDI+ROPE is more telling as a symptom
+of its lack of a precision requirement than as a decision-quality metric. At
+$\theta_{\rm true}=0.5$, all three algorithms show near-zero bias, as expected from
+the symmetry of the fair coin case. Once $\theta_{\rm true}$ deviates from $0.5$,
+HDI+ROPE's bias grows markedly: its median bias approaches the ROPE half-width at
+${\rm ROPE}_{\rm max}$, with the upper IQR extending substantially further.
+This happens because HDI+ROPE can stop on skewed samples before sufficient data
+have accumulated to constrain the posterior.
 
-
-As seen in Section \ref{sec:fair_coin} at $\theta_{\rm true}=0.5$
-all three algorithms demonstrate average ${\hat{\theta}}$ is quite close to the true value
-We understand this fair coin case to be true due to the symmetric
-nature of the problem. That does not mean the HDI+ROPE is unbiassed since 
-it has the discussed 6\% FPR which manifests on both sides of the true value evenly.
-Once the true value deviates from 0.5 this symmetry is broken and we start to see the 
-average $\hat{\theta}$ HDI+ROPE quite deviate from the true value, especially at the
-ROPE boundary where its average bias surpases $\Delta_{\rm ROPE}/2=0.5$. Outside the rope
-this average value is still quite high and the top IQR band substantially more.
-This is understood due to the fact that HDI+ROPE does not account for precision and hence
-may more frequently accept outlier samples.
-
-Within the ROPE, apart of $\theta_{\rm true}=0.5$, amongst the conclusive experiements
-for each algorithm, PitG has the heighest bias and ePitG has the lowest. Interestingly,
-in the case of inconclusive experiments for which PitG has much more experiments
-than ePitG and HDI+ROPE the former has the lowest bias by a small margin (not shown here).
-That said, in Figure \ref{fig:conclusiveness_rates} compounding for
-all conclusive and inconclusive experiments the Decision Correctness of the ePitG is always
-higher than the PitG.
-
-
-That said, we see that the PitG bias is much smaller than the ROPE width. Considering when we do not know the true parameter, when accepting the null hypothesis all values within the ROPE should be accepted as the null hypothesis. One should consider \dots (TODO: continue this line of thought later.)
-should be accepted as the null hypothesis one should consider \dots (TODO: continue this line of thought later and reference JK)
+The precision-based methods exhibit substantially smaller $\hat{\theta}$ bias, well
+within the ROPE width across all $\theta_{\rm true}$ values, as a natural consequence
+of their precision requirement. Among conclusive experiments within the ROPE, PitG
+shows the highest bias and ePitG the lowest.\footnote{For inconclusive experiments,
+where PitG contributes far more experiments than ePitG or HDI+ROPE, PitG's
+$\hat{\theta}$ bias is slightly \textit{lower} than ePitG's, though this ordering
+reverses when compounding all experiments.} Compounding conclusive and inconclusive
+experiments, ePitG accuracy exceeds PitG's at every $\theta_{\rm true}$ value
+(cf.\ Figure~\ref{fig:conclusiveness_rates}, right panel).
 
 
 So far we've demonstrated that the ePitG is significantly more decisive
@@ -364,7 +346,7 @@ wide IQR.
 Once $\theta_{\rm true}$ is outside the ROPE the $N_{\rm stop}$ of HDI+ROPE
 is much lower than $N_{\rm goal}$ required for the precision goal, indicating that it is
 correctly rejecting $\theta_{\rm null}$ much faster than the precision based methods,
-although with a strong bias as seen in Figure \ref{fig:success_by_truth_conclusive} due to strong outlier samples.
+although with a strong bias as seen in Figure \ref{fig:success_by_truth_conclusive} due to strong non-representative samples.
 
 The PitG $N_{\rm stop}$ stats (middle panels) are tightly clustered around $N_{\rm goal}$ across all $\theta_{\rm true}$ values,
 reflecting its design to stop when the precision goal is met.
