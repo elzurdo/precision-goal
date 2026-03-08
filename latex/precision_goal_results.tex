@@ -219,15 +219,24 @@ The ROPE top boundary is highlighted with vertical dashed lines to indicate an i
 \begin{figure}[h!]
   \centering
   \includegraphics[width=1\textwidth]{conclusive_rates.png}
-  \caption{Conclusiveness Rates.
-  }
+  \caption{Algorithm comparison across $\theta_{\rm true}$ values for $M=2{,}000$
+  experiments ($\theta_{\rm null}=0.5$, $\omega_{\rm goal}=0.08$).
+  All panels are color-coded by algorithm: red: HDI+ROPE; blue: PitG; green: ePitG.
+  Vertical dashed line marks ${\rm ROPE}_{\rm max}=0.55$.
+  \textit{Left}: conclusiveness rates.
+  \textit{Middle}: acceptance (solid lines) and rejection (dashed lines) rates;
+  at each $\theta_{\rm true}$ their sum equals the conclusiveness rate.
+  \textit{Right}: decision correctness rates (proportion of correct decisions out of all
+  $M$ experiments); inconclusive experiments are assigned a decision based on whether
+  $\hat{\theta}$ falls inside or outside the ROPE
+  (cf.\ Section~\ref{sec:trends}).}
   \label{fig:conclusiveness_rates}
 \end{figure}
 
 As detailed in Section \ref{sec:fair_coin} the conclusiveness rate of HDI+ROPE (red)
 and ePitG (green) both start at near 100\% for $\theta_{\rm true}=0.5$, where PitG (blue)
 is at 36.7\%. Note that these results are a manifestation of the current setting with
-$\omega_{\rm goal}=0.8$. If, e.g, we use a more stringent goal of $\omega_{\rm goal}=0.6$
+$\omega_{\rm goal}=0.08$. If, e.g, we use a more stringent goal of $\omega_{\rm goal}=0.06$
 the conclusiveness at  $\theta_{\rm true}=0.5$ of PitG increases drastically to 82.5\%
 at the expense of substantially larger $N_{\rm goal}=1065$ (1.8 larger). That said,
 the general trends seen here may be replicated to different extents for varying values of $\omega_{\rm goal}$.
@@ -337,10 +346,15 @@ the minimum sample size the researcher should consider in advance prior to decid
 \begin{figure}[h!]
   \centering
   \includegraphics[width=1\textwidth]{success_by_truth_conclusive.png}
-  \caption{Experiment success rates by true values.
-  Left:  Interquartile ranges (IQR).The solid line is parity with $\theta_{\rm true}$. Dotted lines are the ROPE boundaries. Note that in the Inconclusive Experiments those of HDI+ROPE and ePitG are very narrow.
-  Right: Deviations from the truth: Median minus $\theta_{\rm true}$.
-  }
+  \caption{Observed success rate $\hat{\theta}(N_{\rm stop})$ at the stop iteration as a
+  function of $\theta_{\rm true}$, for conclusive experiments only (subsets of $M=2{,}000$,
+  $\theta_{\rm null}=0.5$, $\omega_{\rm goal}=0.08$).
+  All panels are color-coded by algorithm: red: HDI+ROPE; blue: PitG; green: ePitG.
+  Dotted horizontal lines mark the ROPE boundaries and the vertical dashed is ROPE$_{\rm max}$.
+  \textit{Left}: interquartile range $\hat{\theta}_{\rm 25\%}$--$\hat{\theta}_{\rm 75\%}$
+  of $\hat{\theta}(N_{\rm stop})$; the solid diagonal line is the parity line
+  $\hat{\theta}=\theta_{\rm true}$.
+  \textit{Right}: $\hat{\theta}_{\rm 50\%}-\theta_{\rm true}$.}
   \label{fig:success_by_truth_conclusive}
 \end{figure}
 
@@ -371,8 +385,16 @@ more (if close to or in the ROPE) or less (if far from the ROPE).
 \begin{figure}[h!]
   \centering
   \includegraphics[width=1\textwidth]{stop_iterations_by_truth_conclusive.png}
-  \caption{ePitG vs. PitG vs. iteration stop and conclusiveness ratesb.
-  }
+  \caption{Stop iteration $N_{\rm stop}$ statistics for conclusive experiments across
+  $\theta_{\rm true}$ values ($\omega_{\rm goal}=0.08$).
+  \textit{Left}: $\theta_{\rm null}=0.5$; \textit{Right}: $\theta_{\rm null}=0.7$.
+  In each column the top, middle, and bottom panels correspond to HDI+ROPE, PitG,
+  and ePitG, respectively.
+  \textit{Band}: interquartile range $n_{\rm 25\%}$--$n_{\rm 75\%}$ of $N_{\rm stop}$.
+  \textit{Solid line}: mean $N_{\rm stop}$ value $\overline{n}$.
+  To compare to the researcher's planned sample size Equation~\ref{eq:pitg_stop_iteration}
+  is used to calculate the true precision-goal iteration $N_{\rm goal}(\theta_{\rm true}, \omega_{\rm goal})$ (dotted line)
+  and the null precision-goal iteration $N_{\rm goal}(\theta_{\rm null}, \omega_{\rm goal})$ (horizontal dashed line).}
   \label{fig:stop_iterations_by_truth_conclusive}
 \end{figure}
 
@@ -387,8 +409,14 @@ of the $N_{\rm stop}$ ratio is displayed in dot-dashed and the IQR is the band.
 \begin{figure}[h!]
   \centering
   \includegraphics[width=1\textwidth]{stop_conclusiveness_ratios.png}
-  \caption{ePitG vs. PitG vs. iteration stop and conclusiveness ratesf.
-  }
+  \caption{ePitG-to-PitG ratios of conclusiveness rate and stop iteration across
+  $\theta_{\rm true}$ values ($M=2{,}000$, $\theta_{\rm null}=0.5$,
+  $\omega_{\rm goal}=0.08$).
+  \textit{Solid line}: conclusiveness ratio
+  (cf.\ Figure~\ref{fig:conclusiveness_rates}).
+  \textit{Dot-dashed line}: median $N_{\rm stop}$ ratio.
+  \textit{Band}: interquartile range of the $N_{\rm stop}$ ratio.
+  \textit{Vertical dashed line}: ${\rm ROPE}_{\rm max}=0.55$.}
   \label{fig:stop_conclusiveness_ratios}
 \end{figure}
 
