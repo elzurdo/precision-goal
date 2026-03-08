@@ -1,41 +1,45 @@
-Sequential hypothesis testing allows for continuous data collection until sufficient evidence is obtained, avoiding the need for predetermined sample sizes. However, using decision metrics as stopping rules can introduce confirmation bias in both Frequentist and Bayesian frameworks. Approaches that separate the stopping criterion from the decision criterion, such as "Precision is the Goal", effectively eliminate this bias by stopping only when a target posterior precision is reached. While this ensures unbiased decisions, we demonstrate that it frequently yields inconclusive outcomes, both when substantial effects exist and---most notably---when the null hypothesis is true. To address this limitation, we propose "Enhanced Precision is the Goal", a variant that requires simultaneously meeting both the precision target and the decision criterion. Using synthetic dichotomous data, we show that this reduces inconclusive results from 61\% to 1.6\% in fair coin experiments ($\theta_{\rm true}=0.5$) and from 29\% to 0.2\% in the $\theta_{\rm true}=0.6$ scenario. This improvement comes at the cost of a moderate increase in average sample size (approximately 22\% and 11\% respectively). We provide an online interactive calculator and open-source code to facilitate the effective planning and interpretation of sequential experiments.
+Sequential hypothesis testing allows data collection to continue until sufficient evidence
+accumulates, offering flexibility over fixed-sample designs.
+A key challenge, however, is that stopping rules which trigger on decision criteria ---
+such as p-value thresholds or posterior-based heuristics --- can introduce confirmation
+bias through early peaking on unrepresentative samples.
+Methods that decouple the stopping criterion from the decision criterion, such as
+``Precision is the Goal'' (PitG), eliminate this bias by halting only once a target
+posterior precision is reached.
+Yet we show that PitG frequently yields inconclusive outcomes, most notably when the
+null hypothesis is true.
+To address this, we propose ``Enhanced Precision is the Goal'' (ePitG), which requires
+both the precision target and a conclusive hypothesis outcome to be met simultaneously
+before stopping.
+We demonstrate that ePitG substantially increases decisiveness while preserving PitG's
+zero-false-positive property, at only a modest cost in median sample size.
+In fair coin experiments ($\theta_{\rm true}=0.5$) with a precision goal of
+$\omega_{\rm goal}=0.08$, PitG yields 63.3\% inconclusive outcomes; ePitG reduces this
+to just 2.3\%, with only a 4.7\% increase in median sample size.
+We provide an online interactive calculator and open-source code to support the planning
+and interpretation of sequential experiments.
 
-
-\
-\
-
-%\cite{kruschke2015doing} introduced the "Precision is the Goal" method,
-%which eliminates bias in dichotomous outcome sampling by setting an objective precision threshold as the stopping rule.
+%% -----------------------------------------------------------------------
+%% IMRaD ALTERNATIVE (for reference)
+%% -----------------------------------------------------------------------
+% \textbf{Background.} Sequential hypothesis testing offers flexibility over
+% fixed-sample designs, but risks confirmation bias when stopping rules are
+% coupled to decision criteria.
 %
-%We find in cases where the null hypothesis is true,
-%applying the "Precision is the Goal" method avoids false positives but results in a high rate of inconclusive decisions.
-
-
-
-%Sequential hypothesis testing is a process in which a practitioner does not predefine a
-%sample size but relies on assumptions about incoming data to indicate that enough has
-% been collected to make a decision about a hypothesis. Most commonly used approaches
-% apply an accept/reject decision criterion as a stopping criterion which makes results
-% prone to biases, such as confirmation bias due to the possibility of obtaining extreme
-% results. Although known as a problem with the frequentist {\it p-value} mechanism, it is not
-% magically resolved with Bayesian approaches. To resolve this issue, a predetermined
-% accuracy in parameter estimation has been advocated as a stopping criterion.
-% In particular \cite{kruschke2015doing} showed that by defining in advance an  posterior precision as
-% a stopping criterion, a method called {\it Precision is the Goal}, eliminates bias in the
-% case of dichotomous outcomes sampling. Whereas we find this to be true, we highlight
-% important practical details, in particular when the posterior doesn’t clearly indicate
-% if the null hypothesis may neither be rejected or accepted, i.e, a situation of
-% “inconclusiveness”. In cases where the null hypothesis is true, when applying
-% “Precision is the Goal” we find that even though the null hypothesis is never
-% incorrectly rejected (free from False positives), the majority of the decisions may
-% be inconclusive. 
-% To address this problem we introduce a conservative variant of this method which we call
-% {\it Enhanced Precision Is The Goal} in which the stopping criterion simultaneously
-% requires fulfilling the precision objective as well as the
-% reject/accept decision criterions. We apply to synthetic  data and show that it may
-% substantially reduce inconclusiveness at the cost of larger sample sizes. In one
-% reasonable setting we find this to reduce from 61\% inconclusiveness to sub 2\%
-% requiring a sample size on average 22\% larger. 
-% We also provide an online calculator with source code which aims to make usage of
-% “Precision is the Goal'' more commonplace in planning of data collection as well as
-% experiment interpretation.
+% \textbf{Gap.} Existing decoupled approaches such as ``Precision is the Goal''
+% (PitG) eliminate this bias but produce high rates of inconclusive outcomes,
+% especially when the null hypothesis is true.
+%
+% \textbf{Method.} We propose ``Enhanced Precision is the Goal'' (ePitG), which
+% requires both a target posterior precision and a conclusive hypothesis outcome
+% to be satisfied simultaneously before stopping.
+%
+% \textbf{Results.} In fair coin simulations ($\theta_{\rm true}=0.5$,
+% $\omega_{\rm goal}=0.08$), PitG yields 63.3\% inconclusive outcomes; ePitG
+% reduces this to 2.3\% with only a 4.7\% median increase in sample size,
+% while preserving zero false positives.
+%
+% \textbf{Impact.} ePitG offers a practical and principled solution for sequential
+% testing when decisive outcomes are required. Open-source code and an interactive
+% calculator are provided.
+%% -----------------------------------------------------------------------
