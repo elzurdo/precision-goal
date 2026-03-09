@@ -8,9 +8,16 @@ We organize the methods as follows:
 
 \subsection{Theoretical Framework}
 
-All three algorithms rely on Bayesian heuristics that describe two key aspects of the posterior distribution: its \textit{location} (central tendency relative to the null) and its \textit{width} (quantifying the epistemic uncertainty of the estimate).
+All three algorithms rely on Bayesian heuristics that describe two key aspects of the
+posterior distribution: its \textit{location} (central tendency relative to the null)
+and its \textit{width} (quantifying the epistemic uncertainty of the estimate).
 
-\subsubsection{Region of Practical Equivalence (ROPE) and High Density Interval (HDI)}
+We begin with a discussion on how to quantify effect size of a sample parameter in terms of the location of the posterior
+relative to the null hypothesis, and how to quantify precision of a parameter measurement in terms of the width
+of the posterior. We laster discuss using these heuristics to define a decision rule that is shared by all three algorithms
+followed by using them for stop criteria that differ across algorithms.
+
+\subsubsection{Effect Size by Region of Practical Equivalence (ROPE)}
 
 A common misconception in hypothesis testing is that a ``statistically significant'' outcome is sufficient for real-world decision-making. In practice, one must consider the \textit{effect size}. For example, medical research requires a ``minimal clinically important difference'' for an outcome to justify a change in treatment.
 
@@ -20,9 +27,31 @@ One such metric of interest to account for the importance of the effective size 
 
 The width of the ROPE depends on the task at hand. For instance, a board game manufacturer requires dice to be fair to a reasonable standard, but not to a premium precision indistinguishable to a casual player. Conversely, a casino requires a much stricter tolerance (a narrower ROPE) to ensure regulatory compliance and fair play.
 
-To value the uncertainty of our estimate, we use the \textit{credible interval} (the Bayesian analogue to the frequentist confidence interval). A popular heuristic is the \textbf{Highest Density Interval} (HDI), which describes the region where a substantial amount of the posterior resides; all points within it have a higher probability density than points outside.
+\subsubsection{Precision by Highest Density Interval (HDI)}\label{sec:precision_hdi}
 
-The width of the HDI is commonly calculated using 95\% of the mass to be comparable with traditional Frequentist hypothesis testing. While reasonable for analytical solutions, \cite{kruschke2015doing} notes that for numerical solutions (MCMC), high precision requires at least 10,000 samples; otherwise, a lower mass percentage like 94\% is recommended to ensure stability. \cite{mcelreath2016} suggests 89\% (a prime number) to highlight the arbitrariness of the threshold. In this work, we adhere to 95\% as we employ analytical solutions where sampling noise is not a factor.
+To quantify the uncertainty in our estimate we use the \textbf{credible interval},
+the Bayesian analogue of the frequentist confidence interval:
+the region of the parameter space that contains a specified fraction of the posterior mass
+(e.g.\ 95\%).
+Several rules exist for selecting which region to report; the two most common are the
+\textbf{Equal-Tailed Interval} (ETI) and the \textbf{Highest Density Interval} (HDI)
+(see Appendix~\ref{app:hdi} for their formal definitions).
+
+The HDI has a natural geometric interpretation: imagine drawing a horizontal line across
+the posterior density curve and slowly lowering it from the peak. The line intersects the
+curve at two points, enclosing an area underneath. The HDI is the interval between those
+two intersection points at the moment the enclosed area first reaches the target mass
+(e.g.\ 95\%). Because the line is horizontal, every point inside the interval sits on a
+portion of the curve that is at least as tall as any point outside — hence \textit{highest
+density}. For a symmetric, bell-shaped posterior this coincides with the ETI (equal tails),
+but for a skewed posterior the HDI is noticeably shorter.
+
+Throughout this work we use the HDI at the 95\% level to remain comparable with traditional
+frequentist hypothesis testing. \cite{kruschke2015doing} notes that for numerical posteriors
+obtained via MCMC, 95\% HDI estimation requires at least 10{,}000 samples; a slightly lower
+level such as 94\% is recommended for fewer samples. \cite{mcelreath2016} advocates 89\%
+(a prime, to underscore the arbitrariness of any threshold). Because we employ analytical
+posteriors here, sampling noise is not a concern and 95\% is unambiguous.
 
 \subsubsection{The Decision Rule: Separating ``Stop'' from ``Decide''}\label{sec:decision_criterion}
 
