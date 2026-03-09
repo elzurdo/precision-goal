@@ -198,67 +198,13 @@ As seen in Algorithm \ref{alg:epitg}, strictly enforcing both conditions ensures
 
 Note that all stopping algorithms (\ref{alg:hdi_rope}--\ref{alg:epitg}) assume the collection of one data point at a time, though this is easily modified in the increment step ($N \mathrel{+}= 1$) to accommodate batch collection.
 
-\subsection{Approximate Expected Stop Iteration (CLT)}\label{sec:expected_stop_iteration}
+\subsubsection{Expected Stop Iteration}\label{sec:expected_stop_iteration}
 
-To complement the algorithmic definitions above, we provide a large-sample approximation for the expected stopping iteration of precision-based methods. The derivation relies on a normal approximation to the posterior (or sampling distribution of the estimator) and is therefore intended as an analytical guide rather than an exact finite-sample identity.
-
-Assume an estimator $\hat\theta_N$ with asymptotic form
-\begin{equation}
-\hat\theta_N \approx \mathcal{N}\!\left(\theta,\,\frac{V(\theta)}{N}\right),
+Because the Bayesian HDI width shrinks as $N^{-1/2}$, the stopping iteration of precision-based algorithms can be anticipated analytically. A normal (CLT) approximation to the posterior gives a closed-form expression: for Bernoulli data with true rate $\theta$ and precision goal $\omega_{\rm goal}$,
+\begin{equation}\label{eq:pitg_stop_iteration}
+N_{\rm goal}(\theta,\omega_{\rm goal}) \approx \frac{4 z_{*}^{2}}{\omega_{\rm goal}^{2}}\,\theta(1-\theta),
 \end{equation}
-where $V(\theta)$ is the per-observation variance contribution. For a symmetric central interval with critical value $z_{*}$, the interval width is approximately
-\begin{equation}
-w \approx 2 z_{*}\sqrt{\frac{V(\theta)}{N}}.
-\end{equation}
-Solving for $N$ yields
-\begin{equation}\label{eq:expected_stop_iteration_clt}
-N \approx \frac{4 z_{*}^{2}}{w^{2}}V(\theta).
-\end{equation}
-
-For Bernoulli outcomes, $V(\theta)=\theta(1-\theta)$, giving
-\begin{equation}\label{eq:expected_stop_iteration_binomial}
-N \approx \frac{4 z_{*}^{2}}{w^{2}}\theta(1-\theta).
-\end{equation}
-Using the manuscript notation $\mathrm{CI}\equiv w$ and $p\equiv\theta$, this is the same functional form used for PitG in the binomial case.
-
-For continuous outcomes when the estimand is a mean, $V(\mu)=\sigma^{2}$ (or a plug-in estimate $\hat\sigma^{2}$), giving
-\begin{equation}\label{eq:expected_stop_iteration_mean}
-N \approx \frac{4 z_{*}^{2}\sigma^{2}}{w^{2}}.
-\end{equation}
-
-Finally, if one indexes updates by $n=0,1,2,\dots$ while sample size is $N=n+1$, then rewriting Equation \ref{eq:expected_stop_iteration_clt} in terms of $n$ gives
-\begin{equation}
-n \approx \frac{4 z_{*}^{2}}{w^{2}}V(\theta)-1,
-\end{equation}
-which explains the ``$-1$'' form used elsewhere. This is an indexing convention; asymptotically, the distinction is negligible.
-
-\begin{figure}[h!]
-  \centering
-  \includegraphics[width=1\textwidth]{min_sample_by_goal.png}
-  \caption{caption tbd
-  }
-  \label{fig:min_sample_by_goal.png}
-\end{figure}
-
-
-Suggested references to verify and optionally add later:
-
-Wikipedia
-
-Central limit theorem
-Wald confidence interval (binomial proportion)
-Binomial proportion confidence interval
-Bernstein–von Mises theorem
-Delta method
-Published sources
-
-Kruschke, J. K. (2015). Doing Bayesian Data Analysis (2nd ed.), especially Ch. 13 (your main PitG context).
-van der Vaart, A. W. (1998). Asymptotic Statistics (CLT/asymptotic normality foundations).
-Casella, G., and Berger, R. L. (2002). Statistical Inference (CI-width/sample-size heuristics).
-Brown, Cai, and DasGupta (2001), Statistical Science, “Interval Estimation for a Binomial Proportion” (coverage/interval nuances near boundaries).
-Chow, Shao, and Wang (2008). Sample Size Calculations in Clinical Research (practical width-based sample-size formulas).
-
-\textcolor{red}{\textbf{[TK: Note to self - this section is a bit technical and may be better placed in an Appendix or Supplementary Material, depending on the target audience of the paper. Consider the trade-off between analytical depth and accessibility.]}}
+where $z_{*}$ is the critical value corresponding to the chosen credibility level (e.g., $z_{*}\approx 1.96$ for 95\%). The continuous analogue replaces $\theta(1-\theta)$ with the estimand variance $\sigma^2$. Because $\theta(1-\theta)$ is maximised at $\theta=0.5$, Equation~\ref{eq:pitg_stop_iteration} confirms that the fair-coin case demands the largest sample, and the expected stop iteration decreases monotonically as $\theta$ moves toward $0$ or $1$ (see Appendix~\ref{app:expected_stop} for the full derivation).
 
 \subsection{Experimental Design}
 
@@ -283,25 +229,3 @@ Unless stated otherwise, we utilize the following default parameters, chosen to 
 \end{itemize}
 
 In the following section, we present the results of these simulations, first under these default settings and subsequently by varying key parameters to explore robustness.
-
-NOTE TO SELF: This paper might not vary the parameters. Go back and revise.
-
-More text likely to delete:
-
-
-As this binomial setup is well-defined, we observe trends that can be described analytically. We discuss this in Section \textcolor{red}{\textbf{[TK]}}, but note here that the expected stop iteration for Precision is the Goal is approximated by:
-\begin{equation}\label{eq:pitg_stop_iteration}
-n \approx \frac{4 z_{*}^2}{\rm{CI}^2}p(1-p) - 1
-\end{equation}
-where:
-\begin{itemize}
-  \item $p$ is the success rate. \textcolor{red}{\textbf{[TK: Perhaps this should be $\theta_{\rm true}$?]}}
-  \item ${\rm CI}$ is the precision goal (here 0.08).
-  \item $z_{*}$ is the critical value (e.g., $z_{0.05}=1.96$). \textcolor{red}{\textbf{[TK: confirm variable. For some reason I wote "E.g, for 95\% quantile of the standard normal distribution"]}}
-\end{itemize}
-
-For this fair coin instance ($p=0.5$), we obtain $n \approx 599.2$, indicated by the dashed vertical line in Figure \ref{fig:fair_iter_vs_rate}.
-
-We next move on to examine the general trends across the full range of $\theta_{\rm true}$ values,
-which encompasses the ROPE and its boundaries. \textcolor{red}{\textbf{[TK: Note to self - repetitive from above, revise ...]}}
-

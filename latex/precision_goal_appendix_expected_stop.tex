@@ -1,0 +1,73 @@
+\section{Derivation of Expected Stop Iteration}\label{app:expected_stop}
+
+The precision-based stopping algorithms (PitG and ePitG) halt when the HDI width
+falls below the precision goal $\omega_{\rm goal}$. Because the posterior HDI width
+shrinks as $N^{-1/2}$, one can predict in advance the iteration at which this
+threshold will be crossed. The derivation below uses a normal approximation to the
+posterior and is therefore intended as an analytical guide rather than an exact
+finite-sample identity.
+
+\subsection*{General CLT Form}
+
+Assume an estimator $\hat\theta_N$ with asymptotic distribution
+\begin{equation}\label{eq:clt_general}
+\hat\theta_N \approx \mathcal{N}\!\left(\theta,\,\frac{V(\theta)}{N}\right),
+\end{equation}
+where $V(\theta)$ is the per-observation variance contribution. For a symmetric
+central interval with critical value $z_{*}$ (e.g., $z_{*}=1.96$ for 95\%), the
+interval width is approximately
+\begin{equation}\label{eq:hdi_width_approx}
+w \approx 2 z_{*}\sqrt{\frac{V(\theta)}{N}}.
+\end{equation}
+Setting $w = \omega_{\rm goal}$ and solving for $N$ gives the general expected stop
+iteration:
+\begin{equation}\label{eq:expected_stop_iteration_clt}
+N_{\rm goal} \approx \frac{4 z_{*}^{2}}{\omega_{\rm goal}^{2}}\,V(\theta).
+\end{equation}
+
+\subsection*{Binomial Case}
+
+For Bernoulli outcomes, $V(\theta)=\theta(1-\theta)$, so
+Equation~\ref{eq:expected_stop_iteration_clt} becomes
+\begin{equation}\label{eq:expected_stop_iteration_binomial}
+N_{\rm goal} \approx \frac{4 z_{*}^{2}}{\omega_{\rm goal}^{2}}\,\theta(1-\theta).
+\end{equation}
+This is maximised at $\theta=0.5$, confirming that the fair coin case requires the
+largest sample to achieve a given precision goal, and decreases monotonically as
+$\theta$ moves towards $0$ or $1$.
+
+\subsection*{Continuous Case (Mean Estimation)}
+
+For continuous outcomes when the estimand is a mean $\mu$ with variance $\sigma^{2}$,
+$V(\mu)=\sigma^{2}$ (or a plug-in estimate $\hat\sigma^{2}$), giving
+\begin{equation}\label{eq:expected_stop_iteration_mean}
+N_{\rm goal} \approx \frac{4 z_{*}^{2}\sigma^{2}}{\omega_{\rm goal}^{2}}.
+\end{equation}
+
+\subsection*{Indexing Convention}
+
+If updates are indexed by $n=0,1,2,\dots$ while sample size is $N=n+1$, rewriting
+Equation~\ref{eq:expected_stop_iteration_clt} in terms of $n$ gives
+\begin{equation}\label{eq:expected_stop_index}
+n_{\rm goal} \approx \frac{4 z_{*}^{2}}{\omega_{\rm goal}^{2}}\,V(\theta) - 1.
+\end{equation}
+This is an indexing convention only; asymptotically, the distinction is negligible.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=1\textwidth]{min_sample_by_goal.png}
+  \caption{Expected stop iteration $N_{\rm goal}(\theta_{\rm true}, \omega_{\rm goal})$
+  (Equation~\ref{eq:expected_stop_iteration_binomial}) as a function of
+  $\theta_{\rm true}$ for several values of $\omega_{\rm goal}$.}
+  \label{fig:min_sample_by_goal}
+\end{figure}
+
+\subsection*{Suggested References}
+
+The approximation above rests on standard asymptotic results. Relevant sources include:
+\cite{kruschke2015doing} (Ch.\ 13, PitG context);
+van der Vaart (1998), \textit{Asymptotic Statistics} (CLT and asymptotic normality);
+Casella \& Berger (2002), \textit{Statistical Inference} (CI-width sample-size heuristics);
+Brown, Cai \& DasGupta (2001), \textit{Statistical Science} (binomial proportion intervals);
+Chow, Shao \& Wang (2008), \textit{Sample Size Calculations in Clinical Research}
+(practical width-based formulas).
