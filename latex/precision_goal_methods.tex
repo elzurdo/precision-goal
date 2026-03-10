@@ -6,18 +6,15 @@ We organize the methods as follows:
     \item We describe the \textbf{Experimental Design} used to evaluate these algorithms on synthetic data.
 \end{enumerate}
 
-\subsection{Theoretical Framework}
+\subsection{Theoretical Framework}\label{sec:theoretical_framework}
 
-All three algorithms rely on Bayesian heuristics that describe two key aspects of the
-posterior distribution: its \textit{location} (central tendency relative to the null)
-and its \textit{width} (quantifying the epistemic uncertainty of the estimate).
+All three algorithms rely on two Bayesian heuristics that together characterise the
+posterior distribution: its \textit{location} (which conveys the effect size, i.e, how far the estimate sits from the null)
+and its \textit{width} (how uncertain that estimate is)\footnote{Here we refer to \textit{epistemic uncertainty} referring to the uncertainty in our knowledge about the true value of a parameter, as opposed to aleatory uncertainty which is inherent variability in the system being studied.}. Location is formalised through
+the ROPE and width through the HDI; together they define a shared Decision Rule that
+all three algorithms apply once their respective stopping criteria are met.
 
-We begin with a discussion on how to quantify effect size of a sample parameter in terms of the location of the posterior
-relative to the null hypothesis, and how to quantify precision of a parameter measurement in terms of the width
-of the posterior. We laster discuss using these heuristics to define a decision rule that is shared by all three algorithms
-followed by using them for stop criteria that differ across algorithms.
-
-\subsubsection{Effect Size by Region of Practical Equivalence (ROPE)}
+\subsubsection{Effect Size by Region of Practical Equivalence (ROPE)}\label{sec:rope}
 
 A common misconception in hypothesis testing is that a ``statistically significant'' outcome is sufficient for real-world decision-making. In practice, one must consider the \textit{effect size}. For example, medical research requires a ``minimal clinically important difference'' for an outcome to justify a change in treatment.
 
@@ -53,7 +50,7 @@ level such as 94\% is recommended for fewer samples. \cite{mcelreath2016} advoca
 (a prime, to underscore the arbitrariness of any threshold). Because we employ analytical
 posteriors here, sampling noise is not a concern and 95\% is unambiguous.
 
-\subsubsection{The Decision Rule: Separating ``Stop'' from ``Decide''}\label{sec:decision_criterion}
+\subsubsection{The Decision Rule}\label{sec:decision_criterion}
 
 Crucially, we distinguish between the \textbf{Stopping Rule} (when to stop collecting data) and the \textbf{Decision Rule} (what to conclude once stopped). While the three algorithms discussed later differ in their \textit{stopping} criteria, they all share an identical \textbf{Decision Rule}.
 
@@ -69,7 +66,8 @@ Crucially, we distinguish between the \textbf{Stopping Rule} (when to stop colle
     \label{fig:posteriors}
 \end{figure}
 
-Once the stopping criterion is triggered, the decision is determined solely by the relationship between the HDI and the ROPE (Figure \ref{fig:posteriors}):
+Once the stopping criterion is triggered, the decision is determined solely by the
+relationship between the HDI and the ROPE:
 
 \begin{itemize}
     \item \textbf{Reject Null}: The HDI is completely \textit{outside} the ROPE.
@@ -77,14 +75,20 @@ Once the stopping criterion is triggered, the decision is determined solely by t
     \item \textbf{Inconclusive}: The HDI \textit{straddles} the ROPE boundary.
 \end{itemize}
 
-In Figure \ref{fig:posteriors} we display three posteriors from different stopping points of the same hand-picked experiment of Bernoulli trials ($\theta_{\rm null}=0.5$, ROPE width $= 0.1$).
+The interpretation of these outcomes, particularly what it means to \textit{accept}
+the null in a Bayesian framework, differs meaningfully from the frequentist convention
+and is worth examining carefully; we do so in Section~\ref{sec:accept_reject_meaning}.
+
+In Figure \ref{fig:posteriors} we display three posteriors from different stopping points
+of the same hand-picked experiment of Bernoulli trials ($\theta_{\rm null}=0.5$,
+ROPE width $\Delta_{\rm ROPE}= 0.1$).
 \begin{itemize}
     \item In the \textbf{top panel}, we examine a stop at iteration 126. The 95\% HDI is fully outside the ROPE, leading to a rejection of the null hypothesis.
     \item In the \textbf{middle panel}, a stop is triggered at iteration 598. Here, the HDI straddles the ROPE boundary, resulting in an inconclusive decision.
     \item In the \textbf{bottom panel}, we stop at iteration 804. The 95\% HDI falls fully within the ROPE, allowing us to accept $\theta_{\rm null}$.
 \end{itemize}
 
-The insights from Figure \ref{fig:posteriors} illustrate that the decision outcome is time-dependent. An inconclusive outcome implies that the data collected is insufficient to justify a decision. In a live setting, a human-in-the-loop (or a wrapper algorithm, common in automated high-frequency environments) would need to either conduct a risk assessment or collect more data. Since risk assessment is highly contextual, we defer that discussion and focus on the necessity of collecting more data to avoid inconclusive outcomes.
+The insights from Figure \ref{fig:posteriors} illustrate that the decision outcome is iteration-dependent. An inconclusive outcome implies that the data collected is insufficient to justify a decision. In a live setting, a human-in-the-loop (or a wrapper algorithm, common in automated high-frequency environments) would need to either conduct a risk assessment or collect more data. Since risk assessment is highly contextual, we defer that discussion and focus on the necessity of collecting more data to avoid inconclusive outcomes.
 
 Algorithm \ref{alg:decision_criterion} formalises this logic.
 
@@ -105,7 +109,67 @@ Algorithm \ref{alg:decision_criterion} formalises this logic.
     \end{algorithmic} 
 \end{algorithm}
 
-\subsection{Sequential Stopping Algorithms}
+\subsubsection{Interpreting Accept and Reject Decisions}\label{sec:accept_reject_meaning}
+
+A key conceptual distinction between Bayesian and frequentist hypothesis testing
+lies in what it means to \textit{accept} the null hypothesis.
+
+In the frequentist (NHST) framework, the null is the only hypothesis assigned
+a probability model. A small p-value justifies \textit{rejecting} the null; a large
+p-value only means there is insufficient evidence to reject it. One cannot formally
+\textit{accept} the null --- only ``fail to reject'' it. Absence of evidence is not
+evidence of absence.
+
+The HDI+ROPE framework resolves this asymmetry.\footnote{Bayesian hypothesis testing more broadly — including Bayes Factors — can also provide positive evidence \textit{for} the null, so the asymmetry is specific to NHST rather than to all non-Bayesian methods. What distinguishes the HDI+ROPE approach is that support for the null is operationalised through \textit{practical equivalence}: the null is accepted only when the data are precise enough to rule out any effect outside the ROPE, rather than by comparing marginal likelihoods as Bayes Factors do.} Because the ROPE encodes the researcher's
+pre-specified notion of practical equivalence, the HDI can land in one of three
+meaningful positions:
+
+\begin{itemize}
+  \item \textbf{Accept null}: the HDI falls entirely \textit{within} the ROPE. The data
+        are precise enough to conclude that the true value is practically equivalent
+        to $\theta_{\rm null}$ --- not merely ``not different'', but positively
+        \textit{equivalent for all practical purposes}.
+  \item \textbf{Reject null}: the HDI falls entirely \textit{outside} the ROPE. The
+        data are precise enough to conclude that the true value differs meaningfully
+        from $\theta_{\rm null}$.
+  \item \textbf{Inconclusive}: the HDI straddles the ROPE boundary. The data do not
+        yet discriminate between practical equivalence and meaningful difference;
+        more observations are needed.
+\end{itemize}
+
+Crucially, neither outcome identifies the \textit{sample estimate} $\hat\theta$ as the
+true value; both Accept and Reject are statements about $\theta_{\rm null}$,
+not about $\hat\theta$.
+
+This is because the posterior distribution carries far richer information than any
+single decision. Rather than assigning probability to one value, it spreads probability
+weight continuously across the entire parameter space: values near the peak of
+$p(\theta \mid \mathbf{x})$ are deemed most plausible, values in the tails less so.
+The HDI+ROPE decision rule distils this full distribution into an actionable verdict
+by asking a specific question \textit{``Is the bulk of the posterior's mass inside, outside,
+or straddling the ROPE?"} but the posterior itself remains available for a more
+nuanced interpretation. In particular, one should not read a ``Reject null''
+decision as endorsing $\hat\theta$ as the true value: $\hat\theta$ is simply the
+mode (or mean) of the posterior, and the full distribution quantifies how much
+uncertainty surrounds it.
+
+To make this concrete, consider the default setup used throughout this paper:
+$\theta_{\rm null}=0.5$, $\Delta_{\rm ROPE}=0.1$, so $\mathrm{ROPE}=[0.45, 0.55]$.
+
+\begin{itemize}
+  \item Suppose $\hat\theta=0.48$ and the 95\% HDI is $[0.46,\,0.50]$.
+        Both bounds lie inside $[0.45, 0.55]$, so the HDI is fully within the ROPE
+        and we \textbf{accept} $\theta_{\rm null}=0.5$: the data provide positive
+        evidence that the true rate is practically equivalent to 0.5.
+        We are \textit{not} claiming the true rate equals 0.48.
+  \item Suppose $\hat\theta=0.63$ and the 95\% HDI is $[0.57,\,0.69]$.
+        Both bounds lie above $\mathrm{ROPE}_{\rm max}=0.55$, so the HDI is fully
+        outside the ROPE and we \textbf{reject} $\theta_{\rm null}=0.5$: the data
+        provide positive evidence that the true rate is meaningfully above 0.5.
+        We are \textit{not} claiming the true rate equals 0.63.
+\end{itemize}
+
+\subsection{Sequential Stopping Algorithms}\label{sec:sequential_stopping_algorithms}
 
 Table \ref{tab:comparison} provides a high-level comparison of the three algorithms. Each algorithm shares the same Decision Rule (Algorithm \ref{alg:decision_criterion}) but differs in when it triggers the stop condition.
 
