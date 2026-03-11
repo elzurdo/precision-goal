@@ -179,11 +179,13 @@ Table \ref{tab:comparison} provides a high-level comparison of the three algorit
         \textbf{Algorithm} & \textbf{Pre-Survey} & \textbf{Stop Criterion} &  \textbf{Stop/Decision Logic} \\
         \hline
         HDI + ROPE & $N_\mathrm{min}$ & Decision is conclusive & Stop $\&$ Decision \\
-        Precision is the Goal & Goal & Precision $\le$ Goal & Stop then Decision \\
-        Enhanced PitG & Goal & Precision $\le$ Goal \textbf{AND} & Stop $\&$ Decision \\
+        Precision is the Goal & $\omega_{\rm Goal}$ & $\omega_{\rm HDI}$ $\le$ $\omega_{\rm Goal}$ & Stop then Decision \\
+        Enhanced PitG & $\omega_{\rm Goal}$ & $\omega_{\rm HDI}$ $\le$ $\omega_{\rm Goal}$ \textbf{AND} & Stop $\&$ Decision \\
          & & Decision is conclusive & \\
       \end{tabular}
-      \caption{Comparison of stopping algorithms. `Decision is conclusive' means the HDI is fully inside or fully outside the ROPE.}
+      \caption{Comparison of stopping algorithms. `Decision is conclusive' means the HDI
+      is fully inside or fully outside the ROPE. $\omega_{\rm HDI}$ denotes the observed
+      width of the HDI and $\omega_{\rm Goal}$ denotes the target precision width.}
       \label{tab:comparison}
     \end{center}
   \end{table}
@@ -191,13 +193,15 @@ Table \ref{tab:comparison} provides a high-level comparison of the three algorit
 In the Pre-Survey column we highlight the characteristic parameter required to be determined prior to the collection of data.
 \begin{enumerate}
     \item \textbf{HDI + ROPE}: Requires $N_\mathrm{min}$ (minimal sample size), e.g., 30. This is crucial as the algorithm is sensitive to early outliers.
-    \item \textbf{Precision Methods}: Require `Goal`, the target precision width, which must be narrower than the ROPE width $\Delta_\mathrm{ROPE}$.
+    \item \textbf{Precision Methods}: Require $\omega_{\rm Goal}$, the target precision width.
+    By definition it must be narrower than the ROPE width $\Delta_\mathrm{ROPE}$.
 \end{enumerate}
 
 For brevity, the table excludes two universal parameters required for all three algorithms:
 \begin{itemize}
+    \item $\Delta_\mathrm{ROPE}$ (Effect Size): The width of the Region of Practical Equivalence. This assumes symmetry around the null,
+    more generically one could specify $\mathrm{ROPE}_\mathrm{min}$ and $\mathrm{ROPE}_\mathrm{max}$ separately.
     \item $N_\mathrm{max}$ (Final Budget): The maximum sample size or budget limit.
-    \item $\Delta_\mathrm{ROPE}$ (Effect Size): The width of the Region of Practical Equivalence.
 \end{itemize}
 
 \subsubsection{HDI + ROPE: Location Only}
@@ -229,13 +233,15 @@ Algorithm \ref{alg:hdi_rope} details the procedure. Note the inclusion of $N_\ma
     \end{algorithmic}
 \end{algorithm}
 
-This method is efficient but serves as a cautionary use case of ``confirmation bias'' or ``peeking'' intent if not bounded by $N_\mathrm{min}$.
+This method is efficient but, as detailed in Section \ref{sec:results}, serves as a cautionary use case of ``confirmation bias'' or ``peeking'' intent if not bounded by $N_\mathrm{min}$.
 
 \subsubsection{Precision Is The Goal (PitG): Precision Only}
 
 Introduced by \cite{kruschke2015doing}, \textbf{Precision is the Goal} shifts the stopping condition from the \textit{decision} to the \textit{precision} (width) of the estimate. Data collection stops when the width of the HDI is narrower than a pre-specified Goal (e.g., 80\% of the ROPE width).
 
-Algorithm \ref{alg:pitg} shows the ``De-coupled'' nature of this method: stopping depends on width, while the decision depends on location. This can lead to situations where the algorithm stops (precision reached) but the result is Inconclusive (straddling).
+Algorithm \ref{alg:pitg} shows the ``De-coupled'' nature of this method: stopping depends on width, while the decision depends on location.
+As we later demonstrate in Section \ref{sec:results}, this can lead to situations where
+the algorithm stops (precision reached) but the result is Inconclusive (straddling).
 
 \begin{algorithm}
     \caption{Precision is the Goal}\label{alg:pitg}
@@ -250,9 +256,9 @@ Algorithm \ref{alg:pitg} shows the ``De-coupled'' nature of this method: stoppin
     \State N += 1 \Comment{collect another data point}
     \State Update $\hat\theta, P(\theta|\hat\theta)$ \Comment{update posterior}
     \State $\mathrm{HDI}_\mathrm{min}, \mathrm{HDI}_\mathrm{max} \gets P(\theta|\hat\theta)$
-    \State Precision = $\mathrm{HDI}_\mathrm{max} - \mathrm{HDI}_\mathrm{min}$
-    \If{Precision $\le$ Goal}
-         \State \HiLi Stop = True \Comment{Stopping regardless of Decision}
+    \State $\omega_{\rm HDI} = \mathrm{HDI}_\mathrm{max} - \mathrm{HDI}_\mathrm{min}$
+    \If{$\omega_{\rm HDI} \le$ $\omega_\mathrm{Goal}$}
+         \State \HiLi Stop = True \Comment{Stopping depends on Precision $\omega_{\rm HDI}$ regardless of Decision}
          \State Decision = Decision Algorithm($\mathrm{ROPE}_\mathrm{min}, \mathrm{ROPE}_\mathrm{max}, \mathrm{HDI}_\mathrm{min}, \mathrm{HDI}_\mathrm{max}$)  
     \EndIf
     \EndWhile
@@ -278,11 +284,11 @@ As seen in Algorithm \ref{alg:epitg}, strictly enforcing both conditions ensures
     \State N += 1 \Comment{collect another data point}
     \State Update $\hat\theta, P(\theta|\hat\theta)$ \Comment{update posterior}
     \State $\mathrm{HDI}_\mathrm{min}, \ \mathrm{HDI}_\mathrm{max}  \gets P(\theta|\hat\theta)$ 
-    \State Precision = $\mathrm{HDI}_\mathrm{max} - \mathrm{HDI}_\mathrm{min}$
-    \If{Precision $\le$ Goal}
+    \State $\omega_{\rm HDI} = \mathrm{HDI}_\mathrm{max} - \mathrm{HDI}_\mathrm{min}$
+    \If{$\omega_{\rm HDI} \le$ $\omega_\mathrm{Goal}$}
         \State Decision = Decision Algorithm($\mathrm{ROPE}_\mathrm{min}, \mathrm{ROPE}_\mathrm{max}, \mathrm{HDI}_\mathrm{min}, \mathrm{HDI}_\mathrm{max}$) 
         \If{Decision in \{Accept $\theta_{\rm null}$, Reject $\theta_{\rm null}$\}} 
-            \State \HiLi Stop = True \Comment{Stopping depends on Precision and Decision}
+            \State \HiLi Stop = True \Comment{Stopping depends on Precision $\omega_{\rm HDI}$ and Decision}
         \EndIf
     \EndIf
     \EndWhile
@@ -291,15 +297,42 @@ As seen in Algorithm \ref{alg:epitg}, strictly enforcing both conditions ensures
 
 Note that all stopping algorithms (\ref{alg:hdi_rope}--\ref{alg:epitg}) assume the collection of one data point at a time, though this is easily modified in the increment step ($N \mathrel{+}= 1$) to accommodate batch collection.
 
-\subsubsection{Expected Stop Iteration}\label{sec:expected_stop_iteration}
+\subsubsection{Expected Precision Based Stop Iteration}\label{sec:expected_stop_iteration}
 
-Because the Bayesian HDI width shrinks as $N^{-1/2}$, the stopping iteration of precision-based algorithms can be anticipated analytically. A normal (CLT) approximation to the posterior gives a closed-form expression: for Bernoulli data with true rate $\theta$ and precision goal $\omega_{\rm goal}$,
+For models where the posterior concentrates around the true parameter as data accumulate,
+a property of all regular parametric families, guaranteed asymptotically by the
+Bernstein-von Mises theorem, the HDI width shrinks proportionally to $N^{-1/2}$.
+This makes the stopping iteration of precision-based algorithms predictable in advance.
+Under a normal (CLT) approximation, the expected sample size to achieve a precision goal
+$\omega_{\rm goal}$ is proportional to the per-observation variance $V(\theta)$ of the
+estimator (see Appendix~\ref{app:expected_stop} for the full derivation).
+As a concrete example, for a Bernoulli rate parameter $\theta$ the setting introduced
+in Section~\ref{sec:experimental_design}, $V(\theta) = \theta(1-\theta)$, giving
 \begin{equation}\label{eq:pitg_stop_iteration}
 N_{\rm goal}(\theta,\omega_{\rm goal}) \approx \frac{4 z_{*}^{2}}{\omega_{\rm goal}^{2}}\,\theta(1-\theta),
 \end{equation}
-where $z_{*}$ is the critical value corresponding to the chosen credibility level (e.g., $z_{*}\approx 1.96$ for 95\%). The continuous analogue replaces $\theta(1-\theta)$ with the estimand variance $\sigma^2$. Because $\theta(1-\theta)$ is maximised at $\theta=0.5$, Equation~\ref{eq:pitg_stop_iteration} confirms that the fair-coin case demands the largest sample, and the expected stop iteration decreases monotonically as $\theta$ moves toward $0$ or $1$ (see Appendix~\ref{app:expected_stop} for the full derivation).
+where $z_{*}$ is the critical value for the chosen credibility level (e.g.,
+$z_{*}\approx 1.96$ for 95\%). For continuous outcomes, $V(\theta)$ is replaced by the
+estimand variance $\sigma^2$.
+Because $\theta(1-\theta)$ is maximised at $\theta=0.5$, the fair-coin scenario demands
+the largest sample for any given precision goal, and $N_{\rm goal}$ decreases monotonically
+as $\theta$ approaches $0$ or $1$.
+Figure~\ref{fig:min_sample_by_goal} illustrates this dependence for both the
+Bernoulli and continuous cases across a range of precision goals.
 
-\subsection{Experimental Design}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=1\textwidth]{min_sample_by_goal.png}
+  \caption{Expected precision-based stop iteration $N_{\rm goal}(\theta_{\rm true}, \omega_{\rm goal})$
+  (Equation~\ref{eq:pitg_stop_iteration}) as a function of
+  $\theta_{\rm true}$ for several values of $\omega_{\rm goal}$.
+  Left: Bernoulli case.
+  Right: continuous case with $\sigma^2=1$.
+  }
+  \label{fig:min_sample_by_goal}
+\end{figure}
+
+\subsection{Experimental Design}\label{sec:experimental_design}
 
 To evaluate and compare the performance of the three algorithms,
 we employ a synthetic data simulation based on Bernoulli trials (dichotomous data).
