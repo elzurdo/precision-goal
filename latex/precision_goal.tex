@@ -53,42 +53,65 @@ The paper is organized as follows. In the Methods section, we describe three sto
 \input precision_goal_results
 
 
-\section{Discussion}
+\section{Discussion}\label{sec:dicussion}
 
-Aspects not addressed in the paper:
+While our focus is on single-sample hypothesis testing for a Bernoulli parameter,
+the precision-goal framework extends naturally to other settings.
+For single-group continuous data, Equation~\ref{eq:pitg_stop_iteration} generalises
+by replacing $\theta(1-\theta)$ with $\sigma^2$; Figure~\ref{fig:min_sample_by_goal}
+illustrates the resulting $N_{\rm goal}$ for both cases.
 
-\begin{itemize}
-  \item adding a prior (quite trivial for this setup -- just updating success and failure counts)
-  \item continuous data
-  \item non analytiucal solutions - would require sampling methods like MCMC which would take much longer to calculate (may be less of an issue with future computer power, e.g, quantum computers)
-\end{itemize}
+For two-group comparisons --- whether binomial ($\theta_1 - \theta_2$) or continuous
+($\mu_1 - \mu_2$) --- the standard error of the difference serves as the precision
+metric, enabling sequential A/B testing under the same HDI+ROPE decision framework.
+For the binomial case with conjugate Beta posteriors, the posterior of the difference
+can be evaluated by drawing samples from the two independent Beta distributions, without
+requiring full MCMC\@. For the continuous case, Welch's two-sample $t$-test provides an
+analytical expression for the standard error of the difference, applicable when sample
+sizes are large enough for the CLT approximation to hold.
 
+We defer a treatment of prior selection, noting that informative priors can reduce the
+required sample size: a well-chosen prior contributes effective pseudo-observations,
+narrowing the starting HDI width and reducing the number of additional observations
+needed to reach $\omega_{\rm goal}$.
 
-\section{Discussion}
-TODO: rephrase the following:
+A practical advantage of the HDI+ROPE framework over frequentist approaches concerns
+multiple comparisons. In NHST, conducting several tests simultaneously inflates the
+Type~I error rate, requiring corrections (e.g.\ Bonferroni) that reduce the power of
+each individual test. Frequentist confidence intervals inherit the same dependence on
+the full set of intended comparisons, since their coverage properties are tied to
+p-values. Consequently, both power and precision planning must account for the number
+of planned tests.
 
-While our focus is on single-sample hypothesis testing,
-the precision-goal framework extends naturally to A/B testing.
-For comparing two binomial proportions $\theta_1 - \theta_2$,
-the normal approximation provides an analytical solution for
-the posterior when sample sizes exceed $\sim$30. The HDI width (standard error) serves as the precision metric,
-enabling sequential A/B testing without MCMC.
+The Bayesian posterior is not affected in this way. Because the posterior distribution
+is determined solely by the observed data and the assumed data-generating process ---
+not by the set of tests that were intended but not performed --- the power of any one
+test is unaffected by how many other comparisons are planned \citep{kruschke2015doing}.
+The precision goal $\omega_{\rm goal}$ and the stopping rule of ePitG therefore apply
+unchanged in a multiple-testing context, without the need for correction.
 
-The precision-goal framework extends naturally to two-sample comparisons (A/B testing).
-For binomial proportion $\theta_1 - \theta_2$
-the normal approximation provides analytical posteriors when samples exceed $\sim 30$
-For continuous data comparing means $\mu_1 - \mu_2$ Welch's t-test yields exact analytical solutions regardless of sample size, avoiding MCMC entirely.
-In both cases, the standard error of the difference serves as the precision metric,
-enabling sequential A/B testing under the same HDI+ROPE decision framework.
+TODO: see if Agresti \& Caffo (2000) is relevant: "Simple and Effective Confidence
+Intervals for Proportions and Differences of Proportions Result from Adding Two
+Successes and Two Failures" (Classic reference for improved normal approximation)
 
-the normal approximation also provides analytical posteriors when samples exceed $\sim 30$.
-
-TODO: see if Agresti \& Caffo (2000) is relevant: "Simple and Effective Confidence Intervals for Proportions and Differences of Proportions Result from Adding Two Successes and Two Failures"
-(Classic reference for improved normal approximation)
-
-TODO: power analysis
-
-TODO: multiple hypothesis testing
+It is worth distinguishing three types of power analysis that arise in this framework
+\citep{kruschke2015doing}.
+\textit{Prospective} power analysis is conducted before data collection: given a
+hypothesised data-generating distribution (from theory, pilot data, or prior research),
+one simulates experiments and asks how often the precision goal $\omega_{\rm goal}$ is
+achieved within the budget $N_{\rm max}$.
+This is precisely what the analytical formula for $N_{\rm goal}$
+(Equation~\ref{eq:pitg_stop_iteration}) provides as a closed-form approximation.
+\textit{Retrospective} power analysis uses the posterior from already-collected data as
+the hypothetical data generator to ask whether the completed study was sufficiently
+powered. In NHST this quantity is directly determined by the p-value and therefore adds
+no new information beyond it; in the Bayesian setting it can reveal the probability of
+achieving goals other than null rejection.
+\textit{Replication} power asks: if the experiment were repeated exactly, what is the
+probability of achieving the goal in the new study, informed by the results of the
+first? This is straightforward to compute in a Bayesian framework by using the initial
+posterior as the prior for the follow-up, but is difficult to operationalise in NHST,
+which has no principled access to a posterior-derived data generator.
 
 \section{Conclusion}
 

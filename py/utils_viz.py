@@ -1122,3 +1122,42 @@ def plot_conclusiveness_decisions_and_correctness_rates(algo_stats_df, df_correc
     plt.ylim(ylim)
 
     plt.tight_layout()
+
+def plot_n_goal_by_parameter():
+
+    thetas = np.arange(0.01, 0.99, 0.01)
+    #thetas = np.arange(0.5, 0.99, 0.01)
+    goals = [0.1, 0.08, 0.06, 0.04]
+
+    variances = thetas * (1- thetas)
+    standard_deviations = np.sqrt(variances)
+
+    n_stop_goals = {goal: [binomial_rate_ci_width_to_sample_size(theta, goal) for theta in thetas] for goal in goals}
+
+    df_n_stop_goals = pd.DataFrame(n_stop_goals, index=thetas)
+
+    plt.figure(figsize=(2 * FIG_WIDTH, FIG_HEIGHT))
+
+    plt.subplot(1,2,1)
+
+    for idx, goal in enumerate(goals):
+        plt.plot(df_n_stop_goals.index, df_n_stop_goals[goal], label=f"{goal:.2f}", linewidth=idx+1)
+
+    plt.legend(title=r"$\omega_{\rm goal}$")
+    plt.grid(alpha=0.3)
+    plt.xlabel(r"$\theta$")
+    plt.ylabel(r"$N_{\rm goal}(\theta, \omega_{\rm goal})$")
+    plt.title(r"Binary Variable with rate $\theta$")
+
+    plt.subplot(1,2,2)
+    for idx, goal in enumerate(goals):
+        plt.plot(standard_deviations, df_n_stop_goals[goal], label=f"{goal:.2f}", linewidth=idx+1)
+
+    plt.legend(title=r"$\omega_{\rm goal}/\mu$")
+    plt.grid(alpha=0.3)
+    plt.xlabel(r"$\sigma/\mu$")
+    plt.ylabel(r"$N_{\rm goal}(\sigma/\mu, \omega_{\rm goal}/\mu)$")
+    plt.title(r"Continuous Variable with mean $\mu$ and variance $\sigma^2$")
+
+    plt.suptitle(r"Mimimum Sample Size $N_{\rm goal}$ Required to Achieve Precision Goal $\omega_{\rm goal}$", fontsize=20)
+    plt.tight_layout()
