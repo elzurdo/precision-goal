@@ -54,66 +54,52 @@ The paper is organized as follows. In the Methods section, we describe three sto
 
 
 \section{Discussion}\label{sec:dicussion}
+\input precision_goal_discussion
 
-While our focus is on single-sample hypothesis testing for a Bernoulli parameter,
-the precision-goal framework extends naturally to other settings.
-For single-group continuous data, Equation~\ref{eq:pitg_stop_iteration} generalises
-by replacing $\theta(1-\theta)$ with $\sigma^2$; Figure~\ref{fig:min_sample_by_goal}
-illustrates the resulting $N_{\rm goal}$ for both cases.
 
-For two-group comparisons --- whether binomial ($\theta_1 - \theta_2$) or continuous
-($\mu_1 - \mu_2$) --- the standard error of the difference serves as the precision
-metric, enabling sequential A/B testing under the same HDI+ROPE decision framework.
-For the binomial case with conjugate Beta posteriors, the posterior of the difference
-can be evaluated by drawing samples from the two independent Beta distributions, without
-requiring full MCMC\@. For the continuous case, Welch's two-sample $t$-test provides an
-analytical expression for the standard error of the difference, applicable when sample
-sizes are large enough for the CLT approximation to hold.
 
-We defer a treatment of prior selection, noting that informative priors can reduce the
-required sample size: a well-chosen prior contributes effective pseudo-observations,
-narrowing the starting HDI width and reducing the number of additional observations
-needed to reach $\omega_{\rm goal}$.
+\section{Conclusion}\label{sec:conclusion}
 
-A practical advantage of the HDI+ROPE framework over frequentist approaches concerns
-multiple comparisons. In NHST, conducting several tests simultaneously inflates the
-Type~I error rate, requiring corrections (e.g.\ Bonferroni) that reduce the power of
-each individual test. Frequentist confidence intervals inherit the same dependence on
-the full set of intended comparisons, since their coverage properties are tied to
-p-values. Consequently, both power and precision planning must account for the number
-of planned tests.
+Sequential hypothesis testing requires two distinct decisions: \textit{when} to stop
+collecting data and \textit{what} to conclude once stopped. Conflating these steps,
+as in the HDI+ROPE algorithm, risks stopping on imprecise, unrepresentative posteriors
+and produces a systematic false-positive rate ($\sim\!6\%$ in our simulations, even
+when $\theta_{\rm true}=\theta_{\rm null}$).
+\cite{kruschke2015doing}'s Precision is the Goal (PitG) eliminates this bias by
+decoupling the two steps: it stops only once the posterior HDI narrows below a
+pre-specified precision goal $\omega_{\rm goal}$, then applies the HDI+ROPE decision
+rule. PitG achieves zero false positives, but at the cost of a strikingly high
+inconclusive rate --- 63.3\% in the fair-coin case --- because precision and conclusiveness
+are not required to coincide.
 
-The Bayesian posterior is not affected in this way. Because the posterior distribution
-is determined solely by the observed data and the assumed data-generating process ---
-not by the set of tests that were intended but not performed --- the power of any one
-test is unaffected by how many other comparisons are planned \citep{kruschke2015doing}.
-The precision goal $\omega_{\rm goal}$ and the stopping rule of ePitG therefore apply
-unchanged in a multiple-testing context, without the need for correction.
+We have proposed Enhanced Precision is the Goal (ePitG), which re-couples the two
+criteria conservatively: data collection continues until the HDI is simultaneously
+narrower than $\omega_{\rm goal}$ \textit{and} falls cleanly inside or outside the
+ROPE\@. This single change transforms the picture. At $\theta_{\rm true}=\theta_{\rm null}=0.5$,
+ePitG achieves a 97.7\% conclusiveness rate with zero false positives, compared to
+PitG's 36.7\% --- a $2.7\times$ gain in conclusiveness at a median cost of only 4.7\%
+more samples. The efficiency gain is most pronounced near the ROPE boundaries, precisely
+where correct decisions matter most; once $\theta_{\rm true}$ moves well outside the
+ROPE, ePitG converges to PitG and both stop at $N_{\rm goal}(\theta_{\rm true})$.
 
-TODO: see if Agresti \& Caffo (2000) is relevant: "Simple and Effective Confidence
-Intervals for Proportions and Differences of Proportions Result from Adding Two
-Successes and Two Failures" (Classic reference for improved normal approximation)
+Both precision-based methods share an important analytical property: the expected stop
+iteration is given in closed form by
+$N_{\rm goal}(\theta,\omega_{\rm goal}) \propto \theta(1-\theta)/\omega_{\rm goal}^2$
+(Equation~\ref{eq:pitg_stop_iteration}), enabling prospective planning before any data
+are collected. When $\theta_{\rm null}=0.5$, this quantity is maximised at the null,
+so the planned budget $N_{\rm goal}(\theta_{\rm null})$ is a conservative upper bound;
+for other nulls, it may instead serve as a lower bound, and $N_{\rm max}$ should be set
+accordingly.
 
-It is worth distinguishing three types of power analysis that arise in this framework
-\citep{kruschke2015doing}.
-\textit{Prospective} power analysis is conducted before data collection: given a
-hypothesised data-generating distribution (from theory, pilot data, or prior research),
-one simulates experiments and asks how often the precision goal $\omega_{\rm goal}$ is
-achieved within the budget $N_{\rm max}$.
-This is precisely what the analytical formula for $N_{\rm goal}$
-(Equation~\ref{eq:pitg_stop_iteration}) provides as a closed-form approximation.
-\textit{Retrospective} power analysis uses the posterior from already-collected data as
-the hypothetical data generator to ask whether the completed study was sufficiently
-powered. In NHST this quantity is directly determined by the p-value and therefore adds
-no new information beyond it; in the Bayesian setting it can reveal the probability of
-achieving goals other than null rejection.
-\textit{Replication} power asks: if the experiment were repeated exactly, what is the
-probability of achieving the goal in the new study, informed by the results of the
-first? This is straightforward to compute in a Bayesian framework by using the initial
-posterior as the prior for the follow-up, but is difficult to operationalise in NHST,
-which has no principled access to a posterior-derived data generator.
-
-\section{Conclusion}
+The framework extends naturally beyond the single-group binomial setting studied here.
+The HDI+ROPE decision rule and the precision stopping criterion apply directly to
+continuous outcomes by substituting $\sigma^2$ for $\theta(1-\theta)$, and to
+two-group comparisons (A/B testing) by using the standard error of the difference as
+the precision metric. Compatibility with conjugate posteriors makes the approach
+computationally lightweight; pre-registration of $\omega_{\rm goal}$, the ROPE, and
+$N_{\rm max}$ before data collection aligns naturally with open-science standards and
+eliminates the researcher degrees of freedom that drive selective reporting.
+A full empirical evaluation across these settings is left for future work.
 
 
 

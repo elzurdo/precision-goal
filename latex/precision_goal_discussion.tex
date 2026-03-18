@@ -1,0 +1,78 @@
+While our focus is on single-sample hypothesis testing for a Bernoulli parameter,
+the precision-goal framework extends naturally to other settings.
+For single-group continuous data, Equation~\ref{eq:pitg_stop_iteration} generalises
+by replacing $\theta(1-\theta)$ with $\sigma^2$; Figure~\ref{fig:min_sample_by_goal}
+illustrates the resulting $N_{\rm goal}$ for both cases.
+
+For two-group comparisons --- whether binomial ($\theta_1 - \theta_2$) or continuous
+($\mu_1 - \mu_2$) --- the standard error of the difference serves as the precision
+metric, enabling sequential A/B testing under the same HDI+ROPE decision framework.
+For the binomial case with conjugate Beta posteriors, the posterior of the difference
+can be evaluated by drawing samples from the two independent Beta distributions, without
+requiring full MCMC\@. For the continuous case, Welch's two-sample $t$-test provides an
+analytical expression for the standard error of the difference, applicable when sample
+sizes are large enough for the CLT approximation to hold.
+
+A practical advantage of the HDI+ROPE framework over frequentist approaches concerns
+multiple comparisons. In NHST, conducting several tests simultaneously inflates the
+Type~I error rate, requiring corrections (e.g.\ Bonferroni) that reduce the power of
+each individual test. Frequentist confidence intervals inherit the same dependence on
+the full set of intended comparisons, since their coverage properties are tied to
+p-values. Consequently, both power and precision planning must account for the number
+of planned tests.
+
+The Bayesian posterior is not affected in this way. Because the posterior distribution
+is determined solely by the observed data and the assumed data-generating process ---
+not by the set of tests that were intended but not performed --- the power of any one
+test is unaffected by how many other comparisons are planned \citep{kruschke2015doing}.
+The precision goal $\omega_{\rm goal}$ and the stopping rule of ePitG therefore apply
+unchanged in a multiple-testing context, without the need for correction.
+
+It is worth distinguishing three types of power analysis that arise in this framework
+\citep{kruschke2015doing}.
+\textit{Prospective} power analysis is conducted before data collection: given a
+hypothesised data-generating distribution (from theory, pilot data, or prior research),
+one simulates experiments and asks how often the precision goal $\omega_{\rm goal}$ is
+achieved within the budget $N_{\rm max}$.
+This is precisely what the analytical formula for $N_{\rm goal}$
+(Equation~\ref{eq:pitg_stop_iteration}) provides as a closed-form approximation.
+\textit{Retrospective} power analysis uses the posterior from already-collected data as
+the hypothetical data generator to ask whether the completed study was sufficiently
+powered. In NHST this quantity is directly determined by the p-value and therefore adds
+no new information beyond it; in the Bayesian setting it can reveal the probability of
+achieving goals other than null rejection.
+\textit{Replication} power asks: if the experiment were repeated exactly, what is the
+probability of achieving the goal in the new study, informed by the results of the
+first? This is straightforward to compute in a Bayesian framework by using the initial
+posterior as the prior for the follow-up, but is difficult to operationalise in NHST,
+which has no principled access to a posterior-derived data generator.
+
+A recurring concern about PitG --- and by extension ePitG --- is that the precision
+requirement feels too demanding in practice. Researchers frequently underestimate the
+noise in their measurements and are consequently surprised by the sample sizes that
+$\omega_{\rm goal}$ implies (J.K.\ Kruschke, pers.\ comm., 2022). This is not a flaw
+in the method but a form of epistemic honesty: imprecise posteriors produce inconclusive
+results regardless of the algorithm applied; ePitG simply refuses to declare a verdict
+until the posterior is genuinely informative. Setting $\omega_{\rm goal}$ thus forces
+realistic planning rather than concealing underpowerment behind a false positive or a
+silently inconclusive stop. We defer a full treatment of prior selection, noting that informative priors, where
+available and reliable, offer a practical mitigation by contributing effective
+pseudo-observations that narrow the starting HDI width and lower the threshold
+sample size.
+
+Three further considerations support the broader adoption of this approach.
+First, formally accepting the null via the HDI+ROPE criterion parallels the objective
+of frequentist equivalence testing through the Two One-Sided Tests (TOST) procedure
+\citep{schuirmann1987, lakens2018}, providing a Bayesian counterpart to a methodology
+already accepted in regulatory and applied settings.
+Second, because $\omega_{\rm goal}$, the ROPE, and $N_{\rm max}$ must all be specified
+before data collection begins, ePitG is naturally compatible with pre-registration
+standards \citep{nosek2018}, directly reducing the researcher degrees of freedom that
+drive selective reporting.
+Third, the replication crisis has been partly attributed to underpowered studies whose
+imprecise estimates fail to replicate \citep{osc2015}; ePitG addresses this at the
+design stage by making precision a non-negotiable stopping criterion rather than an
+aspiration.
+
+
+TODO: reference app
