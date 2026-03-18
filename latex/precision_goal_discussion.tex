@@ -74,5 +74,20 @@ imprecise estimates fail to replicate \citep{osc2015}; ePitG addresses this at t
 design stage by making precision a non-negotiable stopping criterion rather than an
 aspiration.
 
+A practical note on sample-size planning.
+$N_{\rm goal}(\theta, \omega_{\rm goal})$ (Equation~\ref{eq:pitg_stop_iteration})
+is a theoretical minimum: any sequential algorithm needs at least this many observations
+under ideal conditions, and ePitG may require more near the ROPE boundaries.
+Because $\theta(1-\theta)$ is maximised at $\theta=0.5$, the fair-coin null
+yields the largest $N_{\rm goal}$ over the entire parameter space.
+A researcher testing $\theta_{\rm null}=0.5$ can therefore treat
+$N_{\rm goal}(\theta_{\rm null})$ as a worst-case ceiling: any departure of
+$\theta_{\rm true}$ from $0.5$ only lowers the required minimum.
+For other nulls the picture is asymmetric: if $\theta_{\rm true}$ happens to lie
+\textit{closer} to $0.5$ than $\theta_{\rm null}$ does, then
+$N_{\rm goal}(\theta_{\rm true}) > N_{\rm goal}(\theta_{\rm null})$, meaning the
+planned minimum underestimates actual need.
+In all settings, $N_{\rm goal}(\theta_{\rm null})$ provides a useful budget floor
+and $N_{\rm max}$ should reflect the researcher's resources beyond it.
 
 TODO: reference app

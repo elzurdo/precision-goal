@@ -71,6 +71,10 @@ pre-specified precision goal $\omega_{\rm goal}$, then applies the HDI+ROPE deci
 rule. PitG achieves zero false positives, but at the cost of a strikingly high
 inconclusive rate --- 63.3\% in the fair-coin case --- because precision and conclusiveness
 are not required to coincide.
+Moreover, unlike NHST, which can only reject or fail to reject the null,
+the HDI+ROPE decision rule enables positive \textit{acceptance} of the null
+when the entire HDI falls within the ROPE, a critical advantage for confirmatory
+research areas such as bioequivalence, safety testing, and regression testing.
 
 We have proposed Enhanced Precision is the Goal (ePitG), which re-couples the two
 criteria conservatively: data collection continues until the HDI is simultaneously
@@ -81,15 +85,23 @@ PitG's 36.7\% --- a $2.7\times$ gain in conclusiveness at a median cost of only 
 more samples. The efficiency gain is most pronounced near the ROPE boundaries, precisely
 where correct decisions matter most; once $\theta_{\rm true}$ moves well outside the
 ROPE, ePitG converges to PitG and both stop at $N_{\rm goal}(\theta_{\rm true})$.
+These figures correspond to $\omega_{\rm goal}=0.08$, i.e.\ a $\pm 4$ percentage
+point margin of error --- a standard reporting precision in opinion polling and
+survey-based research. The qualitative advantage of ePitG over PitG is robust
+across precision goals: looser goals (larger $\omega_{\rm goal}$) worsen PitG's
+inconclusive rate and amplify ePitG's gain, while tighter goals improve PitG's
+conclusiveness at the cost of proportionally larger samples for both methods.
 
 Both precision-based methods share an important analytical property: the expected stop
 iteration is given in closed form by
 $N_{\rm goal}(\theta,\omega_{\rm goal}) \propto \theta(1-\theta)/\omega_{\rm goal}^2$
 (Equation~\ref{eq:pitg_stop_iteration}), enabling prospective planning before any data
-are collected. When $\theta_{\rm null}=0.5$, this quantity is maximised at the null,
-so the planned budget $N_{\rm goal}(\theta_{\rm null})$ is a conservative upper bound;
-for other nulls, it may instead serve as a lower bound, and $N_{\rm max}$ should be set
-accordingly.
+are collected. $N_{\rm goal}(\theta_{\rm null})$ is always a theoretical minimum
+for the required sample size. Because $\theta(1-\theta)$ is maximised at $\theta=0.5$,
+this minimum is largest for the fair-coin null, making it a safe worst-case planning
+ceiling. For other nulls, $\theta_{\rm true}$ may lie closer to $0.5$ than
+$\theta_{\rm null}$ does, raising the actual minimum above the planned one;
+$N_{\rm max}$ should be set generously to cover this (see Discussion).
 
 The framework extends naturally beyond the single-group binomial setting studied here.
 The HDI+ROPE decision rule and the precision stopping criterion apply directly to
@@ -100,6 +112,13 @@ computationally lightweight; pre-registration of $\omega_{\rm goal}$, the ROPE, 
 $N_{\rm max}$ before data collection aligns naturally with open-science standards and
 eliminates the researcher degrees of freedom that drive selective reporting.
 A full empirical evaluation across these settings is left for future work.
+To support adoption, all algorithms are implemented in openly available
+code\footnote{\textcolor{red}{\textbf{[TODO: insert repo URL]}}
+\href{https://github.com/placeholder/precision-goal}{https://github.com/placeholder/precision-goal}},
+and an interactive online calculator for prospective sample-size planning via
+Equation~\ref{eq:pitg_stop_iteration} is available at
+\textcolor{red}{\textbf{[TODO: insert calculator URL]}}
+\href{https://placeholder.app/pitg-calculator}{https://placeholder.app/pitg-calculator}.
 
 
 
