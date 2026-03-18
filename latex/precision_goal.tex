@@ -74,7 +74,8 @@ are not required to coincide.
 Moreover, unlike NHST, which can only reject or fail to reject the null,
 the HDI+ROPE decision rule enables positive \textit{acceptance} of the null
 when the entire HDI falls within the ROPE, a critical advantage for confirmatory
-research areas such as bioequivalence, safety testing, and regression testing.
+research areas such as bioequivalence, safety testing, and software regression testing
+(verifying that a new deployment has not degraded existing behaviour known as do-no-harm).
 
 We have proposed Enhanced Precision is the Goal (ePitG), which re-couples the two
 criteria conservatively: data collection continues until the HDI is simultaneously
@@ -86,8 +87,8 @@ more samples. The efficiency gain is most pronounced near the ROPE boundaries, p
 where correct decisions matter most; once $\theta_{\rm true}$ moves well outside the
 ROPE, ePitG converges to PitG and both stop at $N_{\rm goal}(\theta_{\rm true})$.
 These figures correspond to $\omega_{\rm goal}=0.08$, i.e.\ a $\pm 4$ percentage
-point margin of error --- a standard reporting precision in opinion polling and
-survey-based research. The qualitative advantage of ePitG over PitG is robust
+point margin of error, a standard reporting precision in single-group binomial analyses
+such as opinion polling and survey-based research. The qualitative advantage of ePitG over PitG is robust
 across precision goals: looser goals (larger $\omega_{\rm goal}$) worsen PitG's
 inconclusive rate and amplify ePitG's gain, while tighter goals improve PitG's
 conclusiveness at the cost of proportionally larger samples for both methods.
