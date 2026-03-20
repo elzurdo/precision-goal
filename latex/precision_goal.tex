@@ -125,10 +125,26 @@ Equation~\ref{eq:pitg_stop_iteration} is available at
 
 \appendix
 
+
+\section{Regarding NHST and Bayes Factors}\label{app:fff}
+
 TODO: replicate Figure 18.1 of https://ethanweed.github.io/pythonbook/06.01-bayes.html
 for discussion about p-value and Bayes Factor.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=1\textwidth]{fair_experiment_decision_rates_nhst.png}
+  \caption{Cumulative distribution of decisions.
+  Left: HDI+ROPE. Middle: Precision is the Goal. Right: Enhanced Precision is the Goal.
+  Vertical axis: Proportion of decisions where null hypothesis rejections are red dashed, acceptances are green solid, and inconclusive decisions are gray dot-dashed.
+  At each iteration their sum is 100\% of the iteration decisions.}
+  \label{fig:fair_decisions_nhst}
+\end{figure}
+
+
+
+
 \input precision_goal_appendix_hdi
-\input precision_goal_appendix_binomial
+%%\input precision_goal_appendix_binomial
 \input precision_goal_appendix_expected_stop
 
 \section{Useful Equations}
