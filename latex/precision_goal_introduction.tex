@@ -4,10 +4,18 @@ to assess how well a sample represents an underlying truth.
 A central challenge in this process is determining when enough data has been collected
 to make a reliable decision, especially as the accuracy of statistical assessments
 depends heavily on sample size.  Careful planning for statistical power and precision
-is essential to avoid biased inference and ensure meaningful results.
+is essential to avoid biased inference and ensure meaningful results \citep{cohen1988}.
+% \citet{cohen1988}: ``The power of a statistical test is the probability that it will
+% yield statistically significant results.'' Cohen's book established power analysis as
+% the standard planning tool for sample-size determination, a problem central to this paper.
 
-Sequential hypothesis testing offers a flexible alternative to fixed-sample designs by
-allowing data to be evaluated as it accumulates. This approach is widely used in fields
+Sequential hypothesis testing offers a flexible alternative to fixed-sample designs
+\citep{wald1947} by allowing data to be evaluated as it accumulates.
+% \citet{wald1947} introduced the Sequential Probability Ratio Test (SPRT), the
+% foundational framework for sequential analysis. Wald established that both Type~I and
+% Type~II error rates can be controlled while terminating as soon as sufficient evidence
+% accumulates --- the principle all subsequent sequential methods, including those studied
+% here, build upon. This approach is widely used in fields
 such as clinical trials, quality control, A/B testing, and financial monitoring,
 offering potential benefits in efficiency, timeliness, and ethical considerations.
 Central to this approach is the distinction between two critical components:
@@ -18,7 +26,13 @@ frequentist and Bayesian methods, such as p-value thresholds or posterior-based 
 (e.g., HDI+ROPE, Bayes Factors). However, if not carefully designed, this coupling can
 lead to confirmation bias, especially when stopping is triggered by extreme or
 unrepresentative samples early in the sequence.
-This phenomenon, known as early peeking, can result in premature and biased conclusions.
+This phenomenon, known as early peeking, can result in premature and biased conclusions
+\citep{simmons2011}.
+% \citet{simmons2011}: ``a researcher who starts with 10 observations per condition
+% and then tests for significance after every new per-condition observation finds a
+% significant effect 22\% of the time'' even when none exists at the nominal 5\% level.
+% This paper quantified how flexible stopping rules inflate false-positive rates,
+% directly motivating the decoupled stopping and decision rules discussed here.
 
 To address this, \cite{kruschke2015doing} advocated for a method that strictly decouples
 these two steps. He proposed using a predetermined target for posterior precision as the
