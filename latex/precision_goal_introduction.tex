@@ -15,8 +15,22 @@ Sequential hypothesis testing offers a flexible alternative to fixed-sample desi
 % foundational framework for sequential analysis. Wald established that both Type~I and
 % Type~II error rates can be controlled while terminating as soon as sufficient evidence
 % accumulates --- the principle all subsequent sequential methods, including those studied
-% here, build upon. This approach is widely used in fields
-such as clinical trials, quality control, A/B testing, and financial monitoring,
+% here, build upon.
+This approach is widely used in fields such as clinical trials
+\citep{jennison2000}, quality control, A/B testing \citep{johari2022}, and financial
+monitoring,
+% \citet{jennison2000}: Jennison \& Turnbull's textbook establishes group sequential
+% methods for clinical trials, where interim analyses at pre-planned time points allow
+% early stopping for efficacy or futility while controlling Type~I error via
+% alpha-spending functions. This shows that principled sequential stopping has long
+% been standard in regulated medical research --- and that naive peeking is explicitly
+% prohibited in that literature.
+% \citet{johari2022}: ``A/B tests are typically analyzed via frequentist p-values and
+% confidence intervals, but these inferences are wholly unreliable if users endogenously
+% choose sample sizes by continuously monitoring their tests.'' Johari et al.\ propose
+% always-valid inference using mixture sequential probability ratio tests, ensuring
+% valid inference at any stopping time --- a frequentist counterpart to the decoupled
+% stopping philosophy advocated in this paper.
 offering potential benefits in efficiency, timeliness, and ethical considerations.
 Central to this approach is the distinction between two critical components:
 the \textit{stopping rule}, which dictates when data collection ends, and the \textit{decision rule}, which determines the final verdict on the hypothesis (e.g., accept, reject, or inconclusive). While these components are conceptually distinct, many operational methods conflate them, triggering a stop exactly when a decision criterion is met.
