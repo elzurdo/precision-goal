@@ -1,8 +1,8 @@
 Sequential hypothesis testing allows data collection to continue until sufficient evidence
 accumulates, offering flexibility over fixed-sample designs.
-A key challenge, however, is that stopping rules which trigger on decision criteria ---
-such as p-value thresholds or posterior-based heuristics --- can introduce confirmation
-bias through early peaking on unrepresentative samples.
+A key challenge, however, is that stopping rules which trigger on decision criteria,
+such as p-value thresholds or posterior-based heuristics, can introduce confirmation
+bias through early peeking on unrepresentative samples.
 Methods that decouple the stopping criterion from the decision criterion, such as
 ``Precision is the Goal'' (PitG), eliminate this bias by halting only once a target
 posterior precision is reached.
@@ -13,9 +13,12 @@ both the precision target and a conclusive hypothesis outcome to be met simultan
 before stopping.
 We demonstrate that ePitG substantially increases decisiveness while preserving PitG's
 zero-false-positive property, at only a modest cost in median sample size.
-In fair coin experiments ($\theta_{\rm true}=0.5$) with a precision goal of
+In fair coin experiments ($\theta_{\rm true}= \theta_{\rm null}=0.5$) with a precision goal of
 $\omega_{\rm goal}=0.08$, PitG yields 63.3\% inconclusive outcomes; ePitG reduces this
 to just 2.3\%, with only a 4.7\% increase in median sample size.
+More broadly, unlike methods that can only reject the null hypothesis, the
+precision-based framework also permits its positive acceptance,
+a guarantee it preserves with zero false positives.
 We provide an online interactive calculator and open-source code to support the planning
 and interpretation of sequential experiments.
 
