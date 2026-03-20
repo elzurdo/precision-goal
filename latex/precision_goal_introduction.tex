@@ -17,7 +17,7 @@ Sequential hypothesis testing offers a flexible alternative to fixed-sample desi
 % accumulates --- the principle all subsequent sequential methods, including those studied
 % here, build upon.
 This approach is widely used in fields such as clinical trials
-\citep{jennison2000}, quality control, A/B testing \citep{johari2022}, and financial
+\citep{jennison2000, fda2010bayesian}, quality control, A/B testing \citep{johari2022}, and financial
 monitoring,
 % \citet{jennison2000}: Jennison \& Turnbull's textbook establishes group sequential
 % methods for clinical trials, where interim analyses at pre-planned time points allow
@@ -25,6 +25,12 @@ monitoring,
 % alpha-spending functions. This shows that principled sequential stopping has long
 % been standard in regulated medical research --- and that naive peeking is explicitly
 % prohibited in that literature.
+% \citet{fda2010bayesian}: The FDA's 2010 guidance explicitly endorses stopping based
+% on ``a sufficiently narrow credible interval'' (\S4.7) and adaptive sequential designs
+% with pre-specified interim analyses (\S4.10), reflecting regulatory acceptance of
+% precision-based and sequential Bayesian stopping in clinical trials. The guidance
+% requires type~I error rate control and pre-specified stopping rules --- requirements
+% that ePitG satisfies analytically and without case-by-case simulation.
 % \citet{johari2022}: ``A/B tests are typically analyzed via frequentist p-values and
 % confidence intervals, but these inferences are wholly unreliable if users endogenously
 % choose sample sizes by continuously monitoring their tests.'' Johari et al.\ propose
