@@ -317,17 +317,19 @@ estimand variance $\sigma^2$.
 Because $\theta(1-\theta)$ is maximised at $\theta=0.5$, the fair-coin scenario demands
 the largest sample for any given precision goal, and $N_{\rm goal}$ decreases monotonically
 as $\theta$ approaches $0$ or $1$.
-Figure~\ref{fig:min_sample_by_goal} illustrates this dependence for both the
-Bernoulli and continuous cases across a range of precision goals.
+Figure~\ref{fig:min_sample_by_goal} illustrates this dependence
+%for both the Bernoulli and continuous cases
+for the Bernoulli case
+across a range of precision goals.
 
 \begin{figure}[h!]
   \centering
   \includegraphics[width=1\textwidth]{min_sample_by_goal.png}
   \caption{Expected precision-based stop iteration $N_{\rm goal}(\theta_{\rm true}, \omega_{\rm goal})$
   (Equation~\ref{eq:pitg_stop_iteration}) as a function of
-  $\theta_{\rm true}$ for several values of $\omega_{\rm goal}$.
-  Left: Bernoulli case.
-  Right: continuous case with $\sigma^2=1$.
+  $\theta_{\rm true}$ for several values of $\omega_{\rm goal}$ in the Bernoulli case.
+  %Left: Bernoulli case.
+  %Right: continuous case with $\sigma^2=1$.
   }
   \label{fig:min_sample_by_goal}
 \end{figure}

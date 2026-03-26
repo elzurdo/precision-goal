@@ -30,7 +30,11 @@
 
 % \title{Improved Sequential Hypothesis Testing with
 % ``Enhanced Precision Is The Goal"}
-\title{Honesty is the Best Policy in Sequential Testing: Reintroducing Precision as the Goal}
+%\title{Honesty is the Best Policy in Sequential Testing: Reintroducing Precision as the Goal}
+%\title{Conclusiveness is Also the Goal: R Sequential Testing via a Precision Stopping Criterion}
+\title{Precision and Conclusiveness as Goals: Reliable Sequential Testing with a Dual Stopping Criterion}
+% Consider "Joint" instead of "Dual"
+% Alt title: "Conclusiveness Is Also the Goal: Sequential Testing with a Joint Precision Stopping Criterion"
 \date{\today}
 \author{Eyal A. Kazin}
 
@@ -43,29 +47,43 @@
 
 Let me start by thanking you in advance for your time and thoughtful feedback.
 
-Throughout I use the term "Enhanced Precision is the Goal" (ePitG) to refer to the method
+Throughout I use the term "Enhanced Precision is the Goal" (ePitG) to refer to the novel method
 proposed in this paper, but am curious in better names that capture its essence. I'm 
 considering "Conservative Precision is the Goal" as an alternative, but am open to suggestions.
 
-Alternative title suggestions are welcome. E.g, I was also considering:
-"Improved Sequential Hypothesis Testing with ``Enhanced Precision Is The Goal''" 
+My focus is on three methods that have a common decision criteria and different stopping criteria.
+Two popular methods NHST and Bayes Factors are only briefly mentioned and then expanded upon
+in the Appendix. The NHST appendix is nearly complete whereas the Bayes Factor requires more work.
+I'd be keen to learn if this setup is reasaonble.
+
+Alternative title suggestions are also welcome. E.g, I was also considering:
+"Conclusiveness Is Also the Goal: Sequential Testing with a Joint Precision Stopping Criterion".
 
 Note the that word count here might be longer for journals.
 My purpose is to start with an all inclusive draft that captures all the ideas and
 details, and then trim it down to meet the journal requirements.
 
+My intention is to submit to the new \href{https://academic.oup.com/rssdat}{Royal Statistical Society's Data Science and Artificial Intelligence journal},
+as I feel that this topic of methodlogy is applicable in a wide range of fields and this
+journal is a good fit for that. I'd be keen for other suggestions
+ 
 Also, if you think that any citation might be missing I'd be keen to learn who should deserve
 credit for statements made especially in the Introduction and Discussion sections.
 
-Finally, you may want to play with the dedicated online calculator at https://r-w-t-y.streamlit.app/ .
+Note that some of the figure headers or annotations may require slight edits for consistency,
+feel free to comment if you have identified issues that may be improved.
+
+Finally, you may want to play with the dedicated online calculator at \href{https://r-w-t-y.streamlit.app/}{https://r-w-t-y.streamlit.app/}.
 Note that the experiments here focus on single-group dichotomous data,
-but in the calculator I extend the method extends to continuous data and two-group comparisons as well,
+but in the calculator I extend the method to continuous data and two-group comparisons as well,
 as discussed in the Discussion section and will be the focus of a follow-up paper.
 The calculator is a work in progress where the objective is to advise the user
 if they have collected enough data to make an assessment based on their experiment inputs.
-The next missing feature I have in mind is advising the minimal more data needed to collect based
-on their goal. Another feature to implement is advise on how to set the goal precision, as I believe
+One feature that it is currently lacking is advise on how to set the goal precision, as I believe
 that is the most confounding aspect of experimental design.
+
+There is also mention of access to open source code beyond this calculator. I have not posted
+a link yet. And there are some scattered minor TODOs which may be ignored. Again, thank you!
 
 
 \section{Introduction}
