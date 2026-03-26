@@ -75,14 +75,15 @@ Specifically, ePitG requires that \textit{both} the precision goal (stopping rul
 conclusive hypothesis outcome (decision rule) be met simultaneously to cease data collection.
 
 Applied to dichotomous data, this more conservative rule substantially reduces the rate
-of inconclusive outcomes --- from 63.3\% to just 2.3\% in the fair coin case
-($\theta_{\rm true}=\theta_{\rm null}=0.5$, $\omega_{\rm goal}=0.08$) ---
+of inconclusive outcomes. For example, in the fair coin case
+($\theta_{\rm true}=\theta_{\rm null}=0.5$) with precision goal $\omega_{\rm goal}=0.08$,
+ePitG reduces PitG's inconclusive rate from 63.3\% to just 2.3\%,
 at a median cost of only 4.7\% more samples.
-We demonstrate that ePitG is especially effective when the null hypothesis is true,
-while also ensuring decisive outcomes when it is false, yielding a robust decision
-mechanism across experimental conditions.
+This gain is most pronounced when the null is true or practically so --- precisely the
+regime where PitG's inconclusive rate is highest --- while ePitG also maintains decisive
+outcomes when the null is false, yielding a robust decision mechanism across experimental conditions.
 
-Our results are demonstrated through simulations with dichotomous data, though the
+Our results are demonstrated through simulations with single-group dichotomous data, though the
 framework extends naturally to continuous outcomes and two-group comparisons (see Discussion in Section \ref{sec:discussion}).
 We provide practical guidance, analytical insights, code, and tools to facilitate adoption
 of the method across applied settings.
