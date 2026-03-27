@@ -6,17 +6,37 @@ We organize the methods as follows:
     \item We describe the \textbf{Experimental Design} used to evaluate these algorithms on synthetic data.
 \end{enumerate}
 
+Before proceeding, we note that two other widely used methods --- null hypothesis
+significance testing (NHST, based on p-values) and Bayes Factors --- operate under
+a fundamentally different framework and are therefore not among the three algorithms
+studied here. Both lack an explicit effect-size criterion (the ROPE); additionally,
+NHST cannot formally accept the null hypothesis (only fail to reject it) and cannot
+guarantee a stable false-positive rate under continuous monitoring, while Bayes Factors
+lack a direct precision goal.
+We discuss these limitations and illustrate them empirically in
+Appendices~\ref{app:nhst} and~\ref{app:app_bayes_factors}, respectively.
+
 \subsection{Theoretical Framework}\label{sec:theoretical_framework}
 
-All three algorithms rely on two Bayesian heuristics that together characterise the
+We study three algorithms that rely on two Bayesian heuristics that together characterise the
 posterior distribution: its \textit{location} (which conveys the effect size, i.e, how far the estimate sits from the null)
-and its \textit{width} (how uncertain that estimate is)\footnote{Here we refer to \textit{epistemic uncertainty} referring to the uncertainty in our knowledge about the true value of a parameter, as opposed to aleatory uncertainty which is inherent variability in the system being studied.}. Location is formalised through
+and its \textit{width} (how uncertain that estimate is)\footnote{Here we refer to \textit{epistemic uncertainty} meaning the uncertainty in our knowledge about the true value of a parameter, as opposed to aleatory uncertainty which is inherent variability in the system being studied.}. Location is formalised through
 the ROPE and width through the HDI; together they define a shared Decision Rule that
 all three algorithms apply once their respective stopping criteria are met.
 
 \subsubsection{Effect Size by Region of Practical Equivalence (ROPE)}\label{sec:rope}
 
-A common misconception in hypothesis testing is that a ``statistically significant'' outcome is sufficient for real-world decision-making. In practice, one must consider the \textit{effect size}. For example, medical research requires a ``minimal clinically important difference'' for an outcome to justify a change in treatment.
+A common misconception in hypothesis testing is that a ``statistically significant'' outcome is sufficient for real-world decision-making. In practice, one must consider the \textit{effect size} \citep{cohen1988}: how large is the difference, not merely whether it is detectable. For example, medical research requires a \textit{minimal clinically important difference} (MCID) --- the smallest change that a patient or clinician would consider meaningful --- for an outcome to justify a change in treatment \citep{jaeschke1989}.
+% [cohen1988] Cohen (1988), ``Statistical Power Analysis for the Behavioral Sciences'',
+% 2nd ed. The book that established effect size as a central concept in statistical
+% planning, alongside statistical significance. Directly supports the claim that
+% significance alone is insufficient for real-world inference.
+%
+% [jaeschke1989] Jaeschke, Singer \& Guyatt (1989), ``Measurement of health status:
+% Ascertaining the minimal clinically important difference'', Controlled Clinical
+% Trials 10(4):407--415. The paper that coined the term MCID, defining it as the
+% smallest difference a patient would perceive as beneficial. Directly supports the
+% MCID example and grounds the ROPE concept in established clinical practice.
 
 Consider a hypothetical scenario where a researcher examines if a therapeutic differs in impact by gender. If we assume that enough data was collected to demonstrate that the difference is ``statistically significant'', e.g., the drug is 72.1\% beneficial for males and 72.3\% for females, a practitioner may consider this equivalent for all practical purposes. To justify treating the usage of the drug differently by gender, a meaningful absolute difference (e.g., 5\% or 10\%) would be required. Hence, the researcher should define in advance an ``effective area'' around the null hypothesis.
 
@@ -48,7 +68,9 @@ frequentist hypothesis testing. \cite{kruschke2015doing} notes that for numerica
 obtained via MCMC, 95\% HDI estimation requires at least 10{,}000 samples; a slightly lower
 level such as 94\% is recommended for fewer samples. \cite{mcelreath2016} advocates 89\%
 (a prime, to underscore the arbitrariness of any threshold). Because we employ analytical
-posteriors here, sampling noise is not a concern and 95\% is unambiguous.
+posteriors in our experiments (Section~\ref{sec:experimental_design}), sampling noise is not a
+concern and 95\% is unambiguous; practitioners relying on sampled (e.g., MCMC-based) posteriors
+should consider the lower thresholds noted above.
 
 \subsubsection{The Decision Rule}\label{sec:decision_criterion}
 
@@ -80,15 +102,15 @@ the null in a Bayesian framework, differs meaningfully from the frequentist conv
 and is worth examining carefully; we do so in Section~\ref{sec:accept_reject_meaning}.
 
 In Figure \ref{fig:posteriors} we display three posteriors from different stopping points
-of the same hand-picked experiment of Bernoulli trials ($\theta_{\rm null}=0.5$,
-ROPE width $\Delta_{\rm ROPE}= 0.1$).
+of the same hand-picked experiment of Bernoulli trials and their posteriors are compared
+to a null hypothesis of $\theta_{\rm null}=0.5$, and a ROPE width $\Delta_{\rm ROPE}= 0.1$.
 \begin{itemize}
     \item In the \textbf{top panel}, we examine a stop at iteration 126. The 95\% HDI is fully outside the ROPE, leading to a rejection of the null hypothesis.
     \item In the \textbf{middle panel}, a stop is triggered at iteration 598. Here, the HDI straddles the ROPE boundary, resulting in an inconclusive decision.
     \item In the \textbf{bottom panel}, we stop at iteration 804. The 95\% HDI falls fully within the ROPE, allowing us to accept $\theta_{\rm null}$.
 \end{itemize}
 
-The insights from Figure \ref{fig:posteriors} illustrate that the decision outcome is iteration-dependent. An inconclusive outcome implies that the data collected is insufficient to justify a decision. In a live setting, a human-in-the-loop (or a wrapper algorithm, common in automated high-frequency environments) would need to either conduct a risk assessment or collect more data. Since risk assessment is highly contextual, we defer that discussion and focus on the necessity of collecting more data to avoid inconclusive outcomes.
+The insights from Figure \ref{fig:posteriors} illustrate that the decision outcome may be iteration-dependent. An inconclusive outcome implies that the data collected is insufficient to justify a decision. In a live setting, a human-in-the-loop (or an algorithm, common in automated high-frequency environments) would need to either conduct a risk assessment or collect more data. Since risk assessment is highly contextual, we defer that discussion and focus on the necessity of collecting more data to avoid inconclusive outcomes.
 
 Algorithm \ref{alg:decision_criterion} formalises this logic.
 
@@ -111,62 +133,50 @@ Algorithm \ref{alg:decision_criterion} formalises this logic.
 
 \subsubsection{Interpreting Accept and Reject Decisions}\label{sec:accept_reject_meaning}
 
-A key conceptual distinction between Bayesian and frequentist hypothesis testing
-lies in what it means to \textit{accept} the null hypothesis.
+A key conceptual distinction between Bayesian and frequentist inference lies in what it
+means to \textit{accept} the null hypothesis. In NHST, a small p-value justifies
+\textit{rejecting} the null; a large p-value only means there is insufficient evidence
+to reject it. One cannot formally \textit{accept} the null --- only ``fail to reject''
+it. Absence of evidence is not evidence of absence.
 
-In the frequentist (NHST) framework, the null is the only hypothesis assigned
-a probability model. A small p-value justifies \textit{rejecting} the null; a large
-p-value only means there is insufficient evidence to reject it. One cannot formally
-\textit{accept} the null --- only ``fail to reject'' it. Absence of evidence is not
-evidence of absence.
+The HDI+ROPE framework resolves this asymmetry because the ROPE encodes the researcher's
+pre-specified notion of practical equivalence, enabling three distinct verdicts:
+\textbf{Accept null} (HDI fully \textit{within} the ROPE --- positive evidence that the
+true value is practically equivalent to $\theta_{\rm null}$, not merely ``not different'');
+\textbf{Reject null} (HDI fully \textit{outside} the ROPE --- positive evidence of a
+meaningful difference); or \textbf{Inconclusive} (HDI straddles the ROPE boundary ---
+more data are needed). Note that Bayes Factors can also yield positive evidence \textit{for}
+the null, but do so by comparing marginal likelihoods rather than by assessing practical
+equivalence; the HDI+ROPE Accept verdict is therefore distinctive in being grounded in a
+pre-specified effect-size criterion.
 
-The HDI+ROPE framework resolves this asymmetry.\footnote{Bayesian hypothesis testing more broadly — including Bayes Factors — can also provide positive evidence \textit{for} the null, so the asymmetry is specific to NHST rather than to all non-Bayesian methods. What distinguishes the HDI+ROPE approach is that support for the null is operationalised through \textit{practical equivalence}: the null is accepted only when the data are precise enough to rule out any effect outside the ROPE, rather than by comparing marginal likelihoods as Bayes Factors do.} Because the ROPE encodes the researcher's
-pre-specified notion of practical equivalence, the HDI can land in one of three
-meaningful positions:
+Crucially, neither Accept nor Reject identifies the sample estimate $\hat\theta$ as the
+true value; both are statements about $\theta_{\rm null}$, not $\hat\theta$. The posterior
+distributes probability continuously across parameter space, and the HDI+ROPE rule distils
+this into a verdict by asking whether the bulk of posterior mass lies inside, outside, or
+straddling the ROPE. The full posterior remains available for a more nuanced reading: in
+particular, a ``Reject null'' decision does not endorse $\hat\theta$ as the true value
+--- $\hat\theta$ is the mode (or mean) of the posterior, and the full distribution
+quantifies the uncertainty surrounding it.
 
-\begin{itemize}
-  \item \textbf{Accept null}: the HDI falls entirely \textit{within} the ROPE. The data
-        are precise enough to conclude that the true value is practically equivalent
-        to $\theta_{\rm null}$ --- not merely ``not different'', but positively
-        \textit{equivalent for all practical purposes}.
-  \item \textbf{Reject null}: the HDI falls entirely \textit{outside} the ROPE. The
-        data are precise enough to conclude that the true value differs meaningfully
-        from $\theta_{\rm null}$.
-  \item \textbf{Inconclusive}: the HDI straddles the ROPE boundary. The data do not
-        yet discriminate between practical equivalence and meaningful difference;
-        more observations are needed.
-\end{itemize}
-
-Crucially, neither outcome identifies the \textit{sample estimate} $\hat\theta$ as the
-true value; both Accept and Reject are statements about $\theta_{\rm null}$,
-not about $\hat\theta$.
-
-This is because the posterior distribution carries far richer information than any
-single decision. Rather than assigning probability to one value, it spreads probability
-weight continuously across the entire parameter space: values near the peak of
-$p(\theta \mid \mathbf{x})$ are deemed most plausible, values in the tails less so.
-The HDI+ROPE decision rule distils this full distribution into an actionable verdict
-by asking a specific question \textit{``Is the bulk of the posterior's mass inside, outside,
-or straddling the ROPE?"} but the posterior itself remains available for a more
-nuanced interpretation. In particular, one should not read a ``Reject null''
-decision as endorsing $\hat\theta$ as the true value: $\hat\theta$ is simply the
-mode (or mean) of the posterior, and the full distribution quantifies how much
-uncertainty surrounds it.
-
-To make this concrete, consider the default setup used throughout this paper:
-$\theta_{\rm null}=0.5$, $\Delta_{\rm ROPE}=0.1$, so $\mathrm{ROPE}=[0.45, 0.55]$.
+The panels of Figure~\ref{fig:posteriors} make this concrete under the default setup
+($\theta_{\rm null}=0.5$, $\Delta_{\rm ROPE}=0.1$, $\mathrm{ROPE}=[0.45, 0.55]$):
 
 \begin{itemize}
-  \item Suppose $\hat\theta=0.48$ and the 95\% HDI is $[0.46,\,0.50]$.
-        Both bounds lie inside $[0.45, 0.55]$, so the HDI is fully within the ROPE
-        and we \textbf{accept} $\theta_{\rm null}=0.5$: the data provide positive
-        evidence that the true rate is practically equivalent to 0.5.
-        We are \textit{not} claiming the true rate equals 0.48.
-  \item Suppose $\hat\theta=0.63$ and the 95\% HDI is $[0.57,\,0.69]$.
-        Both bounds lie above $\mathrm{ROPE}_{\rm max}=0.55$, so the HDI is fully
-        outside the ROPE and we \textbf{reject} $\theta_{\rm null}=0.5$: the data
-        provide positive evidence that the true rate is meaningfully above 0.5.
-        We are \textit{not} claiming the true rate equals 0.63.
+  \item \textbf{Bottom panel} (iteration 804, \textbf{Accept}):
+        $\hat\theta=0.515$ and the 95\% HDI is
+        $[{\color{red}0.480},\,{\color{red}0.549}]$
+        {\color{red}[TODO: replace with actual HDI bounds from figure]}.
+        Both bounds lie inside $[0.45,\,0.55]$, so we \textbf{accept}
+        $\theta_{\rm null}=0.5$: positive evidence that the true rate is practically
+        equivalent to $0.5$. We are \textit{not} claiming the true rate equals $0.515$.
+  \item \textbf{Top panel} (iteration 126, \textbf{Reject}):
+        $\hat\theta=0.635$ and the 95\% HDI is
+        $[{\color{red}0.552},\,{\color{red}0.718}]$
+        {\color{red}[TODO: replace with actual HDI bounds from figure]}.
+        Both bounds lie above $\mathrm{ROPE}_{\rm max}=0.55$, so we \textbf{reject}
+        $\theta_{\rm null}=0.5$: positive evidence that the true rate is meaningfully
+        above $0.5$. We are \textit{not} claiming the true rate equals $0.635$.
 \end{itemize}
 
 \subsection{Sequential Stopping Algorithms}\label{sec:sequential_stopping_algorithms}
