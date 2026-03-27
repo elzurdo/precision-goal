@@ -1126,38 +1126,58 @@ def plot_conclusiveness_decisions_and_correctness_rates(algo_stats_df, df_correc
 def plot_n_goal_by_parameter():
 
     thetas = np.arange(0.01, 0.99, 0.01)
-    #thetas = np.arange(0.5, 0.99, 0.01)
     goals = [0.1, 0.08, 0.06, 0.04]
 
-    variances = thetas * (1- thetas)
-    standard_deviations = np.sqrt(variances)
-
-    n_stop_goals = {goal: [binomial_rate_ci_width_to_sample_size(theta, goal) for theta in thetas] for goal in goals}
-
+    n_stop_goals = {goal: [binomial_rate_ci_width_to_sample_size(theta, goal)
+                           for theta in thetas] for goal in goals}
     df_n_stop_goals = pd.DataFrame(n_stop_goals, index=thetas)
 
-    plt.figure(figsize=(2 * FIG_WIDTH, FIG_HEIGHT))
+    z_star = 1.96  # 95% HDI
 
-    plt.subplot(1,2,1)
+    # --- Continuous panel: kappa parameterisation ---
+    # sigma = kappa * sigma_0, where sigma_0 shares units with omega_goal.
+    # N_goal = 4 * z^2 * sigma^2 / omega_goal^2
+    #        = 4 * z^2 * kappa^2 * sigma_0^2 / omega_goal^2
+    # For fixed omega_goal/sigma_0, curves are distinct — they do NOT collapse.
+    # This is the correct parallel to the binomial panel where omega_goal is the legend.
+    kappas = np.arange(0.01, 5., 0.01)  # kappa = sigma / sigma_0 (dimensionless, x-axis)
+    goal_sigma0_ratios = [1, 0.8, 0.6, 0.4]  # omega_goal / sigma_0 (legend, mirrors binomial)
 
+    plt.figure(figsize=(1 * FIG_WIDTH, FIG_HEIGHT))
+
+    # --- Panel 1: Binomial ---
+    #plt.subplot(1, 2, 1)
     for idx, goal in enumerate(goals):
-        plt.plot(df_n_stop_goals.index, df_n_stop_goals[goal], label=f"{goal:.2f}", linewidth=idx+1)
-
+        plt.plot(df_n_stop_goals.index, df_n_stop_goals[goal],
+                 label=f"{goal:.2f}", linewidth=idx + 1)
     plt.legend(title=r"$\omega_{\rm goal}$")
     plt.grid(alpha=0.3)
     plt.xlabel(r"$\theta$")
-    plt.ylabel(r"$N_{\rm goal}(\theta, \omega_{\rm goal})$")
-    plt.title(r"Binary Variable with rate $\theta$")
+    plt.ylabel(r"$N_{\rm goal}(\theta,\, \omega_{\rm goal})$")
+    #plt.title(r"Binary Variable: rate $\theta$")
 
-    plt.subplot(1,2,2)
-    for idx, goal in enumerate(goals):
-        plt.plot(standard_deviations, df_n_stop_goals[goal], label=f"{goal:.2f}", linewidth=idx+1)
+    # --- Panel 2: Continuous, kappa parameterisation ---
+    # plt.subplot(1, 2, 2)
+    # for idx, ratio in enumerate(goal_sigma0_ratios):
+    #     # N_goal = 4 * z^2 * kappa^2 / ratio^2
+    #     # where ratio = omega_goal / sigma_0
+    #     n_stop = 4 * z_star**2 * kappas**2 / ratio**2
+    #     plt.plot(kappas, n_stop,
+    #              label=f"{ratio:.2f}", linewidth=idx + 1)
 
-    plt.legend(title=r"$\omega_{\rm goal}/\mu$")
-    plt.grid(alpha=0.3)
-    plt.xlabel(r"$\sigma/\mu$")
-    plt.ylabel(r"$N_{\rm goal}(\sigma/\mu, \omega_{\rm goal}/\mu)$")
-    plt.title(r"Continuous Variable with mean $\mu$ and variance $\sigma^2$")
+    # plt.legend(title=r"$\omega_{\rm goal}/\sigma_0$")
+    # plt.grid(alpha=0.3)
+    # plt.xlabel(r"$\kappa = \sigma\,/\,\sigma_0$")
+    # plt.ylabel(r"$N_{\rm goal}(\kappa,\, \omega_{\rm goal}/\sigma_0)$")
+    # plt.title(r"Continuous Variable: $\sigma = \kappa\,\sigma_0$")
 
-    plt.suptitle(r"Mimimum Sample Size $N_{\rm goal}$ Required to Achieve Precision Goal $\omega_{\rm goal}$", fontsize=20)
+    # plt.suptitle(
+    #     r"Minimum Sample Size $N_{\rm goal}$ Required to Achieve Precision Goal $\omega_{\rm goal}$",
+    #     fontsize=20
+    # )
+
+    plt.title(
+        r"Minimum $N_{\rm goal}$ to Achieve Precision Goal $\omega_{\rm goal}$",
+        fontsize=20
+    )
     plt.tight_layout()
