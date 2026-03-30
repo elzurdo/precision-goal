@@ -1,107 +1,86 @@
 We begin with a detailed examination of the fair coin case $\theta_{\rm true}=0.5$
-to establish the strengths and limitations of each algorithm,
-using $\theta_{\rm null}=0.5$ and precision goal $\omega_{\rm goal}=0.08$.
+to establish the strengths and limitations of each algorithm.
 We then present general trends across $\theta_{\rm true}$ values from $0.5$ upwards,
 spanning the ROPE and its boundaries.
-While our primary analysis uses $\theta_{\rm null}=0.5$ and $\omega_{\rm goal}=0.08$,
-we note that examination of other parameter values confirms these findings.
-
 
 \subsection{Fair Coin ($\theta_{\rm true}=0.5$)}\label{sec:fair_coin}
 
 Figure \ref{fig:iterations} presents a hand-picked fair coin experiment chosen to
 illustrate stark differences in outcomes across the three algorithms.\footnote{This figure
 is similar to the top panels in \cite{kruschke2015doing} Figures 13.4 and 13.5.
+The sequence itself may be found in the open source material under zurda bah SEQUENCE\_HANDPICKED.
 \textcolor{red}{\textbf{[TODO: provide the exact sequence]}}}
-The posteriors in Figure \ref{fig:posteriors} correspond to three specific iterations
+The posteriors in Figure~\ref{fig:posteriors} correspond to three specific iterations
 of this same experiment.
 
-At iteration 126 (vertical red dashed line), the 95\% HDI of \textit{HDI+ROPE} falls
-fully outside the ROPE, causing it to confidently, though incorrectly, reject
-$\theta_{\rm null}$.
-
-In contrast, the \textit{Precision is the Goal} (PitG) stop criterion is met at
-iteration 598 (first pair of purple dots), when the HDI width narrows below the
-precision goal $\omega_{\rm goal}=0.08$.
-However, because the HDI still straddles the ROPE boundary, the decision is inconclusive.
-
-Finally, for \textit{Enhanced Precision is the Goal} (ePitG), the stop criterion is only
-met at iteration 804 (green vertical line), when the HDI satisfies both conditions
-simultaneously: it is narrower than $\omega_{\rm goal}$ \textit{and} falls fully within
-the ROPE, resulting in a correct acceptance of $\theta_{\rm null}$.
+Despite arising from the same sequence of coin tosses, the three algorithms reach
+sharply different conclusions. HDI+ROPE stops early and confidently, though incorrectly,
+rejects $\theta_{\rm null}$. PitG stops at the expected precision iteration but is left
+inconclusive, as the HDI straddles the ROPE boundary. ePitG waits until both conditions
+are jointly satisfied and correctly accepts $\theta_{\rm null}$. This divergence from a
+single experiment motivates the large-scale analysis that follows.
 
 \begin{figure}[h!]
   \centering
   \includegraphics[width=1\textwidth]{cherry_iterations.png}
-  \caption{Hand-picked fair coin experiment ($\theta_{\rm true}=0.5$) illustrating varied
-  outcomes across the three algorithms.
-  \textit{Vertical axis}: cumulative success rate $\hat{\theta}$ at each iteration.
-  \textit{Gray band}: 95\% HDI of the posterior.
+  \caption{Cumulative success rate $\hat{\theta}(N)$ at each iteration $N$ of a
+  hand-picked fair coin experiment ($\theta_{\rm true}=\theta_{\rm null}=0.5$, $\omega_{\rm goal}=0.08$)
+  illustrating varied outcomes across sampling.
+  \textit{Gray band}: 95\% HDI of the posterior; its width is $\omega_{\rm HDI}$.
   \textit{Horizontal dashed lines}: ROPE boundaries.
-  \textit{Stop trigger conventions}:
-  vertical red dashed line: reject $\theta_{\rm null}$;
-  vertical green solid line: accept $\theta_{\rm null}$;
-  purple dots: iterations at which the precision goal $\omega_{\rm goal}$ is achieved.
-  HDI+ROPE stops at iteration 126, triggering an incorrect rejection of $\theta_{\rm null}$
-  (cf.\ top panel of Figure~\ref{fig:posteriors}).
+  \textit{Vertical red dashed line}: Decision to reject $\theta_{\rm null}$.
+  \textit{Vertical green solid line}: Decision to accept $\theta_{\rm null}$.
+  \textit{Purple dots}: Precision goal met ($\omega_{\rm HDI} \le \omega_{\rm goal}$).
+  \textit{Comparison with Figure~\ref{fig:posteriors}}:
+  The HDI+ROPE algorithm stops at iteration 126, triggering an incorrect rejection of $\theta_{\rm null}$
+  (cf.\ top panel).
   PitG stops at iteration 598 (first purple dot); with the HDI straddling the ROPE boundary,
   the decision is inconclusive
-  (cf.\ middle panel of Figure~\ref{fig:posteriors}).
+  (cf.\ middle panel).
   ePitG stops at iteration 804 (green line), where precision and conclusiveness are jointly
   satisfied, correctly accepting $\theta_{\rm null}$
-  (cf.\ bottom panel of Figure~\ref{fig:posteriors}).}
+  (cf.\ bottom panel).}
   \label{fig:iterations}
 \end{figure}
 
 We expand this analysis to $M=2{,}000$ experiments, displaying outcomes in
-Figures~\ref{fig:fair_iter_vs_rate} and~\ref{fig:fair_decisions},\footnote{Both of these visuals are inspired by
-\cite{kruschke2015doing}, Figure~13.6.} and summarising key
+Figures~\ref{fig:fair_iter_vs_rate} and~\ref{fig:fair_decisions},\footnote{Both of these
+visuals are inspired by Figure~13.6 of \cite{kruschke2015doing}.} and summarising key
 statistics in Tables~\ref{tab:fair_overall} and~\ref{tab:fair_conclusive}.
-
-Figure~\ref{fig:fair_iter_vs_rate} displays, for each experiment, the stop iteration
-$N_{\rm stop}$ and the observed success rate $\hat{\theta}(N_{\rm stop})$, together with
-their aggregated summary statistics.
 
 \begin{figure}[h!]
   \centering
   \includegraphics[width=1\textwidth]{fair_experiments_iter_vs_rate.png}
   \caption{Outcomes of $M=2{,}000$ fair coin experiments ($\theta_{\rm true}=\theta_{\rm null}=0.5$,
-  $\omega_{\rm goal}=0.08$). All panels are color-coded by algorithm.
+  $\omega_{\rm goal}=0.08$).
   \textit{Main panel}: scatter plot of observed success rate $\hat{\theta}(N_{\rm stop})$
-  vs.\ stop iteration $N_{\rm stop}$. Each symbol is one experiment:
-  red squares: HDI+ROPE; blue circles: PitG; green Xs: ePitG.
-  Solid horizontal line: $\theta_{\rm true}$.
-  Horizontal dashed lines: ROPE boundaries.
-  Vertical dashed line: expected goal stop iteration $N_{\rm goal}$
+  vs.\ stop iteration $N_{\rm stop}$.
+  \textit{Symbols}: red squares: HDI+ROPE; blue circles: PitG; green Xs: ePitG.
+  \textit{Solid horizontal line}: $\theta_{\rm true}$.
+  \textit{Horizontal dashed lines}: ROPE boundaries.
+  \textit{Vertical dashed line}: expected goal stop iteration $N_{\rm goal}$
   (Equation~\ref{eq:pitg_stop_iteration}); here $N_{\rm goal}(\theta_{\rm true})=
   N_{\rm goal}(\theta_{\rm null})$ since $\theta_{\rm true}=\theta_{\rm null}$.
   \textit{Bottom panel}: histograms of $N_{\rm stop}$.
   \textit{Left panel}: histograms of $\hat{\theta}(N_{\rm stop})$.
   Histogram binning varies by algorithm to best resolve each distribution.
   The marginal histograms reveal where most results concentrate,
-  complementing the scatter plot which shows the overall spread.}
+  complementing the scatter plot which shows the correlations.}
   \label{fig:fair_iter_vs_rate}
 \end{figure}
 
-HDI+ROPE (red squares) yields a wide range of stop iterations and success rates, with a
+In Figure ~\ref{fig:fair_iter_vs_rate} we see that HDI+ROPE yields a wide range of stop iterations and success rates, with a
 significant portion of results falling outside the ROPE, leading to incorrect rejections
 of $\theta_{\rm null}$. Its $N_{\rm stop}$ distribution is skewed towards early stopping
-at $\sim\!400$, well before $N_{\rm goal}\sim 600$ (dashed vertical line), with a long
-tail extending to later iterations.
+at $\sim\!400$, well before $N_{\rm goal}\sim 600$, with a long tail extending to later
+iterations.
 
-In contrast, PitG (blue circles) consistently stops near $N_{\rm goal}$, with success
-rates clustered tightly around $\theta_{\rm true}=0.5$. However, many of these stops
-occur when the HDI straddles the ROPE boundary, yielding a high rate of inconclusive
-decisions (see Figure~\ref{fig:fair_decisions} and Table~\ref{tab:fair_overall}).
-ePitG (green Xs) exhibits a narrower $\hat{\theta}(N_{\rm stop})$ distribution than PitG
-but extends to later iterations, achieving more conclusive results while maintaining
-unbiased estimates.
-
-Figure~\ref{fig:fair_decisions} focuses on the distribution of decisions made up to (and
-including) each iteration, with three possible outcomes: reject $\theta_{\rm null}$ (red
-dashed line), accept $\theta_{\rm null}$ (green solid line), and inconclusive (gray
-dot-dashed line). The proportions in each panel sum to 100\% at every
-iteration.
+PitG consistently stops near $N_{\rm goal}$, with success rates clustered tightly around
+$\theta_{\rm true}=0.5$. However, many of these stops occur when the HDI straddles the
+ROPE boundary, yielding a high rate of inconclusive decisions
+(see Figure~\ref{fig:fair_decisions} and Table~\ref{tab:fair_overall}).
+ePitG exhibits a narrower $\hat{\theta}(N_{\rm stop})$ distribution than PitG but extends
+to later iterations, achieving more conclusive results while maintaining unbiased estimates.
 
 \begin{figure}[h!]
   \centering
@@ -110,29 +89,25 @@ iteration.
   ($\theta_{\rm true}=\theta_{\rm null}=0.5$, $\omega_{\rm goal}=0.08$).
   At each iteration $N$, the plotted proportions count all experiments that reached
   a decision at or before $N$; their sum is 100\% at every point.
-  \textit{Left}: HDI+ROPE. \textit{Middle}: Precision is the Goal. \textit{Right}:
-  Enhanced Precision is the Goal.
-  \textit{Line styles}:
-  red dashed: reject $\theta_{\rm null}$;
-  green solid: accept $\theta_{\rm null}$;
-  gray dot-dashed: inconclusive.}
+  \textit{Left}: HDI+ROPE; \textit{Middle}: Precision is the Goal; \textit{Right}: Enhanced Precision is the Goal.
+  \textit{Red dashed line}: reject $\theta_{\rm null}$.
+  \textit{Green solid line}: accept $\theta_{\rm null}$.
+  \textit{Gray dot-dashed line}: inconclusive.}
   \label{fig:fair_decisions}
 \end{figure}
 
-The rejection rate of HDI+ROPE (left panel) quickly asymptotes at 6\%, while its
-acceptance rate begins rising near $N\sim 400$, reflecting a gradual shift from
-incorrect rejections to correct acceptances as more data accumulate. The inconclusive
-proportion drops accordingly.
+As seen in Figure~\ref{fig:fair_decisions}, HDI+ROPE's rejection rate (left panel) quickly asymptotes at 6\%, while its acceptance
+rate begins rising near $N\sim 400$, reflecting a gradual shift from incorrect rejections
+to correct acceptances as more data accumulate.
 
-Both precision-based methods correctly maintain a zero rejection rate (middle and right
-panels), as they require precision criteria to be satisfied before any decision is made.
+Both precision-based methods maintain a zero rejection rate (middle and right panels),
+as they require precision criteria to be satisfied before any decision is made.
 For PitG (middle panel), the acceptance rate rises as a near step-function, jumping at
 $N_{\rm goal}$ to 36.7\%, with the inconclusive rate settling at the complement 63.3\%.
 
-The ePitG results (right panel) present a hybrid of the other two: it preserves the
-unbiased, zero-rejection property of PitG while achieving a high conclusiveness rate
-akin to HDI+ROPE, but with a more gradual transition from inconclusive to conclusive
-outcomes.
+ePitG (right panel) presents a hybrid of the other two: it preserves the zero-rejection
+property of PitG while achieving a high conclusiveness rate akin to HDI+ROPE, but with
+a more gradual transition from inconclusive to conclusive outcomes.
 
 Table~\ref{tab:fair_overall} summarises the conclusiveness
 rates and stop-iteration statistics for all 2{,}000 experiments shown in
@@ -143,7 +118,7 @@ conclusive subset, detailing the observed success rates $\hat{\theta}(N_{\rm sto
   \begin{center}
   \begin{tabular}{c|c|c|c}
     \hline
-    Algorithm &  Conclusive Rate  & $n_{\rm 50\%}$ & $n_{\rm 25\%} - n_{\rm 75\%}$\\
+    Algorithm &  Conclusive Rate  & $N_{\rm 50\%}$ & $N_{\rm 25\%} - N_{\rm 75\%}$\\
     \hline
     HDI+ROPE & 0.982 & 523 & 415-721  \\
     PitG     & \textcolor{red}{\textbf{0.367}}  & 599 & 598-599 \\
@@ -153,11 +128,11 @@ conclusive subset, detailing the observed success rates $\hat{\theta}(N_{\rm sto
   \caption{Summary statistics for all $M=2{,}000$ fair coin experiments
   ($\theta_{\rm true}=\theta_{\rm null}=0.5$, $\omega_{\rm goal}=0.08$;
   cf.\ Figure~\ref{fig:fair_iter_vs_rate}).
-  $n_{\rm 50\%}$: median stop iteration;
-  $n_{\rm 25\%} - n_{\rm 75\%}$: interquartile range of stop iteration.
+  $N_{\rm 50\%}$: median stop iteration;
+  $N_{\rm 25\%} - N_{\rm 75\%}$: interquartile range of stop iteration.
   Conclusive Rate values are color-coded: \textcolor{red}{\textbf{red}} flags a
   concerningly low rate (PitG); \textcolor{green}{\textbf{green}} highlights a
-  strong rate with zero false positives (ePitG).}
+  strong rate with zero false positives (ePitG; cf.\ Table~\ref{tab:fair_conclusive}).}
   \label{tab:fair_overall}
 \end{center}
 \end{table}
@@ -168,7 +143,7 @@ rate. PitG delivers zero false positives, but its conclusiveness rate of only 36
 strikingly low: its stop iterations are tightly concentrated in the narrow IQR
 $598$--$599$, all clustering at $N_{\rm goal}$. ePitG strikes the intended balance:
 a 97.7\% conclusiveness rate with zero false positives. Its median stop iteration of 627
-is only 4.7\% above PitG's, and its lower quartile $n_{\rm 25\%}\approx N_{\rm goal}$
+is only 4.7\% above PitG's, and its lower quartile $N_{\rm 25\%}\approx N_{\rm goal}$
 shows that roughly half of ePitG experiments stop as soon as the precision goal is first
 met; the wider IQR of $598$--$794$ reflects those experiments that require additional
 iterations to satisfy the joint precision-and-conclusiveness criterion.
@@ -178,7 +153,7 @@ iterations to satisfy the joint precision-and-conclusiveness criterion.
   \begin{center}
   \begin{tabular}{c|c|c|c|c|c}
     \hline
-    Algorithm & Conclusive & Acceptence Rate & Rejection Rate &  $\hat{\theta}_{\rm 50\%}$ & $\hat{\theta}_{\rm 25\%} - \hat{\theta}_{\rm 75\%}$\\
+    Algorithm & Conclusive & Acceptance Rate & Rejection Rate &  $\hat{\theta}_{\rm 50\%}$ & $\hat{\theta}_{\rm 25\%} - \hat{\theta}_{\rm 75\%}$\\
     \hline
     HDI+ROPE & 1964 & 0.938 & \textcolor{red}{\textbf{0.062}} & 0.5000 & 0.4919-0.5075 \\
     PitG     &  \textcolor{red}{\textbf{734}} & 1     & 0     & 0.5008 & 0.4958-0.5041 \\
@@ -192,8 +167,9 @@ iterations to satisfy the joint precision-and-conclusiveness criterion.
   and therefore sum to 1.
   $\hat{\theta}_{\rm 50\%}$: median observed success rate at stop;
   $\hat{\theta}_{\rm 25\%} - \hat{\theta}_{\rm 75\%}$: interquartile range of
-  observed success rate at stop. \textcolor{red}{\textbf{red}} flags a
-  concerningly low conclusiveness rate (PitG) and a non-zero false positive rate (HDI+ROPE)}
+  observed success rate at stop.
+  \textcolor{red}{\textbf{red}} flags a
+  concerningly low conclusiveness rate (PitG) and a non-zero false positive rate (HDI+ROPE).}
   \label{tab:fair_conclusive}
 \end{center}
 \end{table}
