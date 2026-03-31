@@ -109,10 +109,8 @@ ePitG (right panel) presents a hybrid of the other two: it preserves the zero-re
 property of PitG while achieving a high conclusiveness rate akin to HDI+ROPE, but with
 a more gradual transition from inconclusive to conclusive outcomes.
 
-Table~\ref{tab:fair_overall} summarises the conclusiveness
-rates and stop-iteration statistics for all 2{,}000 experiments shown in
-Figures~\ref{fig:fair_iter_vs_rate} and~\ref{fig:fair_decisions}. Table~\ref{tab:fair_conclusive} focuses on the
-conclusive subset, detailing the observed success rates $\hat{\theta}(N_{\rm stop})$.
+Table~\ref{tab:fair_overall} and Table~\ref{tab:fair_conclusive} summarise, respectively,
+stop-iteration and success-rate statistics across all and conclusive experiments.
 
 \begin{table}[h!]
   \begin{center}
@@ -137,16 +135,15 @@ conclusive subset, detailing the observed success rates $\hat{\theta}(N_{\rm sto
 \end{center}
 \end{table}
 
-HDI+ROPE achieves
-the highest conclusiveness rate (98.2\%), but at the cost of a 6.2\% false positive
-rate. PitG delivers zero false positives, but its conclusiveness rate of only 36.7\% is
-strikingly low: its stop iterations are tightly concentrated in the narrow IQR
-$598$--$599$, all clustering at $N_{\rm goal}$. ePitG strikes the intended balance:
-a 97.7\% conclusiveness rate with zero false positives. Its median stop iteration of 627
-is only 4.7\% above PitG's, and its lower quartile $N_{\rm 25\%}\approx N_{\rm goal}$
-shows that roughly half of ePitG experiments stop as soon as the precision goal is first
-met; the wider IQR of $598$--$794$ reflects those experiments that require additional
-iterations to satisfy the joint precision-and-conclusiveness criterion.
+HDI+ROPE achieves the highest conclusiveness rate (98.2\%), but at the cost of a 6.2\%
+false positive rate. PitG delivers zero false positives, but its conclusiveness rate of
+only 36.7\% is strikingly low, with stop iterations all clustering at $N_{\rm goal}$.
+ePitG strikes the intended balance: a 97.7\% conclusiveness rate with zero false
+positives. Its lower quartile $N_{\rm 25\%}\approx N_{\rm goal}$ shows that roughly half
+of ePitG experiments stop as soon as the precision goal is first met; the wider IQR of
+$598$--$794$ reflects those that require additional iterations to satisfy the joint
+precision-and-conclusiveness criterion, at a median cost of only 4.7\% more samples than
+PitG.
 
 
 \begin{table}[h!]
@@ -163,21 +160,30 @@ iterations to satisfy the joint precision-and-conclusiveness criterion.
   \caption{Summary statistics for the conclusive subset of experiments in
   Table~\ref{tab:fair_overall}.
   Conclusive: count of experiments (out of 2{,}000) with a conclusive outcome.
-  Acceptance and Rejection Rates are conditioned on conclusive experiments
+  Acceptance and Rejection rates are conditioned on conclusive experiments
   and therefore sum to 1.
   $\hat{\theta}_{\rm 50\%}$: median observed success rate at stop;
   $\hat{\theta}_{\rm 25\%} - \hat{\theta}_{\rm 75\%}$: interquartile range of
   observed success rate at stop.
-  \textcolor{red}{\textbf{red}} flags a
+  \textcolor{red}{\textbf{Red}} flags a
   concerningly low conclusiveness rate (PitG) and a non-zero false positive rate (HDI+ROPE).}
   \label{tab:fair_conclusive}
 \end{center}
 \end{table}
 
-The fair coin case thus demonstrates a clear hierarchy: ePitG achieves near-HDI+ROPE
-conclusiveness and PitG's zero-false-positive guarantee at a modest median cost of
-4.7\% more samples. Section~\ref{sec:trends} shows that this advantage persists
-as $\theta_{\rm true}$ departs from $\theta_{\rm null}$.
+The choice of $\omega_{\rm goal}$ governs the fundamental precision--conclusiveness
+trade-off. Tightening from $\omega_{\rm goal}=0.08$ to $0.06$ raises PitG's
+conclusiveness at $\theta_{\rm true}=0.5$ from 36.7\% to 82.5\%, and ePitG's from
+97.7\% to \textcolor{red}{\textbf{[TODO: verify ePitG conclusiveness at
+$\omega_{\rm goal}=0.06$, placeholder $\sim\!99\%$]}}, at the cost of a substantially
+larger required sample size: $N_{\rm goal}=1{,}065$, a $1.8\times$ increase.
+Practitioners should therefore select $\omega_{\rm goal}$ to reflect their tolerance
+for imprecision and their available sampling budget.
+
+The fair coin case thus demonstrates a clear hierarchy: ePitG matches HDI+ROPE's
+conclusiveness and PitG's zero-false-positive guarantee at a modest median cost.
+Section~\ref{sec:trends} shows that this advantage persists as $\theta_{\rm true}$
+departs from $\theta_{\rm null}$.
 
 \subsection{General Trends Across $\theta_{\rm true}$ Values}\label{sec:trends}
 
@@ -208,11 +214,9 @@ serving as a key inflection point in all three panels.
 \end{figure}
 
 As established in Section~\ref{sec:fair_coin}, HDI+ROPE and ePitG open near 100\%
-conclusiveness at $\theta_{\rm true}=0.5$, while PitG sits at only 36.7\%. We have
-verified that these qualitative trends generalise across values of
-$\omega_{\rm goal}$.\footnote{For example, tightening to $\omega_{\rm goal}=0.06$ raises
-PitG's conclusiveness at $\theta_{\rm true}=0.5$ to 82.5\%, but at the cost of a
-substantially larger $N_{\rm goal}=1{,}065$ --- a $1.8\times$ increase.}
+conclusiveness at $\theta_{\rm true}=0.5$, while PitG sits at only 36.7\%, with the
+trade-off against $\omega_{\rm goal}$ discussed there. The qualitative trends shown
+below generalise across values of $\omega_{\rm goal}$.
 
 All three algorithms show a dip in conclusiveness as $\theta_{\rm true}$ approaches
 ${\rm ROPE}_{\rm max}$, after which conclusiveness rises again. HDI+ROPE and ePitG
