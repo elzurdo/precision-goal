@@ -1,0 +1,22 @@
+Don't Stop 'til You Get Enough: Sequential Testing with Precision and Conclusiveness as Goals
+
+Objectives. Sequential hypothesis testing offers flexibility over fixed-sample designs,
+but coupling stopping rules to decision criteria — such as p-value thresholds or
+posterior-based heuristics — risks confirmation bias from early, unrepresentative samples.
+"Precision is the Goal" (PitG), proposed by Kruschke (2015), eliminates this bias by
+halting only once a pre-specified posterior precision is reached, then applying the
+Highest Density Interval + Region of Practical Equivalence (HDI+ROPE) decision rule.
+We identify a key limitation: PitG frequently yields inconclusive outcomes when the null
+hypothesis is true — precisely the regime required by confirmatory applications such as bioequivalence testing, software regression validation, and policy evaluation.
+
+Methods. We propose "Enhanced Precision is the Goal" (ePitG), which requires both the
+precision target and a conclusive hypothesis outcome — accepting or rejecting the null —
+to be satisfied simultaneously before stopping. This conservative recoupling retains the
+near-zero false-positive rate of PitG while substantially improving decisiveness. We
+evaluate both methods through binomial simulations across a range of true parameter values.
+
+Results & Conclusions. In fair coin experiments (θ_true = θ_null = 0.5) with precision
+goal ω_goal = 0.08, PitG yields 63.3% inconclusive outcomes; ePitG reduces this to 2.3%
+at a median cost of only 4.7% more samples, with zero false positives. Crucially, unlike
+NHST, the HDI+ROPE framework also permits positive acceptance of the null — essential
+for confirmatory applications. A closed-form expression for the minimal expected stopping sample size enables prospective planning without simulation. Open-source code and an interactive online planning calculator are provided to support adoption.
