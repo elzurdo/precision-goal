@@ -190,7 +190,7 @@ departs from $\theta_{\rm null}$.
 Building on the fair coin baseline, we now examine how all three algorithms perform as
 $\theta_{\rm true}$ increases from $0.5$ upwards, spanning the ROPE and its
 boundaries.\footnote{By symmetry, results for $\theta_{\rm true}<0.5$ mirror those shown
-here.}
+here, as reflected in Equation~\ref{eq:pitg_stop_iteration} and Figure~\ref{fig:min_sample_by_goal}.}
 
 Figure~\ref{fig:conclusiveness_rates} shows how all three algorithms perform as
 $\theta_{\rm true}$ varies across and beyond the ROPE, with ${\rm ROPE}_{\rm max}=0.55$
@@ -201,11 +201,11 @@ serving as a key inflection point in all three panels.
   \includegraphics[width=1\textwidth]{conclusive_rates.png}
   \caption{Algorithm comparison across $\theta_{\rm true}$ values for $M=2{,}000$
   experiments ($\theta_{\rm null}=0.5$, $\omega_{\rm goal}=0.08$).
-  All panels are color-coded by algorithm: red: HDI+ROPE; blue: PitG; green: ePitG.
-  Vertical dashed line marks ${\rm ROPE}_{\rm max}=0.55$.
+  \textit{Colors}: red: HDI+ROPE; blue: PitG; green: ePitG.
+  \textit{Vertical dashed lines}: ${\rm ROPE}_{\rm max}=0.55$.
   \textit{Left}: conclusiveness rates.
   \textit{Middle}: acceptance (solid lines) and rejection (dashed lines) rates;
-  at each $\theta_{\rm true}$ their sum equals the conclusiveness rate.
+  at each $\theta_{\rm true}$ their sum equals the respective conclusiveness rate.
   \textit{Right}: accuracy rates (proportion of correct decisions out of all
   $M$ experiments); inconclusive experiments are assigned a decision based on whether
   $\hat{\theta}$ falls inside or outside the ROPE
@@ -225,27 +225,30 @@ $\theta_{\rm true}\approx 0.64$, at which point ePitG and PitG become effectivel
 equivalent (for $\theta_{\rm null}=0.5$).
 
 This dip is by design: the ROPE boundaries are natural inflection points, as algorithms
-are constructed to accept $\theta_{\rm null}$ within the ROPE and reject it outside.
+are constructed to accept $\theta_{\rm null}$ within the ROPE and reject it outside 
+(see Section~\ref{sec:accept_reject_meaning}).
 The precision-based methods are deliberately conservative near these boundaries, yielding
 lower conclusiveness rates than HDI+ROPE in this region. At the boundary itself, ePitG
 is conclusive in only 19\% of experiments and PitG in only 5\%.
 
 Breaking the conclusiveness into its acceptance and rejection components (middle panel)
 reveals the error structure. For $\theta_{\rm null}=0.5$, acceptance is the correct
-decision within the ROPE ($\theta_{\rm true}\le 0.55$) and rejection is correct outside
-it. HDI+ROPE's false positive rate (i.e, rejecting $\theta_{\rm null}$ when it is true) of $\sim\!6\%$ at $\theta_{\rm true}=0.5$ climbs to
-$\sim\!30\%$ at ${\rm ROPE}_{\rm max}$; its false negative rate (i.e, accepting $\theta_{\rm null}$ when it is false)
-peaks at $\sim\!10\%$ at
-the boundary before dropping to 0\% by $\theta_{\rm true}=0.57$. Both precision-based methods maintain a near-zero false-positive rate throughout,
-exactly zero well within the ROPE interior, rising to a small but negligible level near
-the boundary, with only a small false negative rate near the ROPE that similarly
-drops quickly. %% that peaks at the ROPE boundary and drops to zero by $\theta_{\rm true}=0.57$.
+decision within the ROPE ($\theta_{\rm true}\le 0.55$) (i.e, within the ROPE) and rejection is correct outside
+it. HDI+ROPE's false positive rate (i.e., rejecting $\theta_{\rm null}$ when $\theta_{\rm true}$ is within the ROPE)
+climbs from $\sim\!6\%$ at $\theta_{\rm true}=0.5$ to $\sim\!30\%$ at
+${\rm ROPE}_{\rm max}$; its false negative rate (i.e., accepting the null when $\theta_{\rm true}$ is outside the ROPE)
+peaks at $\sim\!10\%$ at the ROPE boundary before dropping to $0\%$
+by $\theta_{\rm true}=0.57$. Both precision-based methods maintain a near-zero
+false-positive rate throughout, exactly zero well within the ROPE interior, rising to a
+small level near the ROPE boundary (ePitG at the same $\sim\!10\%$, PitG lower due to
+its much lower conclusiveness rate), with only a small false negative rate near the ROPE
+that similarly drops quickly.
 
 The right panel shows overall \textit{accuracy}, the proportion of correct decisions
-across all $M$ experiments, after assigning each inconclusive experiment a decision
-based on whether $\hat{\theta}$ lies within the ROPE (accept) or outside it (reject).
-Alternative risk- or utility-based assignment rules exist but are deferred to future
-work.
+across all $M$ experiments. Since the three algorithms have different conclusiveness
+rates, each inconclusive experiment is assigned a decision based on whether
+$\hat{\theta}$ lies within the ROPE (accept) or outside it (reject); alternative
+risk- or utility-based rules are deferred to future work.
 
 All three algorithms reach their minimum accuracy at ${\rm ROPE}_{\rm max}$. Within
 the ROPE, ePitG consistently leads PitG, reaching 99.5\% at $\theta_{\rm true}=0.5$
