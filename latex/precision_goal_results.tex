@@ -258,28 +258,23 @@ $\theta_{\rm true}\approx 0.60$.
 
 That HDI+ROPE reaches 100\% accuracy at $\theta_{\rm true}=0.58$ while simultaneously
 producing biased $\hat{\theta}$ estimates motivates a closer look at the observed
-success rate $\hat{\theta}$ statistics. Figure~\ref{fig:success_by_truth_conclusive} shows, for conclusive
-experiments, the IQR of $\hat{\theta}(N_{\rm stop})$ (left panel) and the median bias
-$\hat{\theta}_{\rm 50\%}-\theta_{\rm true}$ (right panel).\footnote{We find similar
-trends for the mean, but omit it to reduce clutter.}
+success rate statistics. Figure~\ref{fig:success_by_truth_conclusive} shows, for
+conclusive experiments, the IQR of $\hat{\theta}(N_{\rm stop})$ (left panel) and the
+median bias $\hat{\theta}_{\rm 50\%}-\theta_{\rm true}$ (right panel).\footnote{We find
+similar trends for the mean, but omit it to reduce clutter.}
 
-Before examining per-algorithm bias, it is worth recalling what an accept or reject
-decision means in this framework. Following \cite{kruschke2018}, accepting
-$\theta_{\rm null}$ for practical purposes does not mean that $\theta_{\rm null}$ is
-itself the most credible value of the posterior; it means merely that \textit{all} the
-most credible values---the entire HDI---are practically equivalent to $\theta_{\rm null}$.
-The relevant quantity for an accept/reject decision is therefore the posterior HDI, not
-the point estimate $\hat{\theta}$. A small bias in $\hat{\theta}$ does not invalidate
-the decision so long as the HDI falls cleanly within the ROPE.
+As discussed in Section~\ref{sec:accept_reject_meaning}, accept/reject decisions rest on
+the HDI's position relative to the ROPE, not on $\hat{\theta}$; a bias in $\hat{\theta}$
+does not invalidate the decision so long as the HDI falls cleanly within (or outside)
+the ROPE.
 
-With this in mind, the $\hat{\theta}$ bias of HDI+ROPE is more telling as a symptom
-of its lack of a precision requirement than as a decision-quality metric. At
-$\theta_{\rm true}=0.5$, all three algorithms show near-zero bias, as expected from
-the symmetry of the fair coin case. Once $\theta_{\rm true}$ deviates from $0.5$,
-HDI+ROPE's bias grows markedly: its median bias approaches the ROPE half-width at
-${\rm ROPE}_{\rm max}$, with the upper IQR extending substantially further.
-This happens because HDI+ROPE can stop on skewed samples before sufficient data
-have accumulated to constrain the posterior.
+HDI+ROPE's $\hat{\theta}$ bias is therefore more telling as a symptom of its lack of a
+precision requirement than as a decision-quality metric. At $\theta_{\rm true}=0.5$,
+all three algorithms show near-zero bias, as expected from the symmetry of the fair coin
+case. Once $\theta_{\rm true}$ deviates from $0.5$, HDI+ROPE's bias grows markedly: its
+median bias approaches ${\rm ROPE}_{\rm max}$, with the upper
+IQR extending substantially further---because HDI+ROPE can stop on skewed samples before
+sufficient data have accumulated to constrain the posterior.
 
 The precision-based methods exhibit substantially smaller $\hat{\theta}$ bias, well
 within the ROPE width across all $\theta_{\rm true}$ values, as a natural consequence
@@ -288,7 +283,7 @@ shows the highest bias and ePitG the lowest.\footnote{For inconclusive experimen
 where PitG contributes far more experiments than ePitG or HDI+ROPE, PitG's
 $\hat{\theta}$ bias is slightly \textit{lower} than ePitG's, though this ordering
 reverses when compounding all experiments.} Compounding conclusive and inconclusive
-experiments, ePitG accuracy exceeds PitG's at every $\theta_{\rm true}$ value
+experiments, ePitG decision accuracy exceeds PitG's at every $\theta_{\rm true}$ value
 (cf.\ Figure~\ref{fig:conclusiveness_rates}, right panel).
 
 
@@ -311,12 +306,13 @@ would plan in advance knowing only $\theta_{\rm null}$.
   \caption{Observed success rate $\hat{\theta}(N_{\rm stop})$ at the stop iteration as a
   function of $\theta_{\rm true}$, for conclusive experiments only (subsets of $M=2{,}000$,
   $\theta_{\rm null}=0.5$, $\omega_{\rm goal}=0.08$).
-  All panels are color-coded by algorithm: red: HDI+ROPE; blue: PitG; green: ePitG.
-  Dotted horizontal lines mark the ROPE boundaries and the vertical dashed is ROPE$_{\rm max}$.
+  \textit{Colors}: red: HDI+ROPE; blue: PitG; green: ePitG.
+  \textit{Horizontal dotted lines}: ROPE boundaries.
+  \textit{Vertical dashed line}: ${\rm ROPE}_{\rm max}$.
   \textit{Left}: interquartile range $\hat{\theta}_{\rm 25\%}$--$\hat{\theta}_{\rm 75\%}$
-  of $\hat{\theta}(N_{\rm stop})$; the solid diagonal line is the parity line
-  $\hat{\theta}=\theta_{\rm true}$.
-  \textit{Right}: $\hat{\theta}_{\rm 50\%}-\theta_{\rm true}$.}
+  of $\hat{\theta}(N_{\rm stop})$.
+  \textit{Diagonal line}: parity line $\hat{\theta}=\theta_{\rm true}$.
+  \textit{Right}: median bias $\hat{\theta}_{\rm 50\%}-\theta_{\rm true}$.}
   \label{fig:success_by_truth_conclusive}
 \end{figure}
 
