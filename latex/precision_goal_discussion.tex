@@ -60,7 +60,10 @@ one simulates experiments and asks how often the precision goal $\omega_{\rm goa
 achieved within the budget $N_{\rm max}$.
 This is precisely what the analytical formula for $N_{\rm goal}$
 (Equation~\ref{eq:pitg_stop_iteration}) provides as a closed-form approximation for the
-minimum required sample size within this model.
+minimum required sample size within this model; note that $N_{\rm goal}$ is a theoretical
+lower bound --- any sequential algorithm requires at least this many observations under
+ideal conditions, and ePitG may require additional samples when $\theta_{\rm true}$ lies
+near a ROPE boundary (see Section~\ref{sec:trends}).
 
 \textit{Retrospective} power analysis uses the posterior from already-collected data as
 the hypothetical data generator to ask whether the completed study was sufficiently
@@ -84,20 +87,32 @@ in the method but a form of epistemic honesty: imprecise posteriors produce inco
 results regardless of the algorithm applied; ePitG simply refuses to declare a verdict
 until the posterior is genuinely informative. Setting $\omega_{\rm goal}$ thus forces
 realistic planning rather than concealing underpowerment behind a false positive or a
-silently inconclusive stop. 
+silently inconclusive stop.
+This discipline is a feature, not a limitation, for any analyst whose conclusions
+must rest on genuinely informative data.
 
-This makes the method most attractive when
-precision is a critical concern and the budget is sufficient to meet it (provide examples
-perhaps a/b testing when data collection is cheap and other examples).
-For other practical settings where the required sample size is prohibitive, the
-precision-based framework is useful for earnest interpretation what may and may not
-be achieved with a limited budget.
+The method is most naturally suited to settings where data collection is relatively
+cheap and the budget comfortably covers the required sample size: large-scale digital
+A/B testing \citep{johari2022}, opinion polling, and automated quality-control pipelines
+are typical examples.
+% \citet{johari2022}: Johari et al.\ (2022) study continuous monitoring of A/B tests ---
+% a canonical high-volume, low-cost data-collection context where precision-based
+% stopping is operationally natural and the budget constraint is rarely binding.
+For settings where the required sample size is prohibitive --- longitudinal studies,
+clinical trials, or expensive policy evaluations --- the framework still serves a
+valuable diagnostic role: $N_{\rm goal}$ makes explicit what precision is achievable
+within the available budget, enabling an honest assessment of what conclusions the data
+can and cannot support.
 
-One option to increase signal with a liited budget is to set infromative priors.
-We defer a full treatment of prior selection, noting that informative priors, where
-available and reliable, offer a practical mitigation by contributing effective
-pseudo-observations that narrow the starting HDI width and lower the threshold
-sample size.
+One option to increase signal with a limited budget is to incorporate informative priors.
+We defer a full treatment of prior selection to future work, noting that informative
+priors, where available and well-justified, offer a practical mitigation by contributing
+effective pseudo-observations that narrow the starting HDI width and lower the required
+sample size \citep{gelman2013bayesian}.
+% \citet{gelman2013bayesian}: BDA3 (Chapter 2) establishes the prior-as-pseudo-data
+% interpretation for conjugate models: a Beta(a,b) prior is equivalent to having
+% previously observed a successes and b failures, directly supporting the claim that
+% informative priors contribute effective pseudo-observations.
 
 Three further considerations support the broader adoption of this approach.
 First, formally accepting the null via the HDI+ROPE criterion parallels the objective
@@ -116,23 +131,14 @@ before data collection begins, ePitG is naturally compatible with pre-registrati
 standards \citep{nosek2018}, directly reducing the researcher degrees of freedom that
 drive selective reporting.
 Third, the replication crisis has been partly attributed to underpowered studies whose
-imprecise estimates fail to replicate \citep{osc2015}; ePitG addresses this at the
-design stage by making precision a non-negotiable stopping criterion rather than an
-aspiration.
-
-A practical note on sample-size planning.
-$N_{\rm goal}(\theta, \omega_{\rm goal})$ (Equation~\ref{eq:pitg_stop_iteration})
-is a theoretical minimum: any sequential algorithm needs at least this many observations
-under ideal conditions, and ePitG may require more near the ROPE boundaries.
-Because $\theta(1-\theta)$ is maximised at $\theta=0.5$, the fair-coin null
-yields the largest $N_{\rm goal}$ over the entire parameter space.
-A researcher testing $\theta_{\rm null}=0.5$ can therefore treat
-$N_{\rm goal}(\theta_{\rm null})$ as a worst-case ceiling: any departure of
-$\theta_{\rm true}$ from $0.5$ only lowers the required minimum.
-For other nulls the picture is asymmetric: if $\theta_{\rm true}$ happens to lie
-\textit{closer} to $0.5$ than $\theta_{\rm null}$ does, then
-$N_{\rm goal}(\theta_{\rm true}) > N_{\rm goal}(\theta_{\rm null})$, meaning the
-planned minimum underestimates actual need.
-In all settings, $N_{\rm goal}(\theta_{\rm null})$ provides a useful budget floor
-and $N_{\rm max}$ should reflect the researcher's resources beyond it.
+imprecise estimates fail to replicate \citep{osc2015, gelman2014}; ePitG addresses this
+at the design stage by making precision a non-negotiable stopping criterion rather than
+an aspiration --- one that is structurally enforced, since the stopping rule cannot fire
+until the precision goal is met.
+% \citet{osc2015}: The Open Science Collaboration (2015) documented that a substantial
+% fraction of published psychological findings failed to replicate, motivating the search
+% for design-stage remedies.
+% \citet{gelman2014}: Gelman \& Carlin (2014) specifically link replication failure to
+% low power and imprecision (``Type S'' sign errors and ``Type M'' magnitude errors),
+% making it the canonical reference for the claim that imprecise estimates fail to replicate.
 
