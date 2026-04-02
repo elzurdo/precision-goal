@@ -334,8 +334,8 @@ Within the ROPE, $N_{\rm stop}$ loosely tracks $N_{\rm goal}(\theta_{\rm true})$
 with a wide IQR reflecting the absence of a precision criterion. Outside the ROPE,
 $N_{\rm stop}$ falls well below $N_{\rm goal}(\theta_{\rm true})$: HDI+ROPE correctly
 rejects $\theta_{\rm null}$ much faster than precision-based methods, but does so on
-the basis of imprecise posteriors, producing the strong $\hat{\theta}$ bias seen in
-cf.\ Figure~\ref{fig:success_by_truth_conclusive}.
+the basis of imprecise posteriors, producing the strong $\hat{\theta}$ bias
+(cf.\ Figure~\ref{fig:success_by_truth_conclusive}).
 
 PitG stops tightly around $N_{\rm goal}(\theta_{\rm true})$ by design, making it the
 natural reference for understanding the precision cost. The contrast with the planned
@@ -390,18 +390,19 @@ comparison by overlaying the ratio of conclusiveness rates
 \end{figure}
 
 The conclusiveness ratio substantially exceeds the $N_{\rm stop}$ ratio throughout,
-particularly within the ROPE and immediately outside it. Strikingly, the conclusiveness
-ratio remains above 1 even where the $N_{\rm stop}$ ratio equals 1---that is, where both
-algorithms stop at the same iteration---which occurs for roughly
-$0.60 \lesssim \theta_{\rm true} \lesssim 0.63$: ePitG gains additional conclusive outcomes
-at no extra sampling cost in this region. The lower band of the IQR confirms that a
-substantial fraction of ePitG experiments stop exactly when PitG does, keeping the
-median $N_{\rm stop}$ ratio low. At the fair coin value $\theta_{\rm true}=0.5$,
-the conclusiveness ratio is $2.66$, while the $N_{\rm stop}$ ratio has an IQR of
-$1.00$--$1.29$ (median $1.04$, mean $1.21$): roughly a $2.7\times$ gain in
-conclusiveness at a median cost of only $4\%$ more samples.
+particularly within and immediately outside the ROPE. Strikingly, the conclusiveness
+ratio remains above 1 even where the $N_{\rm stop}$ ratio approaches 1---that is, where
+both algorithms stop at the same iteration---which occurs for roughly
+$0.60 \lesssim \theta_{\rm true} \lesssim 0.63$: ePitG gains conclusive outcomes at minor
+extra sampling cost in this region. The lower IQR band confirms that a substantial
+fraction of ePitG experiments stop exactly when PitG does, keeping the median
+$N_{\rm stop}$ ratio low. At $\theta_{\rm true}=0.5$, the conclusiveness ratio is
+$2.66$ while the $N_{\rm stop}$ ratio has an IQR of $1.00$--$1.29$ (median $1.04$,
+mean $1.21$): roughly a $2.7\times$ gain in conclusiveness at a median cost of only
+$4\%$ more samples.
 
 The apparent flattening of both ratios near ${\rm ROPE}_{\rm max}$ is an artefact of
 the finite cap $N_{\rm max}=1{,}500$; with a larger cap both curves would peak sharply
-at the boundary. Qualitatively similar results hold for $\theta_{\rm null}=0.7$ and
-$\omega_{\rm goal}=0.06$ (not shown).
+at the boundary. Qualitatively similar results hold for
+$(\theta_{\rm null}=0.7,\ \omega_{\rm goal}=0.08)$ and
+$(\theta_{\rm null}=0.5,\ \omega_{\rm goal}=0.06)$ (not shown).

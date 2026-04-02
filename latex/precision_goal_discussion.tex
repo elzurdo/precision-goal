@@ -1,17 +1,33 @@
 While our focus is on single-sample hypothesis testing for a Bernoulli parameter,
 the precision-goal framework extends naturally to other settings.
 For single-group continuous data, Equation~\ref{eq:pitg_stop_iteration} generalises
-by replacing $\theta(1-\theta)$ with $\sigma^2$; Figure~\ref{fig:min_sample_by_goal}
-illustrates the resulting $N_{\rm goal}$ for both cases.
+by replacing $\theta(1-\theta)$ with the population variance $\sigma^2$; in practice
+$\sigma^2$ is unknown and estimated by the sample variance $s^2$
+(see Appendix~\ref{app:expected_stop} for the derivation).
 
 For two-group comparisons --- whether binomial ($\theta_1 - \theta_2$) or continuous
 ($\mu_1 - \mu_2$) --- the standard error of the difference serves as the precision
-metric, enabling sequential A/B testing under the same HDI+ROPE decision framework.
+metric, enabling sequential A/B testing under the same HDI+ROPE decision framework
+\citep{kruschke2013}.
+% \citet{kruschke2013}: Kruschke's BEST paper introduces the HDI+ROPE framework for
+% two-group comparisons of proportions and means, making it the primary reference for
+% extending the HDI+ROPE decision rule to the two-group setting discussed here.
 For the binomial case with conjugate Beta posteriors, the posterior of the difference
-can be evaluated by drawing samples from the two independent Beta distributions, without
-requiring full MCMC\@. For the continuous case, Welch's two-sample $t$-test provides an
-analytical expression for the standard error of the difference, applicable when sample
-sizes are large enough for the CLT approximation to hold.
+can be evaluated by direct i.i.d.\ sampling from each Beta distribution separately,
+without Markov Chain Monte Carlo (MCMC) \citep{gelman2013bayesian}.
+% \citet{gelman2013bayesian}: BDA3 (Chapter 2/3) is the standard reference for
+% deriving posterior quantities by direct Monte Carlo simulation. Cited here because
+% it supports drawing i.i.d. samples from independent Beta posteriors to obtain the
+% difference distribution exactly, without requiring a Markov chain.
+For the continuous case, under a weakly informative prior the posterior of
+$\mu_1 - \mu_2$ converges to the frequentist sampling distribution by the
+Bernstein--von Mises theorem \citep{gelman2013bayesian}, so the standard error from
+Welch's approximation provides a reliable surrogate for the posterior HDI width when
+samples are of moderate size or larger.
+% \citet{gelman2013bayesian}: BDA3 also covers the Bernstein--von Mises theorem and
+% the conditions under which posteriors converge to the frequentist sampling distribution
+% under weakly informative priors (Chapter 4), justifying the use of Welch's standard
+% error as a surrogate for the posterior HDI width.
 
 A practical advantage of the HDI+ROPE framework over frequentist approaches concerns
 multiple comparisons. In NHST, conducting several tests simultaneously inflates the
@@ -35,8 +51,8 @@ hypothesised data-generating distribution (from theory, pilot data, or prior res
 one simulates experiments and asks how often the precision goal $\omega_{\rm goal}$ is
 achieved within the budget $N_{\rm max}$.
 This is precisely what the analytical formula for $N_{\rm goal}$
-(Equation~\ref{eq:pitg_stop_iteration}) provides as a closed-form approximation.
-\textit{Retrospective} power analysis uses the posterior from already-collected data as
+(Equation~\ref{eq:pitg_stop_iteration}) provides as a closed-form approximation for the
+minimum required sample size. \textit{Retrospective} power analysis uses the posterior from already-collected data as
 the hypothetical data generator to ask whether the completed study was sufficiently
 powered. In NHST this quantity is directly determined by the p-value and therefore adds
 no new information beyond it; in the Bayesian setting it can reveal the probability of
@@ -48,14 +64,24 @@ posterior as the prior for the follow-up, but is difficult to operationalise in 
 which has no principled access to a posterior-derived data generator.
 
 A recurring concern about PitG --- and by extension ePitG --- is that the precision
-requirement feels too demanding in practice. Researchers frequently underestimate the
-noise in their measurements and are consequently surprised by the sample sizes that
+requirement feels too demanding in practice. 
+Researchers frequently underestimate the noise in their measurements and are consequently surprised by the sample sizes that
 $\omega_{\rm goal}$ implies (J.K.\ Kruschke, pers.\ comm., 2022). This is not a flaw
 in the method but a form of epistemic honesty: imprecise posteriors produce inconclusive
 results regardless of the algorithm applied; ePitG simply refuses to declare a verdict
 until the posterior is genuinely informative. Setting $\omega_{\rm goal}$ thus forces
 realistic planning rather than concealing underpowerment behind a false positive or a
-silently inconclusive stop. We defer a full treatment of prior selection, noting that informative priors, where
+silently inconclusive stop. 
+
+This makes the method most attractive when
+precision is a critical concern and the budget is sufficient to meet it (provide examples
+perhaps a/b testing when data collection is cheap and other examples).
+For other practical settings where the required sample size is prohibitive, the
+precision-based framework is useful for earnest interpretation what may and may not
+be achieved with a limited budget.
+
+One option to increase signal with a liited budget is to set infromative priors.
+We defer a full treatment of prior selection, noting that informative priors, where
 available and reliable, offer a practical mitigation by contributing effective
 pseudo-observations that narrow the starting HDI width and lower the threshold
 sample size.
@@ -97,4 +123,3 @@ planned minimum underestimates actual need.
 In all settings, $N_{\rm goal}(\theta_{\rm null})$ provides a useful budget floor
 and $N_{\rm max}$ should reflect the researcher's resources beyond it.
 
-TODO: reference app
