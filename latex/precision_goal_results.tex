@@ -269,6 +269,23 @@ the HDI's position relative to the ROPE, not on $\hat{\theta}$; a bias in $\hat{
 does not invalidate the decision so long as the HDI falls cleanly within (or outside)
 the ROPE.
 
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=1\textwidth]{success_by_truth_conclusive.png}
+  \caption{Sample proportion $\hat{\theta}(N_{\rm stop})$ at the stop iteration as a
+  function of $\theta_{\rm true}$, for conclusive experiments only (subsets of $M=2{,}000$,
+  $\theta_{\rm null}=0.5$, $\omega_{\rm goal}=0.08$).
+  \textit{Colors}: red: HDI+ROPE; blue: PitG; green: ePitG.
+  \textit{Horizontal dotted lines}: ROPE boundaries.
+  \textit{Vertical dashed line}: ${\rm ROPE}_{\rm max}$.
+  \textit{Left}: interquartile range $\hat{\theta}_{\rm 25\%}$--$\hat{\theta}_{\rm 75\%}$
+  of $\hat{\theta}(N_{\rm stop})$.
+  \textit{Diagonal line}: parity line $\hat{\theta}=\theta_{\rm true}$.
+  \textit{Right}: median bias $\hat{\theta}_{\rm 50\%}-\theta_{\rm true}$.}
+  \label{fig:success_by_truth_conclusive}
+\end{figure}
+
 HDI+ROPE's $\hat{\theta}$ bias is therefore more telling as a symptom of its lack of a
 precision requirement than as a decision-quality metric. At $\theta_{\rm true}=0.5$,
 all three algorithms show near-zero bias, as expected from the symmetry of the fair coin
@@ -290,71 +307,10 @@ experiments, ePitG decision accuracy exceeds PitG's at every $\theta_{\rm true}$
 
 The preceding analysis has shown that ePitG is decisively superior to PitG
 near and within the ROPE, at the cost of a larger median $N_{\rm stop}$.
-Figure~\ref{fig:stop_iterations_by_truth_conclusive} quantifies this cost by showing
-$N_{\rm stop}$ statistics for conclusive experiments across $\theta_{\rm true}$,
-restricted to conclusive outcomes since the stop iteration of inconclusive experiments
-is not informative. The left column uses $\theta_{\rm null}=0.5$ (the fair coin setup
-of Section~\ref{sec:fair_coin}); the right uses $\theta_{\rm null}=0.7$ to demonstrate
-generality. In both columns the dotted curve is the theoretical minimum stop iteration
-$N_{\rm goal}(\theta_{\rm true}, \omega_{\rm goal})$ (Equation~\ref{eq:pitg_stop_iteration}),
-which reflects what nature dictates given the true parameter. The horizontal dashed line
-is $N_{\rm goal}(\theta_{\rm null}, \omega_{\rm goal})$, the sample size a researcher
-would plan in advance knowing only $\theta_{\rm null}$.
-
-\begin{figure}[h!]
-  \centering
-  \includegraphics[width=1\textwidth]{success_by_truth_conclusive.png}
-  \caption{Sample proportion $\hat{\theta}(N_{\rm stop})$ at the stop iteration as a
-  function of $\theta_{\rm true}$, for conclusive experiments only (subsets of $M=2{,}000$,
-  $\theta_{\rm null}=0.5$, $\omega_{\rm goal}=0.08$).
-  \textit{Colors}: red: HDI+ROPE; blue: PitG; green: ePitG.
-  \textit{Horizontal dotted lines}: ROPE boundaries.
-  \textit{Vertical dashed line}: ${\rm ROPE}_{\rm max}$.
-  \textit{Left}: interquartile range $\hat{\theta}_{\rm 25\%}$--$\hat{\theta}_{\rm 75\%}$
-  of $\hat{\theta}(N_{\rm stop})$.
-  \textit{Diagonal line}: parity line $\hat{\theta}=\theta_{\rm true}$.
-  \textit{Right}: median bias $\hat{\theta}_{\rm 50\%}-\theta_{\rm true}$.}
-  \label{fig:success_by_truth_conclusive}
-\end{figure}
-
-HDI+ROPE (top panels) shows distinctly different behaviour inside and outside the ROPE.
-Within the ROPE, $N_{\rm stop}$ loosely tracks $N_{\rm goal}(\theta_{\rm true})$, but
-with a wide IQR reflecting the absence of a precision criterion. Outside the ROPE,
-$N_{\rm stop}$ falls well below $N_{\rm goal}(\theta_{\rm true})$: HDI+ROPE correctly
-rejects $\theta_{\rm null}$ much faster than precision-based methods, but does so on
-the basis of imprecise posteriors, producing the strong $\hat{\theta}$ bias documented
-in Figure~\ref{fig:success_by_truth_conclusive}.
-
-PitG (middle panels) stops tightly around $N_{\rm goal}(\theta_{\rm true})$ by design,
-making it the natural reference for understanding the precision cost. The contrast with
-the planned quantity $N_{\rm goal}(\theta_{\rm null})$ (horizontal dashed line) reveals
-an important asymmetry. Because $N_{\rm goal}(\theta)$ is maximised at $\theta=0.5$ and
-decreases as $\theta$ moves towards $0$ or $1$, the direction of the gap between the
-two quantities depends on where $\theta_{\rm true}$ lies relative to $\theta_{\rm null}$.
-
-For $\theta_{\rm null}=0.5$ (left panels), any deviation of $\theta_{\rm true}$ from
-$0.5$ implies $N_{\rm goal}(\theta_{\rm true}) < N_{\rm goal}(\theta_{\rm null})$:
-the researcher's planned budget of 599 samples is a conservative upper bound, and
-experiments stop earlier whenever the truth differs from the null.
-
-For $\theta_{\rm null}=0.7$ (right panels), the picture is asymmetric. When
-$\theta_{\rm true}>\theta_{\rm null}$ (further from $0.5$), $N_{\rm goal}(\theta_{\rm true})<
-N_{\rm goal}(\theta_{\rm null})$ and experiments again stop sooner than planned.
-When $\theta_{\rm true}<\theta_{\rm null}$ (closer to $0.5$), however,
-$N_{\rm goal}(\theta_{\rm true})>N_{\rm goal}(\theta_{\rm null}=0.7)\approx 503$:
-the researcher's planned budget underestimates the samples required, and
-$N_{\rm goal}(\theta_{\rm null})$ should be treated as a lower bound rather than
-an upper one. In practice, the researcher should plan a budget floor of
-$N_{\rm goal}(\theta_{\rm null})$ and set $N_{\rm max}$ according to their resources
-(here $N_{\rm max}=1{,}500$).
-
-ePitG (bottom panels) has $N_{\rm stop}$ equal to or larger than PitG's within
-the ROPE and in the vicinity of its boundaries, the extra iterations being precisely
-what purchases the higher conclusiveness seen in Figure~\ref{fig:conclusiveness_rates}.
-Once $\theta_{\rm true}$ is far enough from the ROPE, ePitG converges to PitG and
-both stop at $N_{\rm goal}(\theta_{\rm true})$.
-
-
+Figure~\ref{fig:stop_iterations_by_truth_conclusive} quantifies this cost for all three
+algorithms, restricting to conclusive outcomes since the stop iteration of inconclusive
+experiments is not informative; including HDI+ROPE also illustrates why the precision
+requirement matters.
 
 \begin{figure}[h!]
   \centering
@@ -373,6 +329,45 @@ both stop at $N_{\rm goal}(\theta_{\rm true})$.
   \label{fig:stop_iterations_by_truth_conclusive}
 \end{figure}
 
+HDI+ROPE shows distinctly different behaviour inside and outside the ROPE.
+Within the ROPE, $N_{\rm stop}$ loosely tracks $N_{\rm goal}(\theta_{\rm true})$, but
+with a wide IQR reflecting the absence of a precision criterion. Outside the ROPE,
+$N_{\rm stop}$ falls well below $N_{\rm goal}(\theta_{\rm true})$: HDI+ROPE correctly
+rejects $\theta_{\rm null}$ much faster than precision-based methods, but does so on
+the basis of imprecise posteriors, producing the strong $\hat{\theta}$ bias seen in
+cf.\ Figure~\ref{fig:success_by_truth_conclusive}.
+
+PitG stops tightly around $N_{\rm goal}(\theta_{\rm true})$ by design, making it the
+natural reference for understanding the precision cost. The contrast with the planned
+quantity $N_{\rm goal}(\theta_{\rm null})$ reveals an important asymmetry: because
+$N_{\rm goal}(\theta)$ is maximised at $\theta=0.5$ and decreases as $\theta$ moves
+towards $0$ or $1$, the direction of the gap depends on where $\theta_{\rm true}$ lies
+relative to $\theta_{\rm null}$.
+
+For $\theta_{\rm null}=0.5$, any deviation of $\theta_{\rm true}$ from $0.5$ implies
+$N_{\rm goal}(\theta_{\rm true}) < N_{\rm goal}(\theta_{\rm null})$: the planned budget
+of 599 samples is a conservative upper bound, and experiments stop earlier whenever
+the truth differs from the null.
+
+For $\theta_{\rm null}=0.7$, the picture is asymmetric. When $\theta_{\rm true}>
+\theta_{\rm null}$ (further from $0.5$), $N_{\rm goal}(\theta_{\rm true})<
+N_{\rm goal}(\theta_{\rm null})$ and experiments stop sooner than planned. When
+$\theta_{\rm true}<\theta_{\rm null}$ (closer to $0.5$), however,
+$N_{\rm goal}(\theta_{\rm true})>N_{\rm goal}(\theta_{\rm null}=0.7)\approx 503$:
+the planned budget underestimates the samples required, and
+$N_{\rm goal}(\theta_{\rm null})$ acts as a lower bound rather than an upper one.
+
+In general, $N_{\rm goal}(\theta_{\rm null})$ serves as the researcher's advance
+planning estimate: a conservative upper bound when $\theta_{\rm null}$ lies at the
+precision maximum (e.g.\ $\theta_{\rm null}=0.5$), and a floor otherwise.
+The researcher should set $N_{\rm max}$ according to their resources, with
+$N_{\rm goal}(\theta_{\rm null})$ as the baseline (here $N_{\rm max}=1{,}500$).
+
+ePitG's $N_{\rm stop}$ equals or exceeds PitG's within the ROPE and in the vicinity
+of its boundaries, the extra iterations being precisely what accounts for the higher
+conclusiveness seen in Figure~\ref{fig:conclusiveness_rates}. Once $\theta_{\rm true}$
+is far enough from the ROPE, ePitG converges to PitG and both stop at
+$N_{\rm goal}(\theta_{\rm true})$.
 
 Figure~\ref{fig:stop_conclusiveness_ratios} places the ePitG--PitG trade-off in direct
 comparison by overlaying the ratio of conclusiveness rates
