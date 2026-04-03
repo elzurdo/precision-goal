@@ -29,6 +29,52 @@ samples are of moderate size or larger.
 % under weakly informative priors (Chapter 4), justifying the use of Welch's standard
 % error as a surrogate for the posterior HDI width.
 
+ePitG operates under a different philosophy from classical sequential methods.
+Group sequential designs \citep{jennison2000} control the familywise Type~I error rate
+across interim analyses via alpha-spending functions, and are therefore tied to the
+number and timing of planned looks.
+ePitG requires no such correction, since the Bayesian posterior accounts for all
+accumulated data without reference to the stopping intention.
+Closest in spirit among Bayesian sequential designs is Bayes Factor Design Analysis
+(BFDA) \citep{schonbrodt2018}, which plans sample size to achieve a target Bayes Factor
+with specified probability.
+% \citet{schonbrodt2018}: Sch\"onbrodt \& Wagenmakers (2018) introduce BFDA as the
+% natural Bayesian sequential counterpart to power analysis: it targets evidential
+% strength (Bayes Factor) rather than posterior precision, making it complementary to
+% rather than competing with ePitG.
+The key distinction is that BFDA targets evidential strength (ratio of marginal
+likelihoods) whereas ePitG targets posterior precision; the two are complementary,
+and a design requiring both a conclusive HDI+ROPE verdict and a minimum Bayes Factor
+is a natural extension.
+
+A practical advantage worth stating explicitly is that, for models with conjugate or
+tractable posteriors --- including all settings studied or discussed in this paper ---
+ePitG requires no MCMC at runtime.
+For Bernoulli data the posterior is a Beta distribution updated in closed form after
+each observation, and the HDI is computed analytically.
+The entire algorithm reduces to a short loop requiring only standard statistical
+functions, with no specialist probabilistic programming software.
+This low implementation barrier makes ePitG immediately accessible to any analyst
+working in Python, R, or a spreadsheet environment.
+Non-conjugate priors or hierarchical models would require MCMC, but such settings
+fall outside the scope of the present work.
+% More precisely, the no-MCMC claim holds case by case as follows:
+% - Single-group Bernoulli (this paper): conjugate Beta posterior, fully analytical
+%   HDI; no sampling of any kind needed.
+% - Single-group continuous (conjugate normal prior): normal or Student-t posterior,
+%   fully analytical; no MCMC needed.
+% - Two-group binomial: no closed form for the difference of two Betas, but
+%   direct i.i.d. Monte Carlo suffices (draw from Beta_1, draw from Beta_2, subtract);
+%   this is plain Monte Carlo, not a Markov chain.
+% - Two-group continuous (weakly informative prior): by the Bernstein--von Mises
+%   theorem the posterior converges to a normal, so Welch's standard error gives the
+%   HDI width without sampling.
+% - Non-conjugate informative priors: MCMC would be required; this case is deferred
+%   to future work.
+% - Hierarchical models: MCMC required; also out of scope here.
+
+These implementation properties complement the broader methodological advantages of
+the HDI+ROPE framework.
 A practical advantage of the HDI+ROPE framework over frequentist approaches concerns
 multiple comparisons. In NHST, conducting several tests simultaneously inflates the
 Type~I error rate, requiring corrections (e.g.\ Bonferroni) that reduce the power of
@@ -104,6 +150,31 @@ valuable diagnostic role: $N_{\rm goal}$ makes explicit what precision is achiev
 within the available budget, enabling an honest assessment of what conclusions the data
 can and cannot support.
 
+The ROPE is the most consequential and subjective design input in the framework.
+It should be determined from domain knowledge rather than from the data ---
+a requirement that forces the researcher to commit to a practically meaningful
+effect-size threshold before observing outcomes \citep{kruschke2018}.
+% \citet{kruschke2018}: Kruschke's 2018 AMPPS paper is the primary reference for
+% ROPE specification in the HDI+ROPE framework, emphasising that the ROPE encodes
+% a pre-specified practical equivalence threshold and must be justified from domain
+% knowledge rather than chosen to suit the data.
+In clinical research the Minimal Clinically Important Difference (MCID) provides a
+principled basis \citep{jaeschke1989}; in bioequivalence testing, regulatory guidelines
+define the permissible deviation corridor \citep{schuirmann1987}; in industrial quality
+control, engineering tolerances serve the same role.
+When no domain standard exists, sensitivity analyses across a range of ROPE widths
+are recommended before committing to a single value \citep{lakens2018}.
+
+The joint operating characteristics of ePitG --- its false-accept and false-reject
+rates as a function of $\theta_{\rm true}$ --- are determined by the interplay of the
+ROPE, $\omega_{\rm goal}$, and $N_{\rm max}$, and can be assessed prospectively.
+As the Results demonstrate, false-accept rates are negligible except when
+$\theta_{\rm true}$ lies within the ROPE boundary region, and false-reject rates are
+suppressed by the precision requirement.
+A researcher can therefore calibrate the operating characteristics in advance by
+verifying via the analytical formula or simulation that the planned $N_{\rm max}$
+achieves the target conclusiveness rate at the effect sizes of interest.
+
 One option to increase signal with a limited budget is to incorporate informative priors.
 We defer a full treatment of prior selection to future work, noting that informative
 priors, where available and well-justified, offer a practical mitigation by contributing
@@ -167,58 +238,6 @@ small-sample settings or for highly skewed likelihoods.
 Third, the flat prior used throughout contributes no pseudo-observations; an analyst
 who encodes a materially incorrect informative prior may bias the posterior in a way
 that the precision criterion alone cannot detect.
-
-The ROPE is the most consequential and subjective design input in the framework.
-It should be determined from domain knowledge rather than from the data ---
-a requirement that forces the researcher to commit to a practically meaningful
-effect-size threshold before observing outcomes \citep{kruschke2018}.
-% \citet{kruschke2018}: Kruschke's 2018 AMPPS paper is the primary reference for
-% ROPE specification in the HDI+ROPE framework, emphasising that the ROPE encodes
-% a pre-specified practical equivalence threshold and must be justified from domain
-% knowledge rather than chosen to suit the data.
-In clinical research the Minimal Clinically Important Difference (MCID) provides a
-principled basis \citep{jaeschke1989}; in bioequivalence testing, regulatory guidelines
-define the permissible deviation corridor \citep{schuirmann1987}; in industrial quality
-control, engineering tolerances serve the same role.
-When no domain standard exists, sensitivity analyses across a range of ROPE widths
-are recommended before committing to a single value \citep{lakens2018}.
-
-The joint operating characteristics of ePitG --- its false-accept and false-reject
-rates as a function of $\theta_{\rm true}$ --- are determined by the interplay of the
-ROPE, $\omega_{\rm goal}$, and $N_{\rm max}$, and can be assessed prospectively.
-As the Results demonstrate, false-accept rates are negligible except when
-$\theta_{\rm true}$ lies within the ROPE boundary region, and false-reject rates are
-suppressed by the precision requirement.
-A researcher can therefore calibrate the operating characteristics in advance by
-verifying via the analytical formula or simulation that the planned $N_{\rm max}$
-achieves the target conclusiveness rate at the effect sizes of interest.
-
-ePitG operates under a different philosophy from classical sequential methods.
-Group sequential designs \citep{jennison2000} control the familywise Type~I error rate
-across interim analyses via alpha-spending functions, and are therefore tied to the
-number and timing of planned looks.
-ePitG requires no such correction, since the Bayesian posterior accounts for all
-accumulated data without reference to the stopping intention.
-Closest in spirit among Bayesian sequential designs is Bayes Factor Design Analysis
-(BFDA) \citep{schonbrodt2018}, which plans sample size to achieve a target Bayes Factor
-with specified probability.
-% \citet{schonbrodt2018}: Sch\"onbrodt \& Wagenmakers (2018) introduce BFDA as the
-% natural Bayesian sequential counterpart to power analysis: it targets evidential
-% strength (Bayes Factor) rather than posterior precision, making it complementary to
-% rather than competing with ePitG.
-The key distinction is that BFDA targets evidential strength (ratio of marginal
-likelihoods) whereas ePitG targets posterior precision; the two are complementary,
-and a design requiring both a conclusive HDI+ROPE verdict and a minimum Bayes Factor
-is a natural extension.
-
-A practical advantage worth stating explicitly is that ePitG requires no MCMC at
-runtime.
-For Bernoulli data the posterior is a Beta distribution updated in closed form after
-each observation, and the HDI is computed analytically.
-The entire algorithm reduces to a short loop requiring only standard statistical
-functions, with no specialist probabilistic programming software.
-This low implementation barrier makes ePitG immediately accessible to any analyst
-working in Python, R, or a spreadsheet environment.
 
 The extensions to continuous outcomes and two-group comparisons described above are
 analytic arguments rather than empirically validated results.
