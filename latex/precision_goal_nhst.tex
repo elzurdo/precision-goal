@@ -1,0 +1,83 @@
+\section{Regarding NHST}\label{app:nhst}
+Throughout this study the focus was on three methods that use posterior information
+to not only reject the null hypothesis but also accept it, or declare an inconclusive
+result.
+
+In contrast, null hypothesis significance testing (NHST) cannot accept the null
+hypothesis. A p-value measures the probability of observing data at least as extreme
+as those obtained \emph{assuming the null is true}, $P(\mathrm{data}\mid H_0)$,
+not the probability that the null is true given the data,
+$P(H_0\mid\mathrm{data})$
+% [cohen1994] Cohen (1994), ``The earth is round (p < .05)'', American Psychologist
+% 49(12):997--1003. The canonical demonstration that p-values cannot be read as
+% P(H0|data). Directly supports the claim that NHST carries no null-acceptance
+% information.
+%
+% [wasserstein2016] Wasserstein & Lazar (2016), ``The ASA Statement on p-Values:
+% Context, Process, and Purpose'', The American Statistician 70(2):129--133.
+% Official ASA position: ``A p-value does not provide a good measure of evidence
+% regarding a model or hypothesis.'' Adds broad authoritative institutional backing.
+\citep{cohen1994, wasserstein2016}.
+In NHST, at each iteration the experiment stops and $\theta_{\rm null}$ is rejected
+whenever the p-value falls below the false positive rate threshold $\alpha_{\rm FPR}$.
+Since the decision rule is based solely on this single threshold, data that fail to
+trigger rejection yield an inconclusive result rather than evidence in favour of the null.
+
+Using the same fair coin setup ($\theta_{\rm true}=\theta_{\rm null}=0.5$) described
+in the Methods section (\ref{sec:methods}), we apply NHST with $\alpha_{\rm FPR}=0.05$
+as the stopping and decision criterion. A reliable sequential method should maintain a
+low rejection rate throughout when the null hypothesis is true: as demonstrated in
+Section~\ref{sec:fair_coin}, HDI+ROPE's rejection rate quickly asymptotes near 6\% and
+both precision-based methods maintain a zero rejection rate.
+
+Figure~\ref{fig:fair_decisions_nhst} shows the opposite for NHST: the rejection rate
+(red solid) grows steadily over time, while the inconclusive proportion (gray dashed)
+decreases. To make this trend visible, the simulation is extended to
+$N_{\rm max}=30{,}000$ iterations, well beyond the $N_{\rm max}=1{,}500$ used in
+the main analysis, since false rejections accumulate slowly and the growing trend
+would not be apparent at shorter horizons.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=1\textwidth]{fair_experiment_decision_rates_nhst.png}
+  \caption{Cumulative decision rates across iterations for $M=50$ fair coin experiments
+  ($\theta_{\rm true}=\theta_{\rm null}=0.5$, $\alpha_{\rm FPR}=0.05$),
+  analogous to Figure~\ref{fig:fair_decisions} but using NHST as the stopping and
+  decision criterion, extended to $N_{\rm max}=30{,}000$ iterations.
+  At each iteration $N$, the plotted proportions count all experiments that reached
+  a decision at or before $N$; their sum is 100\% at every point.
+  \textit{Line styles}:
+  red solid: reject $\theta_{\rm null}$;
+  gray dashed: inconclusive.
+  The smaller experiment count ($M=50$ vs.\ $2{,}000$) reflects the higher
+  computational cost of evaluating p-values relative to HDI-based criteria,
+  which also accounts for the stepped appearance of the curves.}
+  \label{fig:fair_decisions_nhst}
+\end{figure}
+
+As pointed out by \citet{kruschke2015doing}, as evidence accumulates under NHST
+the probability of observing a sample extreme enough to trigger rejection grows without
+bound --- even when the null hypothesis is true. To paraphrase: ``with infinite
+peeking, the false positive rate approaches 100\%.'' This is because the stopping
+rule is tied directly to the decision rule with no reference to an effect size: the
+more data collected, the more likely an extreme sample will appear. Continuously
+monitoring the data and applying a fixed p-value threshold therefore leads to an
+inflated Type~I (false positive) error rate, a manifestation of the multiple-testing
+problem.
+
+\section{Regarding Bayes Factors}\label{app:app_bayes_factors}
+
+The Bayes Factors is another popular method that uses the posterior to reject or accept
+the null hyothesis, but as opposed to the HDI+ROPE method and the precision based methods
+does not involve regards to the effect size, the ROPE.
+The Bayes Factor is a ratio of the likelihood of the data under the null hypothesis to
+the likelihood of the data under the alternative hypothesis,
+and it can be used to quantify evidence for or against the null hypothesis.
+However, it does not provide a direct measure of precision or a way to set a precision goal,
+which is a key feature of the methods discussed in this paper.
+
+
+TODO: continue from here
+
+TODO: replicate the Bayes Factor of Figure 18.1 of https://ethanweed.github.io/pythonbook/06.01-bayes.html
+as well as that in 13.6 of \cite{kruschke2015doing}.
