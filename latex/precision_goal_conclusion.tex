@@ -13,8 +13,8 @@ are not required to coincide.
 Moreover, unlike NHST, which can only reject or fail to reject the null,
 the HDI+ROPE decision rule enables positive \textit{acceptance} of the null
 when the entire HDI falls within the ROPE, a critical advantage for confirmatory
-research areas such as bioequivalence, safety testing, and software regression testing
-(verifying that a new deployment has not degraded existing behaviour known as do-no-harm).
+research areas such as bioequivalence, safety testing, and software regression testing.
+% do-no-harm
 
 We have proposed Enhanced Precision is the Goal (ePitG), which re-couples the two
 criteria conservatively: data collection continues until the HDI is simultaneously
@@ -41,12 +41,16 @@ for the required sample size. Because $\theta(1-\theta)$ is maximised at $\theta
 this minimum is largest for the fair-coin null, making it a safe worst-case planning
 ceiling. For other nulls, $\theta_{\rm true}$ may lie closer to $0.5$ than
 $\theta_{\rm null}$ does, raising the actual minimum above the planned one;
-$N_{\rm max}$ should be set generously to cover this (see Discussion).
+$N_{\rm max}$ should be set generously to cover this.
 
 The framework extends naturally to single-group continuous data and two-group
-comparisons (A/B testing); the adaptations and sample-size planning equations are
+comparisons (e.g, A/B testing); the adaptations and sample-size planning equations are
 detailed in Appendix~\ref{app:extensions}, and a full empirical evaluation across
 these settings is left for future work.
+ePitG is the method of choice whenever a conclusive verdict --- acceptance, rejection,
+or an honest inconclusive --- is required and the cost per observation is low enough
+to reach $\omega_{\rm goal}$; the closed-form $N_{\rm goal}$ makes this judgement
+transparent before any data are collected.
 To support adoption, all algorithms are implemented in openly available
 code\footnote{\textcolor{red}{\textbf{[TODO: insert repo URL]}}
 \href{https://github.com/placeholder/precision-goal}{https://github.com/placeholder/precision-goal}},
