@@ -43,15 +43,10 @@ ceiling. For other nulls, $\theta_{\rm true}$ may lie closer to $0.5$ than
 $\theta_{\rm null}$ does, raising the actual minimum above the planned one;
 $N_{\rm max}$ should be set generously to cover this (see Discussion).
 
-The framework extends naturally beyond the single-group binomial setting studied here.
-The HDI+ROPE decision rule and the precision stopping criterion apply directly to
-continuous outcomes by substituting $\sigma^2$ for $\theta(1-\theta)$, and to
-two-group comparisons (A/B testing) by using the standard error of the difference as
-the precision metric. Compatibility with conjugate posteriors makes the approach
-computationally lightweight; pre-registration of $\omega_{\rm goal}$, the ROPE, and
-$N_{\rm max}$ before data collection aligns naturally with open-science standards and
-eliminates the researcher degrees of freedom that drive selective reporting.
-A full empirical evaluation across these settings is left for future work.
+The framework extends naturally to single-group continuous data and two-group
+comparisons (A/B testing); the adaptations and sample-size planning equations are
+detailed in Appendix~\ref{app:extensions}, and a full empirical evaluation across
+these settings is left for future work.
 To support adoption, all algorithms are implemented in openly available
 code\footnote{\textcolor{red}{\textbf{[TODO: insert repo URL]}}
 \href{https://github.com/placeholder/precision-goal}{https://github.com/placeholder/precision-goal}},

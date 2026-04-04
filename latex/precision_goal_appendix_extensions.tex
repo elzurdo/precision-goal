@@ -1,0 +1,81 @@
+\section{Extensions to Continuous and Two-Group Settings}\label{app:extensions}
+
+The HDI+ROPE precision-goal framework presented in the main text for single-group
+Bernoulli data generalises to other observational settings.
+This appendix outlines the key adaptations for single-group continuous data and
+two-group comparisons (both binomial and continuous), together with the corresponding
+sample-size planning equations.
+Empirical validation of these extensions is left for future work.
+
+\subsection*{Single-Group Continuous Data}
+
+For single-group continuous data, the posterior HDI width of the mean $\mu$ replaces
+the binomial HDI width as the precision metric.
+The precision stopping criterion (Equation~\ref{eq:pitg_stop_iteration}) generalises
+by substituting $\sigma^2$ for $\theta(1-\theta)$; in practice $\sigma^2$ is
+unknown and replaced by the sample variance $s^2$.
+The expected stop iteration (derived in Appendix~\ref{app:expected_stop}) is
+\begin{equation}\label{eq:ngoal_continuous_ext}
+    N_{\rm goal} \approx \frac{4 z_{*}^{2}\,\sigma^{2}}{\omega_{\rm goal}^{2}},
+\end{equation}
+with $\sigma^2$ replaced by $s^2$ when the population variance is unknown.
+(This reproduces Equation~\ref{eq:expected_stop_iteration_mean} from
+Appendix~\ref{app:expected_stop} for convenience.)
+
+\subsection*{Two-Group Comparisons}
+
+For two-group comparisons --- whether binomial ($\theta_1 - \theta_2$) or continuous
+($\mu_1 - \mu_2$) --- the standard error of the difference serves as the precision
+metric, enabling sequential A/B testing under the same HDI+ROPE decision framework
+\citep{kruschke2013}.
+% \citet{kruschke2013}: Kruschke's BEST paper introduces the HDI+ROPE framework for
+% two-group comparisons of proportions and means, making it the primary reference for
+% extending the HDI+ROPE decision rule to the two-group setting discussed here.
+For the binomial case with conjugate Beta posteriors, the posterior of the difference
+can be evaluated by direct i.i.d.\ sampling from each Beta distribution separately,
+without Markov Chain Monte Carlo (MCMC) \citep{gelman2013bayesian}.
+% \citet{gelman2013bayesian}: BDA3 (Chapter 2/3) is the standard reference for
+% deriving posterior quantities by direct Monte Carlo simulation. Cited here because
+% it supports drawing i.i.d. samples from independent Beta posteriors to obtain the
+% difference distribution exactly, without requiring a Markov chain.
+For the continuous case, under a weakly informative prior the posterior of
+$\mu_1 - \mu_2$ converges to the frequentist sampling distribution by the
+Bernstein--von Mises theorem \citep{gelman2013bayesian}, so the standard error from
+Welch's approximation provides a reliable surrogate for the posterior HDI width when
+samples are of moderate size or larger.
+% \citet{gelman2013bayesian}: BDA3 also covers the Bernstein--von Mises theorem and
+% the conditions under which posteriors converge to the frequentist sampling distribution
+% under weakly informative priors (Chapter 4), justifying the use of Welch's standard
+% error as a surrogate for the posterior HDI width.
+
+\subsubsection*{Two-Group Binomial}
+
+With independent Beta posteriors for $\theta_1$ and $\theta_2$, the HDI width of
+the difference $\theta_1 - \theta_2$ is approximated via the standard error
+\begin{equation}\label{eq:se_diff_binomial}
+    \text{SE}(\hat\theta_1 - \hat\theta_2) \approx
+    \sqrt{\frac{\theta_1(1-\theta_1)}{N_1} + \frac{\theta_2(1-\theta_2)}{N_2}}.
+\end{equation}
+Setting the HDI width $2z_* \cdot \text{SE} = \omega_{\rm goal}$ and solving for
+equal group sizes $N_1 = N_2 = N$ gives the expected stop iteration:
+\begin{equation}\label{eq:ngoal_two_group_binomial}
+    % [TODO: derive N_goal for two-group binomial following Appendix~\ref{app:expected_stop};
+    %  natural result for equal groups:
+    %  N_goal \approx 4 z_*^2 [\theta_1(1-\theta_1) + \theta_2(1-\theta_2)] / omega_goal^2]
+    \textcolor{red}{\textbf{[TODO: $N_{\rm goal}$ for two-group binomial (equal groups)]}}
+\end{equation}
+
+\subsubsection*{Two-Group Continuous}
+
+Following Welch's approximation, the standard error of the difference of means is
+\begin{equation}\label{eq:se_diff_continuous}
+    \text{SE}(\hat\mu_1 - \hat\mu_2) \approx
+    \sqrt{\frac{\sigma_1^2}{N_1} + \frac{\sigma_2^2}{N_2}}.
+\end{equation}
+For equal group sizes $N_1 = N_2 = N$, the expected stop iteration becomes:
+\begin{equation}\label{eq:ngoal_two_group_continuous}
+    % [TODO: derive N_goal for two-group continuous following Appendix~\ref{app:expected_stop};
+    %  natural result for equal groups:
+    %  N_goal \approx 4 z_*^2 (\sigma_1^2 + \sigma_2^2) / omega_goal^2]
+    \textcolor{red}{\textbf{[TODO: $N_{\rm goal}$ for two-group continuous (equal groups, Welch)]}}
+\end{equation}

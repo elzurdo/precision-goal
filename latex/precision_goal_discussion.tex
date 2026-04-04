@@ -1,33 +1,7 @@
-While our focus is on single-sample hypothesis testing for a Bernoulli parameter,
-the precision-goal framework extends naturally to other settings.
-For single-group continuous data, Equation~\ref{eq:pitg_stop_iteration} generalises
-by replacing $\theta(1-\theta)$ with the population variance $\sigma^2$; in practice
-$\sigma^2$ is unknown and estimated by the sample variance $s^2$
-(see Appendix~\ref{app:expected_stop} for the derivation).
-
-For two-group comparisons --- whether binomial ($\theta_1 - \theta_2$) or continuous
-($\mu_1 - \mu_2$) --- the standard error of the difference serves as the precision
-metric, enabling sequential A/B testing under the same HDI+ROPE decision framework
-\citep{kruschke2013}.
-% \citet{kruschke2013}: Kruschke's BEST paper introduces the HDI+ROPE framework for
-% two-group comparisons of proportions and means, making it the primary reference for
-% extending the HDI+ROPE decision rule to the two-group setting discussed here.
-For the binomial case with conjugate Beta posteriors, the posterior of the difference
-can be evaluated by direct i.i.d.\ sampling from each Beta distribution separately,
-without Markov Chain Monte Carlo (MCMC) \citep{gelman2013bayesian}.
-% \citet{gelman2013bayesian}: BDA3 (Chapter 2/3) is the standard reference for
-% deriving posterior quantities by direct Monte Carlo simulation. Cited here because
-% it supports drawing i.i.d. samples from independent Beta posteriors to obtain the
-% difference distribution exactly, without requiring a Markov chain.
-For the continuous case, under a weakly informative prior the posterior of
-$\mu_1 - \mu_2$ converges to the frequentist sampling distribution by the
-Bernstein--von Mises theorem \citep{gelman2013bayesian}, so the standard error from
-Welch's approximation provides a reliable surrogate for the posterior HDI width when
-samples are of moderate size or larger.
-% \citet{gelman2013bayesian}: BDA3 also covers the Bernstein--von Mises theorem and
-% the conditions under which posteriors converge to the frequentist sampling distribution
-% under weakly informative priors (Chapter 4), justifying the use of Welch's standard
-% error as a surrogate for the posterior HDI width.
+While the present study focuses on single-group Bernoulli data, the HDI+ROPE
+precision-goal framework extends naturally to single-group continuous outcomes and
+two-group comparisons (both binomial and continuous); see Appendix~\ref{app:extensions}
+for the adaptations and corresponding sample-size planning equations.
 
 ePitG operates under a different philosophy from classical sequential methods.
 Group sequential designs \citep{jennison2000} control the familywise Type~I error rate
