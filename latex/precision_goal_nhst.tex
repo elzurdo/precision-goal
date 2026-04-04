@@ -67,17 +67,89 @@ problem.
 
 \section{Regarding Bayes Factors}\label{app:app_bayes_factors}
 
-The Bayes Factors is another popular method that uses the posterior to reject or accept
-the null hyothesis, but as opposed to the HDI+ROPE method and the precision based methods
-does not involve regards to the effect size, the ROPE.
-The Bayes Factor is a ratio of the likelihood of the data under the null hypothesis to
-the likelihood of the data under the alternative hypothesis,
-and it can be used to quantify evidence for or against the null hypothesis.
-However, it does not provide a direct measure of precision or a way to set a precision goal,
-which is a key feature of the methods discussed in this paper.
+The Bayes Factor (BF) is a widely used Bayesian measure for comparing two hypotheses.
+For a null hypothesis $H_0$ and an alternative $H_1$, the Bayes Factor in favour of
+the null is defined as the ratio of marginal likelihoods:
+\begin{equation}\label{eq:bf_definition}
+  \mathrm{BF}_{01} = \frac{p(\mathrm{data} \mid H_0)}{p(\mathrm{data} \mid H_1)}.
+\end{equation}
+A value $\mathrm{BF}_{01} > 1$ constitutes evidence in favour of $H_0$; a value
+$\mathrm{BF}_{01} < 1$ constitutes evidence against it.
+The scale proposed by \citet{jeffreys1961} and refined by \citet{kassraftery1995}
+provides conventional thresholds: $\mathrm{BF}_{01} > 3$ is typically taken as
+``substantial'' evidence for the null, and $\mathrm{BF}_{01} < 1/3$ as substantial
+evidence against it.
 
+For the Bernoulli setting with $z$ successes in $N$ trials, \citet{kruschke2015doing}
+(Chapter~13.3.2) uses a point null $H_0\colon \theta = \theta_{\rm null}$ and a uniform
+alternative $H_1\colon \theta \sim \mathrm{Beta}(1, 1)$.  The marginal likelihood under
+$H_0$ is simply $\theta_{\rm null}^{z}(1-\theta_{\rm null})^{N-z}$, and under $H_1$ it
+is the Beta--Binomial integral
+\begin{equation}\label{eq:bf_h1_marginal}
+  p(\mathrm{data} \mid H_1)
+  = \int_0^1 \theta^{z}(1-\theta)^{N-z}\,d\theta
+  = B(z+1,\, N-z+1),
+\end{equation}
+where $B(\cdot,\cdot)$ denotes the Beta function, giving the closed-form expression
+\begin{equation}\label{eq:bf_bernoulli}
+  \mathrm{BF}_{01}
+  = \frac{\theta_{\rm null}^{z}(1-\theta_{\rm null})^{N-z}}{B(z+1,\, N-z+1)}.
+\end{equation}
+The sequential stopping rule is: continue sampling until either
+$\mathrm{BF}_{01} \geq 3$ (accept $H_0$) or $\mathrm{BF}_{01} \leq 1/3$ (reject $H_0$),
+or the budget $N_{\rm max}$ is exhausted.
 
-TODO: continue from here
+\subsection*{Sequential Behaviour and Limitations}
 
-TODO: replicate the Bayes Factor of Figure 18.1 of https://ethanweed.github.io/pythonbook/06.01-bayes.html
-as well as that in 13.6 of \cite{kruschke2015doing}.
+\citet{kruschke2015doing} evaluates the operating characteristics of BF stopping
+sequentially across 1{,}000 simulated sequences of up to $N_{\rm max}=1{,}500$ flips,
+comparing it against NHST, HDI+ROPE, and PitG (his Figures~13.6 and~13.7).
+The main findings relevant to this paper are as follows.
+
+\textbf{When the null is true ($\theta_{\rm true}=\theta_{\rm null}=0.5$).}
+This is the setting shown in Kruschke's Figure~13.6 (for which  Figure~\ref{fig:fair_decisions} of this paper is analogous). 
+The BF stopping rule
+converges to an asymptotic false rejection rate (referred to as \textit{false alarm}) of just over 20\%---lower than NHST,
+which diverges to 100\%, but substantially higher than PitG and ePitG, which maintain a
+0\% false alarm rate.  The BF correctly accepts the null for the remaining sequences,
+although it can do so on the basis of precise or imprecise data indiscriminately.
+
+\textbf{When the null is false ($\theta_{\rm true}=0.65$).}
+This setting is displayed in Kruschke's Figure~13.7 (which is captured in the middle
+panel of Figure~\ref{fig:conclusiveness_rates}). 
+The BF falsely accepts the null in approximately
+40\% of sequences despite the true parameter lying outside the ROPE, a substantially
+higher false acceptance rate than either precision-based method.
+
+\textbf{Parameter estimation at the stopping point.}
+Because the BF stopping rule fires on the \emph{extremeness} of the likelihood ratio
+rather than the \emph{width} of the posterior, it can accept or reject with very little
+data.  As Kruschke's lower rows illustrate, $\hat{\theta}$ at stopping is noticeably
+biased away from $\theta_{\rm true}$ in both the accept and the reject case---more so
+than HDI+ROPE, and substantially more than PitG.  This is the fundamental problem
+identified in \citet{kruschke2015doing}: a stopping rule based on extremeness in the data
+automatically biases the sample toward extreme estimates; only a precision-based stopping
+rule guarantees near-unbiased parameter estimation.
+
+\subsection*{Key Limitations in Context}
+
+Three structural limitations follow from the BF's definition.
+
+\textit{No effect-size criterion.}  $\mathrm{BF}_{01}$ compares the point null
+$\theta = \theta_{\rm null}$ against the prior-averaged alternative.  It carries no
+information about whether the true parameter is \emph{practically} different from the
+null---a parameter value just outside the ROPE is treated identically to one that is
+far from it.  The HDI+ROPE framework addresses this explicitly by requiring the HDI to
+fall cleanly inside or outside the ROPE before a verdict is issued.
+
+\textit{Sensitivity to the alternative prior.}  $\mathrm{BF}_{01}$ depends on the
+choice of prior $p(\theta \mid H_1)$ (Equation~\ref{eq:bf_h1_marginal}).  Kruschke's
+choice of a uniform $\mathrm{Beta}(1,1)$ prior is one convention; different priors
+yield different numerical BF values and therefore different stopping points, even
+for identical data.  The HDI+ROPE stopping rule has no such ambiguity: its behaviour
+depends only on the posterior and the pre-specified ROPE and $\omega_{\rm goal}$.
+
+\textit{No precision guarantee.}  As noted above, the BF can stop early on imprecise
+posteriors.  In contrast, PitG and ePitG require the HDI width to fall below
+$\omega_{\rm goal}$ before any verdict is issued, providing a structural guarantee
+that accepted or rejected conclusions rest on adequately precise estimates.

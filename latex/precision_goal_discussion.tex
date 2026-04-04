@@ -11,15 +11,17 @@ ePitG requires no such correction, since the Bayesian posterior accounts for all
 accumulated data without reference to the stopping intention.
 Closest in spirit among Bayesian sequential designs is Bayes Factor Design Analysis
 (BFDA) \citep{schonbrodt2018}, which plans sample size to achieve a target Bayes Factor
-with specified probability.
+with specified probability --- a prospective planning use of the BF distinct from
+using the BF as a sequential stopping rule (see Appendix~\ref{app:app_bayes_factors}
+for a discussion of BF stopping and its limitations).
 % \citet{schonbrodt2018}: Sch\"onbrodt \& Wagenmakers (2018) introduce BFDA as the
 % natural Bayesian sequential counterpart to power analysis: it targets evidential
 % strength (Bayes Factor) rather than posterior precision, making it complementary to
 % rather than competing with ePitG.
 The key distinction is that BFDA targets evidential strength (ratio of marginal
-likelihoods) whereas ePitG targets posterior precision; the two are complementary,
-and a design requiring both a conclusive HDI+ROPE verdict and a minimum Bayes Factor
-is a natural extension.
+likelihoods) whereas ePitG targets posterior precision; the two are complementary
+as planning tools, and a design requiring both a conclusive HDI+ROPE verdict and a
+minimum Bayes Factor is a natural extension.
 
 A practical advantage worth stating explicitly is that, for models with conjugate or
 tractable posteriors --- including all settings studied or discussed in this paper ---
