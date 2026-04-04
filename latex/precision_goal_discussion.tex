@@ -51,55 +51,20 @@ fall outside the scope of the present work.
 
 These implementation properties complement the broader methodological advantages of
 the HDI+ROPE framework.
-A practical advantage of the HDI+ROPE framework over frequentist approaches concerns
-multiple comparisons. In NHST, conducting several tests simultaneously inflates the
-Type~I error rate, requiring corrections (e.g.\ Bonferroni) that reduce the power of
-each individual test. Frequentist confidence intervals inherit the same dependence on
-the full set of intended comparisons, since their coverage properties are tied to
-p-values. Consequently, both power and precision planning must account for the number
-of planned tests.
+Unlike frequentist approaches, where conducting multiple simultaneous tests inflates the
+Type~I error rate and requires corrections (e.g.\ Bonferroni) that reduce per-test
+power, the Bayesian posterior is not subject to this inflation: $\omega_{\rm goal}$
+and the ePitG stopping rule apply unchanged across independent simultaneous tests
+without correction \citep{gelman2012, kruschke2015doing};
+Appendix~\ref{app:multiple_comparisons} develops this point in full and discusses the
+three types of Bayesian power analysis (prospective, retrospective, and replication)
+that arise in this framework.
 
-The Bayesian posterior is not affected in this way. Because the posterior distribution
-is determined solely by the observed data and the assumed data-generating process ---
-not by the set of tests that were intended but not performed --- the power of any one
-test is unaffected by how many other comparisons are planned, provided each test uses
-an independent model \citep{gelman2012, kruschke2015doing}.
-% \citet{gelman2012}: Gelman, Hill \& Yajima (2012) is the standard journal reference
-% for the claim that Bayesian posteriors typically require no multiple-comparison
-% correction when tests are based on independent models.
-% \citet{kruschke2015doing}: DBDA2 (Chapter~11) provides the pedagogical treatment.
-The precision goal $\omega_{\rm goal}$ and the stopping rule of ePitG therefore apply
-unchanged in a multiple-testing context, without the need for correction.
-
-This freedom from multiple-comparison penalties also reshapes how power analysis is
-framed in the Bayesian setting.
-It is worth distinguishing three types of power analysis that arise in this framework
-\citep{kruschke2015doing}.
-
-\textit{Prospective} power analysis is conducted before data collection: given a
-hypothesised data-generating distribution (from theory, pilot data, or prior research),
-one simulates experiments and asks how often the precision goal $\omega_{\rm goal}$ is
-achieved within the budget $N_{\rm max}$.
-This is precisely what the analytical formula for $N_{\rm goal}$
-(Equation~\ref{eq:pitg_stop_iteration}) provides as a closed-form approximation for the
-minimum required sample size within this model; note that $N_{\rm goal}$ is a theoretical
-lower bound --- any sequential algorithm requires at least this many observations under
-ideal conditions, and ePitG may require additional samples when $\theta_{\rm true}$ lies
-near a ROPE boundary (see Section~\ref{sec:trends}).
-
-\textit{Retrospective} power analysis uses the posterior from already-collected data as
-the hypothetical data generator to ask whether the completed study was sufficiently
-powered. In NHST this quantity is directly determined by the p-value and therefore adds
-no new information beyond it \citep{hoenig2001}; in the Bayesian setting it can reveal
-the probability of achieving goals other than null rejection.
-% \citet{hoenig2001}: Hoenig \& Heisey (2001) demonstrate that observed power in NHST
-% is a 1-to-1 function of the p-value and therefore adds no information beyond it ---
-% the canonical reference for the redundancy of retrospective NHST power.
-\textit{Replication} power asks: if the experiment were repeated exactly, what is the
-probability of achieving the goal in the new study, informed by the results of the
-first? This is straightforward to compute in a Bayesian framework by using the initial
-posterior as the prior for the follow-up, but is difficult to operationalise in NHST,
-which has no principled access to a posterior-derived data generator.
+Of these, \textit{prospective} power analysis is most directly relevant to sample-size
+planning: given a hypothesised data-generating distribution, $N_{\rm goal}$
+(Equation~\ref{eq:pitg_stop_iteration}) provides a closed-form lower bound on the
+samples required to achieve $\omega_{\rm goal}$; ePitG may need additional samples when
+$\theta_{\rm true}$ lies near a ROPE boundary (see Section~\ref{sec:trends}).
 
 A recurring concern about PitG --- and by extension ePitG --- is that the precision
 requirement feels too demanding in practice. 
