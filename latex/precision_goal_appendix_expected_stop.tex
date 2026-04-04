@@ -6,6 +6,12 @@ shrinks as $N^{-1/2}$, one can predict in advance the iteration at which this
 threshold will be crossed. The derivation below uses a normal approximation to the
 posterior and is therefore intended as an analytical guide rather than an exact
 finite-sample identity.
+% Throughout, we assume unimodal, approximately symmetric posteriors, for which
+% HDI width is a natural and interpretable precision measure.
+% For multimodal posteriors, HDI width becomes ambiguous (it is unclear which mode
+% to centre on), and posterior entropy may be a more appropriate precision criterion
+% \citep{kruschke2015doing, chaloner1995, sebastiani2000}; such settings fall outside
+% the scope of the present work.
 
 \subsection*{General CLT Form}
 
