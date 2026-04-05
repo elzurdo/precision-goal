@@ -1,3 +1,10 @@
+The central finding of this paper is that ePitG resolves the tension inherent in
+PitG: requiring both precision and conclusiveness simultaneously yields a 97.7\%
+conclusiveness rate with a zero false-positive rate at $\theta_{\rm true}=\theta_{\rm null}=0.5$,
+at a median sample cost of only 4.7\% over PitG.
+The following sections place this result in methodological context, draw out its
+practical implications, and acknowledge its honest limitations.
+
 While the present study focuses on single-group Bernoulli data, the HDI+ROPE
 precision-goal framework extends naturally to single-group continuous outcomes and
 two-group comparisons (both binomial and continuous); see Appendix~\ref{app:extensions}
@@ -49,22 +56,19 @@ fall outside the scope of the present work.
 %   to future work.
 % - Hierarchical models: MCMC required; also out of scope here.
 
-These implementation properties complement the broader methodological advantages of
-the HDI+ROPE framework.
-Unlike frequentist approaches, where conducting multiple simultaneous tests inflates the
-Type~I error rate and requires corrections (e.g.\ Bonferroni) that reduce per-test
-power, the Bayesian posterior is not subject to this inflation: $\omega_{\rm goal}$
-and the ePitG stopping rule apply unchanged across independent simultaneous tests
-without correction \citep{gelman2012, kruschke2015doing};
-Appendix~\ref{app:multiple_comparisons} develops this point in full and discusses the
-three types of Bayesian power analysis (prospective, retrospective, and replication)
-that arise in this framework.
-
-Of these, \textit{prospective} power analysis is most directly relevant to sample-size
-planning: given a hypothesised data-generating distribution, $N_{\rm goal}$
+Beyond implementation convenience, the HDI+ROPE framework offers a structural
+methodological advantage over frequentist approaches: unlike NHST, where conducting
+multiple simultaneous tests inflates the Type~I error rate and requires corrections
+(e.g.\ Bonferroni) that reduce per-test power, the Bayesian posterior is unaffected ---
+$\omega_{\rm goal}$ and the ePitG stopping rule apply unchanged across independent
+simultaneous tests without correction \citep{gelman2012, kruschke2015doing}.
+For prospective sample-size planning, $N_{\rm goal}$
 (Equation~\ref{eq:pitg_stop_iteration}) provides a closed-form lower bound on the
-samples required to achieve $\omega_{\rm goal}$; ePitG may need additional samples when
-$\theta_{\rm true}$ lies near a ROPE boundary (see Section~\ref{sec:trends}).
+samples required to achieve $\omega_{\rm goal}$; ePitG may need additional samples
+when $\theta_{\rm true}$ lies near a ROPE boundary (see Section~\ref{sec:trends}).
+Appendix~\ref{app:multiple_comparisons} develops the multiple-comparisons point in
+full and covers all three types of Bayesian power analysis (prospective, retrospective,
+and replication).
 
 A recurring concern about PitG --- and by extension ePitG --- is that the precision
 requirement feels too demanding in practice. 
@@ -91,20 +95,12 @@ valuable diagnostic role: $N_{\rm goal}$ makes explicit what precision is achiev
 within the available budget, enabling an honest assessment of what conclusions the data
 can and cannot support.
 
-The ROPE is the most consequential and subjective design input in the framework.
-It should be determined from domain knowledge rather than from the data ---
-a requirement that forces the researcher to commit to a practically meaningful
-effect-size threshold before observing outcomes \citep{kruschke2018}.
-% \citet{kruschke2018}: Kruschke's 2018 AMPPS paper is the primary reference for
-% ROPE specification in the HDI+ROPE framework, emphasising that the ROPE encodes
-% a pre-specified practical equivalence threshold and must be justified from domain
-% knowledge rather than chosen to suit the data.
-In clinical research the Minimal Clinically Important Difference (MCID) provides a
-principled basis \citep{jaeschke1989}; in bioequivalence testing, regulatory guidelines
-define the permissible deviation corridor \citep{schuirmann1987}; in industrial quality
-control, engineering tolerances serve the same role.
-When no domain standard exists, sensitivity analyses across a range of ROPE widths
-are recommended before committing to a single value \citep{lakens2018}.
+The ROPE is the most consequential and subjective design input: it must be grounded
+in domain knowledge rather than chosen to suit the data \citep{kruschke2018}.
+Appendix~\ref{app:practical_guidance} discusses principled approaches for setting it
+--- including the Minimal Clinically Important Difference, bioequivalence standards,
+and sensitivity analyses --- together with three broader considerations supporting
+ePitG's adoption (equivalence testing, pre-registration, and the replication crisis).
 
 The joint operating characteristics of ePitG --- its false-accept and false-reject
 rates as a function of $\theta_{\rm true}$ --- are determined by the interplay of the
@@ -125,45 +121,6 @@ sample size \citep{gelman2013bayesian}.
 % interpretation for conjugate models: a Beta(a,b) prior is equivalent to having
 % previously observed a successes and b failures, directly supporting the claim that
 % informative priors contribute effective pseudo-observations.
-
-Three further considerations support the broader adoption of this approach.
-First, formally accepting the null via the HDI+ROPE criterion parallels the objective
-of frequentist equivalence testing through the Two One-Sided Tests (TOST) procedure
-\citep{schuirmann1987, lakens2018}, providing a Bayesian counterpart to a methodology
-already accepted in regulatory and applied settings \citep{fda2010bayesian}.
-% \citet{schuirmann1987}: The original paper introducing the TOST procedure for
-% bioequivalence testing --- the canonical frequentist method for formally accepting
-% a null (within a margin), making it the natural comparator for the HDI+ROPE Accept
-% verdict.
-% \citet{lakens2018}: Lakens et al.\ (2018) is the standard modern tutorial on
-% equivalence testing for psychological researchers, providing the methodological
-% bridge between TOST and the effect-size framing used here.
-% \citet{fda2010bayesian}: The FDA's 2010 Bayesian guidance (\S4.7) explicitly permits
-% stopping when the posterior credible interval is ``sufficiently narrow'', the same
-% precision principle as PitG. ePitG adds the simultaneous conclusiveness requirement,
-% directly addressing the inconclusive-outcome problem the FDA guidance leaves to
-% case-by-case design agreement. Citing this document here supports the claim that
-% precision-based Bayesian stopping is not merely academic but already embedded in
-% regulatory practice.
-Second, because $\omega_{\rm goal}$, the ROPE, and $N_{\rm max}$ must all be specified
-before data collection begins, ePitG is naturally compatible with pre-registration
-standards \citep{nosek2018}, directly reducing the researcher degrees of freedom that
-drive selective reporting.
-% \citet{nosek2018}: Nosek et al.\ (2018) is the landmark paper establishing
-% pre-registration as a standard remedy for selective reporting and p-hacking;
-% cited here because ePitG's fully specified stopping rule is directly and
-% structurally compatible with pre-registration requirements.
-Third, the replication crisis has been partly attributed to underpowered studies whose
-imprecise estimates fail to replicate \citep{osc2015, gelman2014}; ePitG addresses this
-at the design stage by making precision a non-negotiable stopping criterion rather than
-an aspiration --- one that is structurally enforced, since the stopping rule cannot fire
-until the precision goal is met.
-% \citet{osc2015}: The Open Science Collaboration (2015) documented that a substantial
-% fraction of published psychological findings failed to replicate, motivating the search
-% for design-stage remedies.
-% \citet{gelman2014}: Gelman \& Carlin (2014) specifically link replication failure to
-% low power and imprecision (``Type S'' sign errors and ``Type M'' magnitude errors),
-% making it the canonical reference for the claim that imprecise estimates fail to replicate.
 
 Three limitations of the present work deserve acknowledgement.
 First, the results are sensitive to the three design parameters --- the ROPE,

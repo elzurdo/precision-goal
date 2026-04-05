@@ -1,0 +1,62 @@
+\section{Practical Design Guidance and Broader Context}\label{app:practical_guidance}
+
+\subsection*{Setting the ROPE}
+
+The ROPE is the most consequential and subjective design input in the framework.
+It should be determined from domain knowledge rather than from the data ---
+a requirement that forces the researcher to commit to a practically meaningful
+effect-size threshold before observing outcomes \citep{kruschke2018}.
+% \citet{kruschke2018}: Kruschke's 2018 AMPPS paper is the primary reference for
+% ROPE specification in the HDI+ROPE framework, emphasising that the ROPE encodes
+% a pre-specified practical equivalence threshold and must be justified from domain
+% knowledge rather than chosen to suit the data.
+In clinical research the Minimal Clinically Important Difference (MCID) provides a
+principled basis \citep{jaeschke1989}; in bioequivalence testing, regulatory guidelines
+define the permissible deviation corridor \citep{schuirmann1987}; in industrial quality
+control, engineering tolerances serve the same role.
+When no domain standard exists, sensitivity analyses across a range of ROPE widths
+are recommended before committing to a single value \citep{lakens2018}.
+
+\subsection*{Broader Adoption Considerations}
+
+Three further considerations support the broader adoption of this approach.
+
+First, formally accepting the null via the HDI+ROPE criterion parallels the objective
+of frequentist equivalence testing through the Two One-Sided Tests (TOST) procedure
+\citep{schuirmann1987, lakens2018}, providing a Bayesian counterpart to a methodology
+already accepted in regulatory and applied settings \citep{fda2010bayesian}.
+% \citet{schuirmann1987}: The original paper introducing the TOST procedure for
+% bioequivalence testing --- the canonical frequentist method for formally accepting
+% a null (within a margin), making it the natural comparator for the HDI+ROPE Accept
+% verdict.
+% \citet{lakens2018}: Lakens et al.\ (2018) is the standard modern tutorial on
+% equivalence testing for psychological researchers, providing the methodological
+% bridge between TOST and the effect-size framing used here.
+% \citet{fda2010bayesian}: The FDA's 2010 Bayesian guidance (\S4.7) explicitly permits
+% stopping when the posterior credible interval is ``sufficiently narrow'', the same
+% precision principle as PitG. ePitG adds the simultaneous conclusiveness requirement,
+% directly addressing the inconclusive-outcome problem the FDA guidance leaves to
+% case-by-case design agreement. Citing this document here supports the claim that
+% precision-based Bayesian stopping is not merely academic but already embedded in
+% regulatory practice.
+
+Second, because $\omega_{\rm goal}$, the ROPE, and $N_{\rm max}$ must all be specified
+before data collection begins, ePitG is naturally compatible with pre-registration
+standards \citep{nosek2018}, directly reducing the researcher degrees of freedom that
+drive selective reporting.
+% \citet{nosek2018}: Nosek et al.\ (2018) is the landmark paper establishing
+% pre-registration as a standard remedy for selective reporting and p-hacking;
+% cited here because ePitG's fully specified stopping rule is directly and
+% structurally compatible with pre-registration requirements.
+
+Third, the replication crisis has been partly attributed to underpowered studies whose
+imprecise estimates fail to replicate \citep{osc2015, gelman2014}; ePitG addresses this
+at the design stage by making precision a non-negotiable stopping criterion rather than
+an aspiration --- one that is structurally enforced, since the stopping rule cannot fire
+until the precision goal is met.
+% \citet{osc2015}: The Open Science Collaboration (2015) documented that a substantial
+% fraction of published psychological findings failed to replicate, motivating the search
+% for design-stage remedies.
+% \citet{gelman2014}: Gelman \& Carlin (2014) specifically link replication failure to
+% low power and imprecision (``Type S'' sign errors and ``Type M'' magnitude errors),
+% making it the canonical reference for the claim that imprecise estimates fail to replicate.
