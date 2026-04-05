@@ -30,18 +30,14 @@ likelihoods) whereas ePitG targets posterior precision; the two are complementar
 as planning tools, and a design requiring both a conclusive HDI+ROPE verdict and a
 minimum Bayes Factor is a natural extension.
 
-A practical advantage worth stating explicitly is that, for models with conjugate or
-tractable posteriors --- including all settings studied or discussed in this paper ---
-ePitG requires no MCMC at runtime.
-For Bernoulli data the posterior is a Beta distribution updated in closed form after
-each observation, and the HDI is computed analytically.
-The entire algorithm reduces to a short loop requiring only standard statistical
-functions, with no specialist probabilistic programming software.
-This low implementation barrier makes ePitG immediately accessible to any analyst
-working in Python, R, or a spreadsheet environment.
-Non-conjugate priors or hierarchical models would require MCMC, but such settings
-fall outside the scope of the present work.
-% More precisely, the no-MCMC claim holds case by case as follows:
+ePitG is a generic sequential stopping rule that applies to any posterior from which
+an HDI can be computed, including non-conjugate and hierarchical settings that require
+MCMC.
+The analysis in this paper is deliberately restricted to models with conjugate or
+otherwise tractable posteriors: for Bernoulli data the Beta posterior and its HDI are
+fully analytical, reducing the algorithm to a short loop with no specialist
+probabilistic programming software.
+% More precisely, the tractable-posterior claim holds case by case as follows:
 % - Single-group Bernoulli (this paper): conjugate Beta posterior, fully analytical
 %   HDI; no sampling of any kind needed.
 % - Single-group continuous (conjugate normal prior): normal or Student-t posterior,
@@ -56,7 +52,7 @@ fall outside the scope of the present work.
 %   to future work.
 % - Hierarchical models: MCMC required; also out of scope here.
 
-Beyond implementation convenience, the HDI+ROPE framework offers a structural
+Regardless of the computational setting, the HDI+ROPE framework offers a structural
 methodological advantage over frequentist approaches: unlike NHST, where conducting
 multiple simultaneous tests inflates the Type~I error rate and requires corrections
 (e.g.\ Bonferroni) that reduce per-test power, the Bayesian posterior is unaffected ---
@@ -122,7 +118,7 @@ sample size \citep{gelman2013bayesian}.
 % previously observed a successes and b failures, directly supporting the claim that
 % informative priors contribute effective pseudo-observations.
 
-Three limitations of the present work deserve acknowledgement.
+Four limitations of the present work deserve acknowledgement.
 First, the results are sensitive to the three design parameters --- the ROPE,
 $\omega_{\rm goal}$, and $N_{\rm max}$ --- all of which must be committed to before
 data collection begins.
@@ -136,6 +132,12 @@ small-sample settings or for highly skewed likelihoods.
 Third, the flat prior used throughout contributes no pseudo-observations; an analyst
 who encodes a materially incorrect informative prior may bias the posterior in a way
 that the precision criterion alone cannot detect.
+Fourth, while ePitG applies in principle to any posterior from which an HDI can be
+computed, this paper does not characterise its behaviour when the HDI is estimated
+from MCMC samples.
+In such settings the HDI estimate carries Monte Carlo error that could affect stopping
+calibration --- particularly in early data collection when the posterior is diffuse ---
+and this remains an open question for future work.
 
 The extensions to continuous outcomes and two-group comparisons described above are
 analytic arguments rather than empirically validated results.
