@@ -9,17 +9,17 @@ posterior precision is reached.
 Yet we show that PitG frequently yields inconclusive outcomes, most notably when the
 null hypothesis is true.
 To address this, we propose ``Enhanced Precision is the Goal'' (ePitG), which requires
-both the precision target and a conclusive hypothesis outcome to be met simultaneously
-before stopping.
+both the precision target and a conclusive hypothesis outcome (i.e, accept or reject the null)
+to be met simultaneously before stopping.
 We demonstrate that ePitG substantially increases decisiveness while preserving PitG's
 near-zero false-positive rate, at only a modest cost in median sample size.
 In fair coin experiments ($\theta_{\rm true}= \theta_{\rm null}=0.5$) with a precision goal of
 $\omega_{\rm goal}=0.08$, PitG yields 63.3\% inconclusive outcomes; ePitG reduces this
 to just 2.3\%, with only a 4.7\% increase in median sample size.
-More broadly, unlike methods that can only reject the null hypothesis, the
-precision-based framework also permits its positive acceptance ---
-a property it retains with a near-zero false-positive rate: exactly zero when
-$\theta_{\rm true}=\theta_{\rm null}$ and negligibly small near the equivalence boundary.
+%More broadly, unlike methods that can only reject the null hypothesis, the
+%precision-based framework also permits its positive acceptance ---
+%a property it retains with a near-zero false-positive rate: exactly zero when
+%$\theta_{\rm true}=\theta_{\rm null}$ and negligibly small near the equivalence boundary.
 We provide an online interactive calculator and open-source code to support the planning
 and interpretation of sequential experiments.
 

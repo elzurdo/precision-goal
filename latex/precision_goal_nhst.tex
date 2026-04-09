@@ -1,13 +1,17 @@
 \section{Regarding NHST}\label{app:nhst}
-Throughout this study the focus was on three methods that use posterior information
-to not only reject the null hypothesis but also accept it, or declare an inconclusive
-result.
-
-In contrast, null hypothesis significance testing (NHST) cannot accept the null
-hypothesis. A p-value measures the probability of observing data at least as extreme
-as those obtained \emph{assuming the null is true}, $P(\mathrm{data}\mid H_0)$,
-not the probability that the null is true given the data,
-$P(H_0\mid\mathrm{data})$
+Null hypothesis significance testing (NHST) \citep{fisher1925, neymanpearson1933}
+% [fisher1925] Fisher (1925), ``Statistical Methods for Research Workers'', Oliver
+% and Boyd. Introduced the p-value and the concept of significance testing --- the
+% foundational contribution to the p-value side of NHST.
+%
+% [neymanpearson1933] Neyman & Pearson (1933), ``On the Problem of the Most
+% Efficient Tests of Statistical Hypotheses'', Phil. Trans. R. Soc. A 231:289--337.
+% Introduced the formal H0/H1 framework, Type I/II errors, and the alpha threshold
+% --- the hypothesis-testing side of the hybrid that practitioners use today.
+is included here as contextual background rather than as a competing method.
+A p-value measures the probability of observing data at least as extreme as those
+obtained \emph{assuming the null is true}, $P(\mathrm{data}\mid H_0)$, not the
+probability that the null is true given the data, $P(H_0\mid\mathrm{data})$
 % [cohen1994] Cohen (1994), ``The earth is round (p < .05)'', American Psychologist
 % 49(12):997--1003. The canonical demonstration that p-values cannot be read as
 % P(H0|data). Directly supports the claim that NHST carries no null-acceptance
@@ -17,7 +21,13 @@ $P(H_0\mid\mathrm{data})$
 % Context, Process, and Purpose'', The American Statistician 70(2):129--133.
 % Official ASA position: ``A p-value does not provide a good measure of evidence
 % regarding a model or hypothesis.'' Adds broad authoritative institutional backing.
-\citep{cohen1994, wasserstein2016}.
+\citep{cohen1994, wasserstein2016};
+consequently, NHST can only reject the null or remain inconclusive --- it carries
+no mechanism to positively accept it, making it structurally unsuitable for the
+precision-and-conclusiveness criterion that motivates ePitG.
+Understanding its sequential behaviour nevertheless clarifies why the Bayesian
+HDI+ROPE framework was developed.
+
 In NHST, at each iteration the experiment stops and $\theta_{\rm null}$ is rejected
 whenever the p-value falls below the false positive rate threshold $\alpha_{\rm FPR}$.
 Since the decision rule is based solely on this single threshold, data that fail to
@@ -41,14 +51,14 @@ would not be apparent at shorter horizons.
   \centering
   \includegraphics[width=1\textwidth]{fair_experiment_decision_rates_nhst.png}
   \caption{Cumulative decision rates across iterations for $M=50$ fair coin experiments
-  ($\theta_{\rm true}=\theta_{\rm null}=0.5$, $\alpha_{\rm FPR}=0.05$),
-  analogous to Figure~\ref{fig:fair_decisions} but using NHST as the stopping and
-  decision criterion, extended to $N_{\rm max}=30{,}000$ iterations.
+  ($\theta_{\rm true}=\theta_{\rm null}=0.5$, $\alpha_{\rm FPR}=0.05$,
+  $N_{\rm max}=30{,}000$), extending Figure~\ref{fig:fair_decisions} with NHST
+  as a fourth panel; it appears in this appendix as NHST lies outside the scope
+  of the main analysis.
   At each iteration $N$, the plotted proportions count all experiments that reached
   a decision at or before $N$; their sum is 100\% at every point.
-  \textit{Line styles}:
-  red solid: reject $\theta_{\rm null}$;
-  gray dashed: inconclusive.
+  \textit{Red solid line}: reject $\theta_{\rm null}$.
+  \textit{Gray dashed line}: inconclusive.
   The smaller experiment count ($M=50$ vs.\ $2{,}000$) reflects the higher
   computational cost of evaluating p-values relative to HDI-based criteria,
   which also accounts for the stepped appearance of the curves.}
@@ -62,8 +72,14 @@ peeking, the false positive rate approaches 100\%.'' This is because the stoppin
 rule is tied directly to the decision rule with no reference to an effect size: the
 more data collected, the more likely an extreme sample will appear. Continuously
 monitoring the data and applying a fixed p-value threshold therefore leads to an
-inflated Type~I (false positive) error rate, a manifestation of the multiple-testing
-problem.
+inflated Type~I (false rejection/positive) error rate, a manifestation of the multiple-testing
+problem
+% [simmons2011] Simmons, Nelson & Simonsohn (2011), ``False-Positive Psychology'',
+% Psychological Science 22(11):1359--1366. Quantifies that flexible stopping rules
+% (``peeking'') inflate false-positive rates even at nominal alpha=0.05 --- the same
+% mechanism as continuous sequential NHST. Already cited in the Introduction for this
+% claim; repeated here for self-contained reading of the appendix.
+\citep{simmons2011}.
 
 \section{Regarding Bayes Factors}\label{app:app_bayes_factors}
 
