@@ -72,7 +72,7 @@ peeking, the false positive rate approaches 100\%.'' This is because the stoppin
 rule is tied directly to the decision rule with no reference to an effect size: the
 more data collected, the more likely an extreme sample will appear. Continuously
 monitoring the data and applying a fixed p-value threshold therefore leads to an
-inflated Type~I (false rejection/positive) error rate, a manifestation of the multiple-testing
+inflated false rejection/positive (Type~I )) error rate, a manifestation of the multiple-testing
 problem
 % [simmons2011] Simmons, Nelson & Simonsohn (2011), ``False-Positive Psychology'',
 % Psychological Science 22(11):1359--1366. Quantifies that flexible stopping rules
@@ -83,7 +83,11 @@ problem
 
 \section{Regarding Bayes Factors}\label{app:app_bayes_factors}
 
-The Bayes Factor (BF) is a widely used Bayesian measure for comparing two hypotheses.
+This appendix concerns the use of the Bayes Factor (BF) as a \textit{sequential
+stopping rule}; this role is distinct from its use in Bayes Factor Design Analysis
+(BFDA), which is a prospective planning tool discussed in Section~\ref{sec:discussion}.
+
+The BF is a widely used Bayesian measure for comparing two hypotheses.
 For a null hypothesis $H_0$ and an alternative $H_1$, the Bayes Factor in favour of
 the null is defined as the ratio of marginal likelihoods:
 \begin{equation}\label{eq:bf_definition}
@@ -124,11 +128,13 @@ The main findings relevant to this paper are as follows.
 
 \textbf{When the null is true ($\theta_{\rm true}=\theta_{\rm null}=0.5$).}
 This is the setting shown in Kruschke's Figure~13.6 (for which  Figure~\ref{fig:fair_decisions} of this paper is analogous). 
-The BF stopping rule
-converges to an asymptotic false rejection rate (referred to as \textit{false alarm}) of just over 20\%---lower than NHST,
-which diverges to 100\%, but substantially higher than PitG and ePitG, which maintain a
-0\% false alarm rate.  The BF correctly accepts the null for the remaining sequences,
-although it can do so on the basis of precise or imprecise data indiscriminately.
+The BF stopping rule converges to an asymptotic false rejection rate
+(referred to by \citeauthor{kruschke2015doing} as the \textit{false alarm rate})
+of just over 20\%---lower than NHST, which diverges to 100\%, but substantially higher
+than PitG, which maintains a 0\% false rejection rate \citep{kruschke2015doing}.
+As demonstrated in this paper, ePitG also achieves a 0\% false rejection rate.
+The BF correctly accepts the null for the remaining sequences, although it can do
+so on the basis of precise or imprecise data indiscriminately.
 
 \textbf{When the null is false ($\theta_{\rm true}=0.65$).}
 This setting is displayed in Kruschke's Figure~13.7 (which is captured in the middle
@@ -169,3 +175,9 @@ depends only on the posterior and the pre-specified ROPE and $\omega_{\rm goal}$
 posteriors.  In contrast, PitG and ePitG require the HDI width to fall below
 $\omega_{\rm goal}$ before any verdict is issued, providing a structural guarantee
 that accepted or rejected conclusions rest on adequately precise estimates.
+
+These limitations notwithstanding, BF stopping and HDI+ROPE are not mutually exclusive.
+As noted in Section~\ref{sec:discussion}, a design requiring both a conclusive
+HDI+ROPE verdict \textit{and} a minimum Bayes Factor is a natural extension of ePitG,
+combining the precision guarantee of the latter with the evidential strength measure
+of the former.
