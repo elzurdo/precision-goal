@@ -1,21 +1,12 @@
-\section{Credible Interval Variants: ETI and HDI}\label{app:hdi}
+\section{HDI and ETI: Credible Interval Variants}\label{app:hdi}
 
 Given a posterior density $p(\theta \mid \mathbf{x})$, a $(1-\alpha)$ credible interval
 $[L, U]$ satisfies
 \begin{equation}\label{eq:credible_interval}
   \int_L^U p(\theta \mid \mathbf{x})\,d\theta = 1 - \alpha.
 \end{equation}
-Infinitely many intervals satisfy this constraint; the two most widely used selections are:
-
-\subsection*{Equal-Tailed Interval (ETI)}
-
-The ETI places $\alpha/2$ probability mass in each tail:
-\begin{equation}\label{eq:eti}
-  L_{\rm ETI} = F^{-1}\!\left(\tfrac{\alpha}{2}\right), \qquad
-  U_{\rm ETI} = F^{-1}\!\left(1 - \tfrac{\alpha}{2}\right),
-\end{equation}
-where $F^{-1}$ is the posterior quantile function. The ETI is simple to compute and
-uniquely defined, but it is not generally the shortest interval.
+Infinitely many intervals satisfy this constraint. This paper uses the Highest Density
+Interval throughout; the Equal-Tailed Interval is described below for comparison.
 
 \subsection*{Highest Density Interval (HDI)}
 
@@ -27,18 +18,33 @@ An equivalent characterisation: $[L^*, U^*]$ is the unique interval for which
 $p(L^* \mid \mathbf{x}) = p(U^* \mid \mathbf{x})$, so every point inside has posterior
 density at least as high as every point outside (hence ``highest density'').
 
-For symmetric, unimodal posteriors the HDI and ETI coincide. They diverge for skewed
-distributions — for instance, a Beta posterior near $\theta = 0$ or $\theta = 1$ — where
-the HDI is noticeably shorter.
+\subsection*{Equal-Tailed Interval (ETI)}
+
+The ETI places $\alpha/2$ probability mass in each tail:
+\begin{equation}\label{eq:eti}
+  L_{\rm ETI} = F^{-1}\!\left(\tfrac{\alpha}{2}\right), \qquad
+  U_{\rm ETI} = F^{-1}\!\left(1 - \tfrac{\alpha}{2}\right),
+\end{equation}
+where $F^{-1}$ is the posterior quantile function. The ETI is simple to compute and
+uniquely defined, but it is not generally the shortest interval.
+For symmetric, unimodal posteriors the HDI and ETI coincide; they diverge for skewed
+distributions --- for instance, a Beta posterior near $\theta = 0$ or $\theta = 1$ ---
+where the HDI is noticeably shorter and therefore preferred.
 
 \subsection*{Numerical Computation}
 
 The HDI is computed numerically by minimising the interval width over the quantile
-function (see \texttt{HDIofICDF} in the accompanying code):
+function (\texttt{HDIofICDF} in the accompanying code, implemented via
+\texttt{scipy.optimize.fmin} applied to the distribution's percent-point function):
 \begin{equation}
   \min_{\ell \in [0,\,\alpha]}\left[F^{-1}(1-\alpha+\ell) - F^{-1}(\ell)\right].
 \end{equation}
-The minimising $\ell^*$ gives $L^* = F^{-1}(\ell^*)$ and $U^* = F^{-1}(1-\alpha+\ell^*)$.
-For the Binomial model used in this work the posterior is $\mathrm{Beta}(s+1,\,f+1)$,
-where $s$ and $f$ are the observed successes and failures respectively; the HDI
-is found by applying the above minimisation to the Beta quantile function.
+The minimising $\ell^*$ gives $L^* = F^{-1}(\ell^*)$ and
+$U^* = F^{-1}(1-\alpha+\ell^*)$.
+For the Binomial model used in this work, the posterior after $s$ successes and $f$
+failures is $\mathrm{Beta}(s,\,f)$, and the HDI is found by applying the above
+minimisation to the Beta quantile function.
+% The same \texttt{HDIofICDF} function handles the continuous setting by substituting
+% the Student-$t$ quantile function with location equal to the sample mean and scale
+% equal to the standard error (see \texttt{continuous\_hdi\_ci\_limits} in the
+% accompanying code).
