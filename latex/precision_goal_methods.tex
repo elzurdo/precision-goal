@@ -92,12 +92,15 @@ Crucially, we distinguish between the \textbf{Stopping Rule} (when to stop colle
 \end{figure}
 
 Once the stopping criterion is triggered, the decision is determined solely by the
-relationship between the HDI and the ROPE:
+relationship between the HDI and the ROPE.
+Let ${\rm ROPE} = [{\rm ROPE}_{\rm min}, {\rm ROPE}_{\rm max}]$ and the posterior HDI limits be $[{\rm HDI}_{\rm min}, {\rm HDI}_{\rm max}]$.
 
 \begin{itemize}
-    \item \textbf{Reject Null}: The HDI is completely \textit{outside} the ROPE.
-    \item \textbf{Accept Null}: The HDI is completely \textit{inside} the ROPE.
-    \item \textbf{Inconclusive}: The HDI \textit{straddles} the ROPE boundary.
+    \item \textbf{Accept Null}: The HDI is completely \textit{inside} the ROPE. \\
+    $({\rm ROPE}_{\rm min} \leq {\rm HDI}_{\rm min}) \land ({\rm HDI}_{\rm max} \leq {\rm ROPE}_{\rm max})$
+    \item \textbf{Reject Null}: The HDI is completely \textit{outside} the ROPE. \\
+    $ ({\rm HDI}_{\rm max} < {\rm ROPE}_{\rm min}) \lor ({\rm ROPE}_{\rm max} < {\rm HDI}_{\rm min} )$
+    \item \textbf{Inconclusive}: The HDI \textit{straddles} the ROPE boundary. \\ Otherwise.
 \end{itemize}
 
 The interpretation of these outcomes, particularly what it means to \textit{accept}
@@ -115,7 +118,14 @@ to a null hypothesis of $\theta_{\rm null}=0.5$, and a ROPE width $\Delta_{\rm R
 
 The insights from Figure \ref{fig:posteriors} illustrate that the decision outcome may be iteration-dependent. An inconclusive outcome implies that the data collected is insufficient to justify a decision. In a live setting, a human-in-the-loop (or an algorithm, common in automated high-frequency environments) would need to either conduct a risk assessment or collect more data. Since risk assessment is highly contextual, we defer that discussion and focus on the necessity of collecting more data to avoid inconclusive outcomes.
 
-Algorithm \ref{alg:decision_criterion} formalises this logic.
+Algorithm \ref{alg:decision_criterion} further formalises this logic.
+
+% Logic for Enhanced PitG. Will need to update variables names. E.g, L should be HDI_min, etc.
+% \begin{itemize}
+%     \item \textbf{Accept Null}: $(\omega \leq \omega_{\rm goal}) \land ( {\rm ROPE}_{\rm min} \leq L) \land (U \leq {\rm ROPE}_{\rm max})$
+%     \item \textbf{Reject Null}: $(\omega \leq \omega_{\rm goal}) \land (U < {\rm ROPE}_{\rm min} \lor {\rm ROPE}_{\rm max} < L )$
+%     \item \textbf{Inconclusive}: Otherwise
+% \end{itemize}
 
 \begin{algorithm}
     \caption{The Decision Rule}\label{alg:decision_criterion}
