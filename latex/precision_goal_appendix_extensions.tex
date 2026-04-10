@@ -1,26 +1,12 @@
-\section{Extensions to Continuous and Two-Group Settings}\label{app:extensions}
+\section{Extensions to Two-Group Settings}\label{app:extensions}
 
 The HDI+ROPE precision-goal framework presented in the main text for single-group
-Bernoulli data generalises to other observational settings.
-This appendix outlines the key adaptations for single-group continuous data and
-two-group comparisons (both binomial and continuous), together with the corresponding
-sample-size planning equations.
-Empirical validation of these extensions is left for future work.
-
-\subsection*{Single-Group Continuous Data}
-
-For single-group continuous data, the posterior HDI width of the mean $\mu$ replaces
-the binomial HDI width as the precision metric.
-The precision stopping criterion (Equation~\ref{eq:pitg_stop_iteration}) generalises
-by substituting $\sigma^2$ for $\theta(1-\theta)$; in practice $\sigma^2$ is
-unknown and replaced by the sample variance $s^2$.
-The expected stop iteration (derived in Appendix~\ref{app:expected_stop}) is
-\begin{equation}\label{eq:ngoal_continuous_ext}
-    N_{\rm goal} \approx \frac{4 z_{*}^{2}\,\sigma^{2}}{\omega_{\rm goal}^{2}},
-\end{equation}
-with $\sigma^2$ replaced by $s^2$ when the population variance is unknown.
-(This reproduces Equation~\ref{eq:expected_stop_iteration_mean} from
-Appendix~\ref{app:expected_stop} for convenience.)
+Bernoulli data generalises to two-group comparisons.
+This appendix outlines the key adaptations for two-group binomial and continuous
+outcomes, together with the corresponding sample-size planning equations.
+For single-group continuous data, the expected stop iteration is derived in
+Appendix~\ref{app:expected_stop}.
+Empirical validation for utility of ePitG in these extensions is left for future work.
 
 \subsection*{Two-Group Comparisons}
 
@@ -48,6 +34,7 @@ samples are of moderate size or larger.
 % under weakly informative priors (Chapter 4), justifying the use of Welch's standard
 % error as a surrogate for the posterior HDI width.
 
+%TODO generalise to when N1!=N2
 \subsubsection*{Two-Group Binomial}
 
 With independent Beta posteriors for $\theta_1$ and $\theta_2$, the HDI width of
@@ -56,13 +43,13 @@ the difference $\theta_1 - \theta_2$ is approximated via the standard error
     \text{SE}(\hat\theta_1 - \hat\theta_2) \approx
     \sqrt{\frac{\theta_1(1-\theta_1)}{N_1} + \frac{\theta_2(1-\theta_2)}{N_2}}.
 \end{equation}
+This uses the CLT form with $N_i$ in the denominator; the exact Beta posterior
+variance replaces $N_i$ with $N_i+1$ (cf.\ the Binomial Case in
+Appendix~\ref{app:expected_stop}).
 Setting the HDI width $2z_* \cdot \text{SE} = \omega_{\rm goal}$ and solving for
 equal group sizes $N_1 = N_2 = N$ gives the expected stop iteration:
 \begin{equation}\label{eq:ngoal_two_group_binomial}
-    % [TODO: derive N_goal for two-group binomial following Appendix~\ref{app:expected_stop};
-    %  natural result for equal groups:
-    %  N_goal \approx 4 z_*^2 [\theta_1(1-\theta_1) + \theta_2(1-\theta_2)] / omega_goal^2]
-    \textcolor{red}{\textbf{[TODO: $N_{\rm goal}$ for two-group binomial (equal groups)]}}
+    N_{\rm goal} \approx \frac{4 z_{*}^{2}[\theta_1(1-\theta_1)+\theta_2(1-\theta_2)]}{\omega_{\rm goal}^{2}}.
 \end{equation}
 
 \subsubsection*{Two-Group Continuous}
@@ -74,8 +61,6 @@ Following Welch's approximation, the standard error of the difference of means i
 \end{equation}
 For equal group sizes $N_1 = N_2 = N$, the expected stop iteration becomes:
 \begin{equation}\label{eq:ngoal_two_group_continuous}
-    % [TODO: derive N_goal for two-group continuous following Appendix~\ref{app:expected_stop};
-    %  natural result for equal groups:
-    %  N_goal \approx 4 z_*^2 (\sigma_1^2 + \sigma_2^2) / omega_goal^2]
-    \textcolor{red}{\textbf{[TODO: $N_{\rm goal}$ for two-group continuous (equal groups, Welch)]}}
+    N_{\rm goal} \approx \frac{4 z_{*}^{2}(\sigma_1^2+\sigma_2^2)}{\omega_{\rm goal}^{2}},
 \end{equation}
+with $\sigma_i^2$ replaced by $s_i^2$ when the population variances are unknown.
