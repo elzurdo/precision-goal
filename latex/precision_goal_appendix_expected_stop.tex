@@ -1,12 +1,12 @@
 \section{Derivation of Expected Precision Goal Stop Iteration}\label{app:expected_stop}
 
-The precision-based stopping algorithms (PitG and ePitG) halt when the HDI width
+The precision-based stopping algorithms (PitG \citep{kruschke2015doing} and ePitG) halt when the HDI width
 (see Appendix~\ref{app:hdi})
 falls below the precision goal $\omega_{\rm goal}$. Because the posterior HDI width
 shrinks as $N^{-1/2}$, one can predict in advance the iteration at which this
-threshold will be crossed. The derivation below uses a normal approximation to the
-posterior and is therefore intended as an analytical guide rather than an exact
-finite-sample identity.
+threshold will be crossed. The General CLT Form below uses a normal approximation
+and is intended as an analytical guide; the Binomial Case refines this using the
+exact Beta posterior variance.
 % Throughout, we assume unimodal, approximately symmetric posteriors, for which
 % HDI width is a natural and interpretable precision measure.
 % For multimodal posteriors, HDI width becomes ambiguous (it is unclear which mode
@@ -34,42 +34,52 @@ N_{\rm goal} \approx \frac{4 z_{*}^{2}}{\omega_{\rm goal}^{2}}\,V(\theta).
 
 \subsection*{Binomial Case}
 
-For Bernoulli outcomes, $V(\theta)=\theta(1-\theta)$, so
-Equation~\ref{eq:expected_stop_iteration_clt} becomes
+For Bernoulli outcomes the posterior under a flat prior is $\mathrm{Beta}(s,\,f)$,
+where $s$ is the number of successes and $f = N - s$ the number of failures.
+Its exact variance is
+\[
+\mathrm{Var}(\theta \mid s, f) = \frac{\hat\theta\,(1-\hat\theta)}{N+1},
+\]
+where $\hat\theta = s/N$. Substituting into Equation~\ref{eq:hdi_width_approx}
+and setting $w = \omega_{\rm goal}$ gives the exact expected stop iteration:
 \begin{equation}\label{eq:expected_stop_iteration_binomial}
-N_{\rm goal} \approx \frac{4 z_{*}^{2}}{\omega_{\rm goal}^{2}}\,\theta(1-\theta).
+N_{\rm goal} = \frac{4 z_{*}^{2}}{\omega_{\rm goal}^{2}}\,\theta(1-\theta) - 1.
 \end{equation}
-This is maximised at $\theta=0.5$, confirming that the fair coin case requires the
+The $-1$ arises from the $N+1$ denominator in the exact Beta posterior variance,
+whereas the CLT approximation (Equation~\ref{eq:expected_stop_iteration_clt})
+treats the denominator as $N$ and omits it.
+As shown in Figure~\ref{fig:min_sample_by_goal} in Section~\ref{sec:expected_stop_iteration},
+$N_{\rm goal}$ is maximised at $\theta=0.5$, confirming that the fair coin case requires the
 largest sample to achieve a given precision goal, and decreases monotonically as
 $\theta$ moves towards $0$ or $1$.
+Equation~\ref{eq:pitg_stop_iteration} in the main text uses the CLT approximation
+(Equation~\ref{eq:expected_stop_iteration_clt}), which replaces $N+1$ with $N$ and
+drops the $-1$ term, negligible for large $N$.
+
 
 \subsection*{Continuous Case (Mean Estimation)}
 
 For continuous outcomes when the estimand is a mean $\mu$ with variance $\sigma^{2}$,
-$V(\mu)=\sigma^{2}$ (or a plug-in estimate $\hat\sigma^{2}$), giving
+two versions of the expected stop iteration are available.
+
+\textbf{Version A (CLT approximation).}
+Substituting $V(\mu)=\sigma^{2}$ (estimated by sample variance $s^2$) into
+Equation~\ref{eq:expected_stop_iteration_clt} gives
 \begin{equation}\label{eq:expected_stop_iteration_mean}
 N_{\rm goal} \approx \frac{4 z_{*}^{2}\sigma^{2}}{\omega_{\rm goal}^{2}}.
 \end{equation}
+This version is accurate for large $N$ where the Student-$t$ critical value
+approaches $z_{*}$.
 
-\subsection*{Indexing Convention}
-
-If updates are indexed by $n=0,1,2,\dots$ while sample size is $N=n+1$, rewriting
-Equation~\ref{eq:expected_stop_iteration_clt} in terms of $n$ gives
-\begin{equation}\label{eq:expected_stop_index}
-n_{\rm goal} \approx \frac{4 z_{*}^{2}}{\omega_{\rm goal}^{2}}\,V(\theta) - 1.
+\textbf{Version B (Student-$t$ posterior).}
+Under a non-informative prior the posterior for $\mu$ is a scaled Student-$t$
+with $\nu = N-1$ degrees of freedom, giving HDI width
+$w = 2\,t_{\alpha/2,\,N-1}\,s/\!\sqrt{N}$ (see Useful Equations appendix).
+Setting $w = \omega_{\rm goal}$ yields the implicit equation
+\begin{equation}\label{eq:expected_stop_iteration_mean_t}
+N_{\rm goal} = \frac{4\,t_{\alpha/2,\,N-1}^{2}\,\sigma^{2}}{\omega_{\rm goal}^{2}},
 \end{equation}
-This is an indexing convention only; asymptotically, the distinction is negligible.
+where $t_{\alpha/2,\,N-1}$ depends on $N$, so the equation must be solved
+numerically. For $N \ge 30$ the two versions are nearly identical; Version~A
+is preferred for sample-size planning.
 
-Figure~\ref{fig:min_sample_by_goal} in Section~\ref{sec:expected_stop_iteration} of the
-main text illustrates $N_{\rm goal}$ as a function of $\theta_{\rm true}$ for both the
-Bernoulli and continuous cases across a range of precision goals.
-
-\subsection*{Suggested References}
-
-The approximation above rests on standard asymptotic results. Relevant sources include:
-\cite{kruschke2015doing} (Ch.\ 13, PitG context);
-van der Vaart (1998), \textit{Asymptotic Statistics} (CLT and asymptotic normality);
-Casella \& Berger (2002), \textit{Statistical Inference} (CI-width sample-size heuristics);
-Brown, Cai \& DasGupta (2001), \textit{Statistical Science} (binomial proportion intervals);
-Chow, Shao \& Wang (2008), \textit{Sample Size Calculations in Clinical Research}
-(practical width-based formulas).

@@ -129,7 +129,9 @@ similarly.
 Second, the stopping properties are validated empirically only for Bernoulli trials
 with a conjugate Beta posterior; the normal approximation underpinning
 $N_{\rm goal}$ (Equation~\ref{eq:pitg_stop_iteration}) may require greater caution in
-small-sample settings or for highly skewed likelihoods.
+small-sample settings or for highly skewed likelihoods
+(see Appendix~\ref{app:expected_stop} for the exact Binomial result and the
+Student-$t$ variant for continuous outcomes).
 Third, the flat prior used throughout contributes no pseudo-observations; an analyst
 who encodes a materially incorrect informative prior may bias the posterior in a way
 that the precision criterion alone cannot detect.
