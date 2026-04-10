@@ -93,12 +93,12 @@ $$ n \approx \left( \frac{2 z_{1-\alpha/2} \cdot \sigma}{W_{\rm goal}} \right)^2
 
 For small samples, $z$ (Normal) should be replaced iteratively with $t$ values, but this serves as a closed-form approximation.
 
-\subsubsection{Decision Rules (Enhanced PitG)}
+% \subsubsection{Decision Rules (Enhanced PitG)}
 
-Let ${\rm ROPE} = [\theta_L, \theta_H]$ and the posterior HDI be $[L, U] = [\bar{x} - W/2, \bar{x} + W/2]$.
+% Let ${\rm ROPE} = [\theta_L, \theta_H]$ and the posterior HDI be $[L, U] = [\bar{x} - W/2, \bar{x} + W/2]$.
 
-\begin{itemize}
-    \item \textbf{Accept Null}: $(L \geq \theta_L) \land (U \leq \theta_H) \land (W \leq W_{\rm goal})$
-    \item \textbf{Reject Null}: $(U < \theta_L \lor L > \theta_H) \land (W \leq W_{\rm goal})$
-    \item \textbf{Inconclusive}: Otherwise
-\end{itemize}
+% \begin{itemize}
+%     \item \textbf{Accept Null}: $(L \geq \theta_L) \land (U \leq \theta_H) \land (W \leq W_{\rm goal})$
+%     \item \textbf{Reject Null}: $(U < \theta_L \lor L > \theta_H) \land (W \leq W_{\rm goal})$
+%     \item \textbf{Inconclusive}: Otherwise
+% \end{itemize}
