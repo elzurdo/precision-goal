@@ -124,7 +124,7 @@ stop-iteration and sample-proportion statistics across all and conclusive experi
     ePitG    & \textcolor{green}{\textbf{0.977}}  & 627 & 598 - 794& 196 \\
     \hline
   \end{tabular}
-  \caption{TODO: update values. Summary statistics for all $M=2{,}000$ fair coin experiments
+  \caption{Summary statistics for all $M=2{,}000$ fair coin experiments
   ($\theta_{\rm true}=\theta_{\rm null}=0.5$, $\omega_{\rm goal}=0.08$;
   cf.\ Figure~\ref{fig:fair_iter_vs_rate}).
   $N_{\rm 50\%}$: median stop iteration;
@@ -158,7 +158,7 @@ PitG.
     ePitG    & 1953 & 1     & 0     & 0.5008 & 0.4895-0.5105\\
     \hline
   \end{tabular}
-  \caption{TODO: explore if needed to update values. Summary statistics for the conclusive subset of experiments in
+  \caption{Summary statistics for the conclusive subset of experiments in
   Table~\ref{tab:fair_overall}.
   Conclusive: count of experiments (out of 2{,}000) with a conclusive outcome.
   Acceptance and Rejection rates are conditioned on conclusive experiments
@@ -218,7 +218,10 @@ set $N_{\rm max}$ generously to allow ePitG to reach its full potential.
   $N_{\rm goal}$: expected precision-based stop iteration (Equation~\ref{eq:pitg_stop_iteration});
   Conclusiveness: fraction of $M$ experiments with a conclusive outcome;
   Conclusiveness Ratio: ePitG/PitG conclusiveness;
-  ePitG $N_{\rm stop}$: quartile statistics restricted to conclusive ePitG experiments;
+  ePitG $N_{\rm stop}$: quartile statistics restricted to conclusive ePitG
+  experiments (note that results of line $\omega_{\rm goal}=0.08$ slightly differ from
+  the corresponding in
+  Table~\ref{tab:fair_overall} which summarises all experiments).;
   $\Delta_{\rm IQR} = N_{\rm 75\%} - N_{\rm 25\%}$.
   For $\omega_{\rm goal} \le 0.08$, $N_{\rm 25\%} = N_{\rm goal}$, showing that many
   ePitG experiments stop as soon as the precision goal is first met.
@@ -263,7 +266,7 @@ serving as a key inflection point in all three panels.
 As established in Section~\ref{sec:fair_coin}, HDI+ROPE and ePitG open near 100\%
 conclusiveness at $\theta_{\rm true}=0.5$, while PitG sits at only 36.7\%, with the
 trade-off against $\omega_{\rm goal}$ discussed there. The qualitative trends shown
-below generalise across values of $\omega_{\rm goal}$.
+below generalise across values of $\omega_{\rm goal}$ (Section~\ref{sec:goal_impact}).
 
 All three algorithms show a dip in conclusiveness as $\theta_{\rm true}$ approaches
 ${\rm ROPE}_{\rm max}$, after which conclusiveness rises again. HDI+ROPE and ePitG
@@ -443,12 +446,14 @@ $0.60 \lesssim \theta_{\rm true} \lesssim 0.63$: ePitG gains conclusive outcomes
 extra sampling cost in this region. The lower IQR band confirms that a substantial
 fraction of ePitG experiments stop exactly when PitG does, keeping the median
 $N_{\rm stop}$ ratio low. At $\theta_{\rm true}=0.5$, the conclusiveness ratio is
-$2.66$ while the $N_{\rm stop}$ ratio has an IQR of $1.00$--$1.29$ (median $1.04$,
+$2.66$ (cf.\ Table~\ref{tab:goal_impact} for how this ratio varies with $\omega_{\rm goal}$)
+while the $N_{\rm stop}$ ratio has an IQR of $1.00$--$1.29$ (median $1.04$,
 mean $1.21$): roughly a $2.7\times$ gain in conclusiveness at a median cost of only
 $4\%$ more samples.
 
 The apparent flattening of both ratios near ${\rm ROPE}_{\rm max}$ is an artefact of
 the finite cap $N_{\rm max}=1{,}500$; with a larger cap both curves would peak sharply
 at the boundary. Qualitatively similar results hold for
-$(\theta_{\rm null}=0.7,\ \omega_{\rm goal}=0.08)$ and
-$(\theta_{\rm null}=0.5,\ \omega_{\rm goal}=0.06)$ (not shown).
+$(\theta_{\rm null}=0.7,\ \omega_{\rm goal}=0.08$ ; not shown) and
+$(\theta_{\rm null}=0.5,\ \omega_{\rm goal}=0.06$; not shown but
+see Section~\ref{sec:goal_impact} for the $\omega_{\rm goal}$ sensitivity at $\theta_{\rm true}=0.5$).
