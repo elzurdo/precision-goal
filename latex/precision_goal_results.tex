@@ -8,7 +8,7 @@ spanning the ROPE and its boundaries.
 Figure \ref{fig:iterations} presents a hand-picked fair coin experiment chosen to
 illustrate stark differences in outcomes across the three algorithms.\footnote{This figure
 is similar to the top panels in \cite{kruschke2015doing} Figures 13.4 and 13.5.
-The sequence itself may be found in the open source material under zurda bah SEQUENCE\_HANDPICKED.
+The sequence itself may be found in the open source material under SEQUENCE\_HANDPICKED.
 \textcolor{red}{\textbf{[TODO: provide the exact sequence]}}}
 The posteriors in Figure~\ref{fig:posteriors} correspond to three specific iterations
 of this same experiment.
@@ -115,16 +115,16 @@ stop-iteration and sample-proportion statistics across all and conclusive experi
 
 \begin{table}[h!]
   \begin{center}
-  \begin{tabular}{c|c|c|c}
+  \begin{tabular}{c|c|c|c|c}
     \hline
-    Algorithm &  Conclusive Rate  & $N_{\rm 50\%}$ & $N_{\rm 25\%} - N_{\rm 75\%}$\\
+    Algorithm &  Conclusive Rate  & $N_{\rm 50\%}$ & ${\rm IQR}_{N} = N_{\rm 25\%} - N_{\rm 75\%}$ & $\Delta_{\rm IQR}$\\
     \hline
-    HDI+ROPE & 0.982 & 523 & 415-721  \\
-    PitG     & \textcolor{red}{\textbf{0.367}}  & 599 & 598-599 \\
-    ePitG    & \textcolor{green}{\textbf{0.977}}  & 627 & 598-794 \\
+    HDI+ROPE & 0.982 & 523 & 415 - 721& 306  \\
+    PitG     & \textcolor{red}{\textbf{0.367}}  & 599 & 598 - 599& 1 \\
+    ePitG    & \textcolor{green}{\textbf{0.977}}  & 627 & 598 - 794& 196 \\
     \hline
   \end{tabular}
-  \caption{Summary statistics for all $M=2{,}000$ fair coin experiments
+  \caption{TODO: update values. Summary statistics for all $M=2{,}000$ fair coin experiments
   ($\theta_{\rm true}=\theta_{\rm null}=0.5$, $\omega_{\rm goal}=0.08$;
   cf.\ Figure~\ref{fig:fair_iter_vs_rate}).
   $N_{\rm 50\%}$: median stop iteration;
@@ -158,7 +158,7 @@ PitG.
     ePitG    & 1953 & 1     & 0     & 0.5008 & 0.4895-0.5105\\
     \hline
   \end{tabular}
-  \caption{Summary statistics for the conclusive subset of experiments in
+  \caption{TODO: explore if needed to update values. Summary statistics for the conclusive subset of experiments in
   Table~\ref{tab:fair_overall}.
   Conclusive: count of experiments (out of 2{,}000) with a conclusive outcome.
   Acceptance and Rejection rates are conditioned on conclusive experiments
@@ -172,14 +172,60 @@ PitG.
 \end{center}
 \end{table}
 
+\subsubsection{Goal Impact}\label{sec:goal_impact}
+
 The choice of $\omega_{\rm goal}$ governs the fundamental precision--conclusiveness
-trade-off. Tightening from $\omega_{\rm goal}=0.08$ to $0.06$ raises PitG's
-conclusiveness at $\theta_{\rm true}=0.5$ from 36.7\% to 82.5\%, and ePitG's from
-97.7\% to \textcolor{red}{\textbf{[TODO: verify ePitG conclusiveness at
-$\omega_{\rm goal}=0.06$, placeholder $\sim\!99\%$]}}, at the cost of a substantially
-larger required sample size: $N_{\rm goal}=1{,}065$, a $1.8\times$ increase.
-Practitioners should therefore select $\omega_{\rm goal}$ to reflect their tolerance
-for imprecision and their available sampling budget.
+trade-off for PitG. Table~\ref{tab:goal_impact} shows the effect across a range of values
+at $\theta_{\rm true}=0.5$. Tightening $\omega_{\rm goal}$ (decreasing it) raises PitG's
+conclusiveness at the cost of a larger required sample size: $N_{\rm goal}$ grows
+quadratically as $\omega_{\rm goal}$ decreases (Equation~\ref{eq:pitg_stop_iteration}).
+ePitG's conclusiveness, by contrast, remains essentially flat across the full range
+($0.972$--$0.979$), demonstrating robustness to the choice of $\omega_{\rm goal}$.
+The conclusiveness ratio (ePitG/PitG) captures this contrast directly: it grows from
+$1.17$ at $\omega_{\rm goal}=0.06$ to infinity at $\omega_{\rm goal}=0.10$, where PitG
+becomes entirely inconclusive.
+
+At the tightest setting ($\omega_{\rm goal}=0.06$), the ePitG $N_{\rm stop}$ IQR is zero:
+all experiments stop at exactly $N_{\rm goal}$, leaving no room for the additional
+iterations that ePitG normally uses to resolve borderline cases.
+At the loosest setting ($\omega_{\rm goal}=0.10$, equal to the ROPE width), PitG is always
+inconclusive, but ePitG still achieves 97.9\% conclusiveness by collecting more data until
+both precision and conclusiveness are jointly satisfied.
+
+The conclusiveness of ePitG is more sensitive to $N_{\rm max}$ (fixed at $1{,}500$ in this
+example) than to $\omega_{\rm goal}$, whereas PitG always stops at $N_{\rm goal}$ regardless.
+Consequently, $N_{\rm goal}$ serves as a minimum budget for ePitG: for tight precision goals
+it is sufficient to achieve high conclusiveness; for looser goals, the researcher should
+set $N_{\rm max}$ generously to allow ePitG to reach its full potential.
+
+\begin{table}[h!]
+  \begin{center}
+  \begin{tabular}{c|c|c|c|c|c|c|c}
+    \hline
+    & &\multicolumn{1}{c|}{PitG} & \multicolumn{1}{c|}{ePitG} & \multicolumn{1}{c|}{Conclusiveness Ratio} & \multicolumn{3}{c}{ePitG $N_{\rm stop}$} \\
+    $\omega_{\rm goal}$ & $N_{\rm goal}$ & Conclusiveness & Conclusiveness  &  ePitG/PitG & $ N_{\rm 25\%}$ &  $N_{\rm 75\%}$ & $\Delta_{\rm IQR}$\\
+    \hline
+    0.06 & 1,066 & 0.825 & 0.972 & 1.17 & 1,066 & 1,066 & 0 \\
+    0.07 & 783 & 0.594 & 0.975 & 1.64 & 783 & 832 & 49 \\
+    0.08 & 599 & 0.367 & 0.977 & 2.66 & 599 & 775 & 176 \\
+    0.09 & 473 & 0.127 & 0.978 & 7.73 & 487 & 752 & 265 \\
+    0.10 & 383 & 0.    & 0.979 & --  & 428 & 730 & 302 \\
+    \hline
+  \end{tabular}
+  \caption{Impact of $\omega_{\rm goal}$ on PitG and ePitG performance
+  ($\theta_{\rm true}=\theta_{\rm null}=0.5$, $M=2{,}000$ experiments,
+  $N_{\rm max}=1{,}500$, ${\rm ROPE}_{\rm max}-{\rm ROPE}_{\rm min}=0.1$).
+  $N_{\rm goal}$: expected precision-based stop iteration (Equation~\ref{eq:pitg_stop_iteration});
+  Conclusiveness: fraction of $M$ experiments with a conclusive outcome;
+  Conclusiveness Ratio: ePitG/PitG conclusiveness;
+  ePitG $N_{\rm stop}$: quartile statistics restricted to conclusive ePitG experiments;
+  $\Delta_{\rm IQR} = N_{\rm 75\%} - N_{\rm 25\%}$.
+  For $\omega_{\rm goal} \le 0.08$, $N_{\rm 25\%} = N_{\rm goal}$, showing that many
+  ePitG experiments stop as soon as the precision goal is first met.
+ }
+  \label{tab:goal_impact}
+\end{center}
+\end{table}
 
 The fair coin case thus demonstrates a clear hierarchy: ePitG matches HDI+ROPE's
 conclusiveness and PitG's zero-false-positive guarantee at a modest median cost.

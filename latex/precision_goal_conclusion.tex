@@ -25,12 +25,17 @@ PitG's 36.7\% --- a $2.7\times$ gain in conclusiveness at a median cost of only 
 more samples. The efficiency gain is most pronounced near the ROPE boundaries, precisely
 where correct decisions matter most; once $\theta_{\rm true}$ moves well outside the
 ROPE, ePitG converges to PitG and both stop at $N_{\rm goal}(\theta_{\rm true})$.
-These figures correspond to $\omega_{\rm goal}=0.08$, i.e.\ a $\pm 4$ percentage
+These figures correspond to a ROPE width of $\Delta_{\rm ROPE}=0.1$ and a precision goal of $\omega_{\rm goal}=0.08$, i.e.\ a $\pm 4$ percentage
 point margin of error, a standard reporting precision in single-group binomial analyses
 such as opinion polling and survey-based research. The qualitative advantage of ePitG over PitG is robust
 across precision goals: looser goals (larger $\omega_{\rm goal}$) worsen PitG's
 inconclusive rate and amplify ePitG's gain, while tighter goals improve PitG's
 conclusiveness at the cost of proportionally larger samples for both methods.
+Quantitatively, ePitG's conclusiveness varies by less than one percentage point
+($0.972$--$0.979$) across $\omega_{\rm goal}=0.06$--$0.10$, while the
+conclusiveness ratio (ePitG/PitG) ranges from $1.17\times$ at the tightest
+setting and grows exponentially. At $\omega_{\rm goal}=0.10$ PitG yields no conclusive
+outcomes (Table~\ref{tab:goal_impact}).
 
 Both precision-based methods share an important analytical property: the expected stop
 iteration is given in closed form by

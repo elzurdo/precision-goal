@@ -2,6 +2,10 @@ The central finding of this paper is that ePitG resolves the tension inherent in
 PitG: requiring both precision and conclusiveness simultaneously yields a 97.7\%
 conclusiveness rate with a zero false-positive rate at $\theta_{\rm true}=\theta_{\rm null}=0.5$,
 at a median sample cost of only 4.7\% over PitG.
+Moreover, ePitG's conclusiveness is robust to the choice of $\omega_{\rm goal}$:
+across $\omega_{\rm goal}=0.06$--$0.10$, it varies by less than one percentage
+point ($0.972$--$0.979$), while PitG's conclusiveness spans from $82.5\%$ to
+$0\%$ (Section~\ref{sec:goal_impact}).
 The following sections place this result in methodological context, draw out its
 practical implications, and acknowledge its honest limitations.
 
@@ -109,6 +113,10 @@ suppressed by the precision requirement.
 A researcher can therefore calibrate the operating characteristics in advance by
 verifying via the analytical formula or simulation that the planned $N_{\rm max}$
 achieves the target conclusiveness rate at the effect sizes of interest.
+Notably, ePitG's conclusiveness is more sensitive to $N_{\rm max}$ than to
+$\omega_{\rm goal}$ (Section~\ref{sec:goal_impact}); setting $N_{\rm max}$
+generously is therefore the primary practical lever for ensuring high
+decisiveness across a range of precision goals.
 
 One option to increase signal with a limited budget is to incorporate informative priors.
 We defer a full treatment of prior selection to future work, noting that informative
