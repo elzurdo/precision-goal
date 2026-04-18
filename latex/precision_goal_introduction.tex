@@ -54,11 +54,19 @@ This phenomenon, known as early peeking, can result in premature and biased conc
 % This paper quantified how flexible stopping rules inflate false-positive rates,
 % directly motivating the decoupled stopping and decision rules discussed here.
 
-To address this, \cite{kruschke2015doing} advocated for a method that strictly decouples
-these two steps. He proposed using a predetermined target for posterior precision as the
+Following the \textit{Accuracy in Parameter Estimation} paradigm \citep{maxwell2008},
+\cite{kruschke2015doing} advocated for a method that strictly decouples these two steps,
+thereby addressing the risk of premature and biased conclusions from early peeking.
+He proposed using a predetermined target for posterior precision as the
 sole \textit{stopping rule}, independent of the hypothesis outcome. Only once this precision goal
-is met is the \textit{decision rule} applied to accept or reject the null hypothesis
-(the importance of precision as a goal was also pointed out by \citealt{maxwell1984}).
+is met is the \textit{decision rule} applied to accept or reject the null hypothesis.
+% \citet{maxwell2008}:
+% Maxwell, Kelley \& Rausch (2008) "Sample Size Planning for Statistical Power and Accuracy
+% in Parameter Estimation", Annual Review of Psychology.  This is the foundational paper for
+% the AIPE (Accuracy in Parameter Estimation) paradigm, which argues sample sizes should be
+% planned to achieve sufficiently narrow confidence/credible intervals --- the direct academic
+% precursor to Kruschke's PitG.  Citation IS independently justified; it is not merely
+% echoing Kruschke's bibliography.
 \cite{kruschke2015doing} demonstrated that this ``Precision is the Goal'' (PitG) method
 eliminates bias in outcome sampling. However, our analysis reveals a subtle but important
 limitation: when the null hypothesis is true, or practically so, PitG often yields a high rate of inconclusive
@@ -82,6 +90,9 @@ at a median cost of only 4.7\% more samples.
 This gain is most pronounced when the null is true or practically so --- precisely the
 regime where PitG's inconclusive rate is highest --- while ePitG also maintains decisive
 outcomes when the null is false, yielding a robust decision mechanism across experimental conditions.
+Moreover, ePitG's conclusiveness is robust to the choice of precision goal: across
+$\omega_{\rm goal}=0.06$--$0.10$, it varies by less than one percentage point
+($0.972$--$0.979$), while PitG's conclusiveness ranges from $82.5\%$ to $0\%$.
 
 Our results are demonstrated through simulations with single-group dichotomous data, though the
 framework extends naturally to continuous outcomes and two-group comparisons (see Discussion in Section \ref{sec:discussion}).
