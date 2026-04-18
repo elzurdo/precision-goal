@@ -1,10 +1,8 @@
 Here we describe three stopping algorithms for sequential hypothesis testing.
-We organize the methods as follows:
-\begin{enumerate}
-    \item We outline the \textbf{Theoretical Framework}, defining the heuristics (ROPE, HDI) and the universal "Decision Rule" shared by all methods.
-    \item We detail the three \textbf{Sequential Stopping Algorithms}: HDI+ROPE, Precision is the Goal, and Enhanced Precision is the Goal.
-    \item We describe the \textbf{Experimental Design} used to evaluate these algorithms on synthetic data.
-\end{enumerate}
+We first establish the \textbf{Theoretical Framework} (ROPE, HDI, and the shared Decision Rule),
+then detail the three \textbf{Sequential Stopping Algorithms} (HDI+ROPE, Precision is the Goal,
+and Enhanced Precision is the Goal), and finally describe the \textbf{Experimental Design}
+used to evaluate them on synthetic data.
 
 Before proceeding, we note that two other widely used methods --- null hypothesis
 significance testing (NHST, based on p-values) and Bayes Factors --- operate under
@@ -19,7 +17,7 @@ Appendices~\ref{app:nhst} and~\ref{app:app_bayes_factors}, respectively.
 \subsection{Theoretical Framework}\label{sec:theoretical_framework}
 
 We study three algorithms that rely on two Bayesian heuristics that together characterise the
-posterior distribution: its \textit{location} (which conveys the effect size, i.e, how far the estimate sits from the null)
+posterior distribution: its \textit{location} (which conveys the effect size, i.e., how far the estimate sits from the null)
 and its \textit{width} (how uncertain that estimate is)\footnote{Here we refer to \textit{epistemic uncertainty} meaning the uncertainty in our knowledge about the true value of a parameter, as opposed to aleatory uncertainty which is inherent variability in the system being studied.}. Location is formalised through
 the ROPE and width through the HDI; together they define a shared Decision Rule that
 all three algorithms apply once their respective stopping criteria are met.
@@ -38,9 +36,12 @@ A common misconception in hypothesis testing is that a ``statistically significa
 % smallest difference a patient would perceive as beneficial. Directly supports the
 % MCID example and grounds the ROPE concept in established clinical practice.
 
-Consider a hypothetical scenario where a researcher examines if a therapeutic differs in impact by gender. If we assume that enough data was collected to demonstrate that the difference is ``statistically significant'', e.g., the drug is 72.1\% beneficial for males and 72.3\% for females, a practitioner may consider this equivalent for all practical purposes. To justify treating the usage of the drug differently by gender, a meaningful absolute difference (e.g., 5\% or 10\%) would be required. Hence, the researcher should define in advance an ``effective area'' around the null hypothesis.
+Consider a hypothetical scenario where a researcher examines if a therapeutic differs in impact by gender.
+If we assume that enough data was collected to demonstrate that the difference is ``statistically significant'', e.g., the drug is 72.1\% beneficial for males and 72.3\% for females, a practitioner may consider this equivalent for all practical purposes. To justify treating the usage of the drug differently by gender, a meaningful absolute difference (e.g., 5\% or 10\%) would be required. Hence, the researcher should define in advance an ``effective area'' around the null hypothesis.
 
-One such metric of interest to account for the importance of the effective size is the \textbf{Region of Practical Equivalence} (ROPE). The ROPE is defined as an area around the null value considered ``similar enough to the null hypothesis'' such that if the true value is within this area, it is effectively the same as the null hypothesis.
+One principled way to operationalise effect size is the \textbf{Region of Practical Equivalence} (ROPE).
+The ROPE is defined as an area around the null value considered ``similar enough to the null hypothesis''
+such that if the true value is within this area, it is effectively the same as the null hypothesis.
 
 The width of the ROPE depends on the task at hand. For instance, a board game manufacturer requires dice to be fair to a reasonable standard, but not to a premium precision indistinguishable to a casual player. Conversely, a casino requires a much stricter tolerance (a narrower ROPE) to ensure regulatory compliance and fair play.
 
@@ -64,13 +65,13 @@ density}. For a symmetric, bell-shaped posterior this coincides with the ETI (eq
 but for a skewed posterior the HDI is noticeably shorter.
 
 Throughout this work we use the HDI at the 95\% level to remain comparable with traditional
-frequentist hypothesis testing. \cite{kruschke2015doing} notes that for numerical posteriors
+frequentist hypothesis testing.\footnote{\cite{kruschke2015doing} notes that for numerical posteriors
 obtained via Markov Chain Monte Carlo (MCMC), 95\% HDI estimation requires at least 10{,}000 samples; a slightly lower
 level such as 94\% is recommended for fewer samples. \cite{mcelreath2016} advocates 89\%
-(a prime, to underscore the arbitrariness of any threshold). Because we employ analytical
+(the highest prime below 100, to underscore the arbitrariness of any threshold). Because we employ analytical
 posteriors in our experiments (Section~\ref{sec:experimental_design}), sampling noise is not a
 concern and 95\% is unambiguous; practitioners relying on sampled (e.g., MCMC-based) posteriors
-should consider the lower thresholds noted above.
+should consider the lower thresholds noted above.}
 
 \subsubsection{The Decision Rule}\label{sec:decision_criterion}
 
@@ -119,13 +120,6 @@ to a null hypothesis of $\theta_{\rm null}=0.5$, and a ROPE width $\Delta_{\rm R
 The insights from Figure \ref{fig:posteriors} illustrate that the decision outcome may be iteration-dependent. An inconclusive outcome implies that the data collected is insufficient to justify a decision. In a live setting, a human-in-the-loop (or an algorithm, common in automated high-frequency environments) would need to either conduct a risk assessment or collect more data. Since risk assessment is highly contextual, we defer that discussion and focus on the necessity of collecting more data to avoid inconclusive outcomes.
 
 Algorithm \ref{alg:decision_criterion} further formalises this logic.
-
-% Logic for Enhanced PitG. Will need to update variables names. E.g, L should be HDI_min, etc.
-% \begin{itemize}
-%     \item \textbf{Accept Null}: $(\omega \leq \omega_{\rm goal}) \land ( {\rm ROPE}_{\rm min} \leq L) \land (U \leq {\rm ROPE}_{\rm max})$
-%     \item \textbf{Reject Null}: $(\omega \leq \omega_{\rm goal}) \land (U < {\rm ROPE}_{\rm min} \lor {\rm ROPE}_{\rm max} < L )$
-%     \item \textbf{Inconclusive}: Otherwise
-% \end{itemize}
 
 \begin{algorithm}
     \caption{The Decision Rule}\label{alg:decision_criterion}
@@ -197,11 +191,11 @@ Table \ref{tab:comparison} provides a high-level comparison of the three algorit
 \begin{table}[h!]
     \begin{center}
       \begin{tabular}{l|c|l|l}
-        \textbf{Algorithm} & \textbf{Pre-Survey} & \textbf{Stop Criterion} &  \textbf{Stop/Decision Logic} \\
+        \textbf{Algorithm} & \textbf{Pre-Survey} & \textbf{Stop Criterion} &  \textbf{Precision/Location Coupling} \\
         \hline
-        HDI + ROPE & $N_\mathrm{min}$ & Decision is conclusive & Stop $\&$ Decision \\
-        Precision is the Goal & $\omega_{\rm Goal}$ & $\omega_{\rm HDI}$ $\le$ $\omega_{\rm Goal}$ & Stop then Decision \\
-        Enhanced PitG & $\omega_{\rm Goal}$ & $\omega_{\rm HDI}$ $\le$ $\omega_{\rm Goal}$ \textbf{AND} & Stop $\&$ Decision \\
+        HDI + ROPE & $N_\mathrm{min}$ & Decision is conclusive & Location only \\
+        Precision is the Goal & $\omega_{\rm Goal}$ & $\omega_{\rm HDI}$ $\le$ $\omega_{\rm Goal}$ & Precision then Location \\
+        Enhanced PitG & $\omega_{\rm Goal}$ & $\omega_{\rm HDI}$ $\le$ $\omega_{\rm Goal}$ \textbf{AND} & Precision $+$ Location \\
          & & Decision is conclusive & \\
       \end{tabular}
       \caption{Comparison of stopping algorithms. `Decision is conclusive' means the HDI
@@ -293,9 +287,20 @@ the algorithm stops (precision reached) but the result is inconclusive (posterio
     \end{algorithmic}
 \end{algorithm}
 
-\subsubsection{Enhanced Precision Is The Goal Stopping: Precision and Location}
+\subsubsection{Enhanced Precision Is The Goal Stopping: Precision and Location}\label{sec:enhanced_pitg}
 
-We propose \textbf{Enhanced Precision is the Goal}, a conservative variant of PitG, to mitigate the high rate of inconclusive results. This method ``re-couples'' the criteria: it stops strictly when \textit{both} the precision goal is met \textit{AND} a conclusive decision can be made.
+We propose \textbf{Enhanced Precision is the Goal}, a conservative variant of PitG,
+to mitigate the high rate of inconclusive results. This method ``re-couples'' the criteria:
+it stops strictly when \textit{both} the precision goal is met \textit{AND} a conclusive
+decision can be made.
+
+% Logic for Enhanced PitG. Will need to update variables names. E.g, L should be HDI_min, etc.
+% The following is the basic logic:
+% \begin{itemize}
+%    \item \textbf{Accept Null}: $(\omega_{\rm HDI} \leq \omega_{\rm goal}) \land ( {\rm ROPE}_{\rm min} \leq \mathrm{HDI}_\mathrm{min}) \land (\mathrm{HDI}_\mathrm{max} \leq {\rm ROPE}_{\rm max})$
+%    \item \textbf{Reject Null}: $(\omega_{\rm HDI} \leq \omega_{\rm goal}) \land (\mathrm{HDI}_\mathrm{max} < {\rm ROPE}_{\rm min} \lor {\rm ROPE}_{\rm max} < \mathrm{HDI}_\mathrm{min} )$
+%    \item \textbf{Inconclusive}: Otherwise: Collect more data until $N < N_\mathrm{max}$
+% \end{itemize}
 
 As seen in Algorithm \ref{alg:epitg}, strictly enforcing both conditions ensures that we do not stop in an inconclusive state, potentially at the cost of collecting more data (up to $N_\mathrm{max}$).
 
@@ -329,7 +334,7 @@ For models where the posterior concentrates around the true parameter as data ac
 a property of all regular parametric families, guaranteed asymptotically by the
 Bernstein-von Mises theorem, the HDI width shrinks proportionally to $N^{-1/2}$.
 This makes the expected minimum stopping iteration of precision-based algorithms predictable in advance.
-Under a normal approximation (central limit theorem; CLT) , the expected sample size to achieve a precision goal
+Under a normal approximation (central limit theorem; CLT), the expected sample size to achieve a precision goal
 $\omega_{\rm goal}$ is proportional to the per-observation variance $V(\theta)$ of the
 estimator (see Appendix~\ref{app:expected_stop} for the full derivation).
 As a concrete example, for a Bernoulli rate parameter $\theta$ as in the setting introduced
@@ -377,7 +382,9 @@ algorithms' results.}
 We generate $M=2,000$ independent sequences of $N_{\rm max}=1,500$ trials each. This maximum sample size is chosen to simulate a typical medium-sized survey or experiment.
 
 
-We test multiple scenarios for the ground truth probability between $0.5 \le \theta_{\rm true} \le 0.8$ against a null hypothesis of $\theta_{\rm null}=0.5$.
+We test multiple scenarios for the ground truth probability $0.5 \le \theta_{\rm true} \le 0.8$
+against a null hypothesis of $\theta_{\rm null}=0.5$, including the fair-coin case
+$\theta_{\rm true}=\theta_{\rm null}=0.5$.
 \subsubsection{Algorithm Configuration}
 
 Unless stated otherwise, we utilize the following default parameters, chosen to reflect detailed but realistic experimental conditions (e.g., opinion polling):
