@@ -36,8 +36,8 @@ A common misconception in hypothesis testing is that a ``statistically significa
 % smallest difference a patient would perceive as beneficial. Directly supports the
 % MCID example and grounds the ROPE concept in established clinical practice.
 
-Consider a hypothetical scenario where a researcher examines if a therapeutic differs in impact by gender.
-If we assume that enough data was collected to demonstrate that the difference is ``statistically significant'', e.g., the drug is 72.1\% beneficial for males and 72.3\% for females, a practitioner may consider this equivalent for all practical purposes. To justify treating the usage of the drug differently by gender, a meaningful absolute difference (e.g., 5\% or 10\%) would be required. Hence, the researcher should define in advance an ``effective area'' around the null hypothesis.
+Consider a hypothetical scenario where a researcher examines whether a therapeuticdiffers in impact by gender.
+If we assume that enough data were collected to demonstrate that the difference is ``statistically significant'', e.g., the drug is 72.1\% beneficial for males and 72.3\% for females, a practitioner may consider this equivalent for all practical purposes. To justify treating the usage of the drug differently by gender, a meaningful absolute difference (e.g., 5\% or 10\%) would be required. Hence, the researcher should define in advance an ``effective area'' around the null hypothesis.
 
 One principled way to operationalise effect size is the \textbf{Region of Practical Equivalence} (ROPE).
 The ROPE is defined as an area around the null value considered ``similar enough to the null hypothesis''
@@ -111,16 +111,16 @@ and is worth examining carefully; we do so in Section~\ref{sec:accept_reject_mea
     \label{fig:posteriors}
 \end{figure}
 
-In Figure \ref{fig:posteriors} we display three posteriors from different stopping points
-of the same hand-picked experiment of Bernoulli trials and their posteriors are compared
-to a null hypothesis of $\theta_{\rm null}=0.5$, and a ROPE width $\Delta_{\rm ROPE}= 0.1$.
+Figure~\ref{fig:posteriors} displays posteriors from three stopping points of the same
+hand-picked Bernoulli experiment, compared against $\theta_{\rm null}=0.5$ and
+ROPE width $\Delta_{\rm ROPE}=0.1$.
 \begin{itemize}
     \item In the \textbf{top panel}, we examine a stop at iteration 126. The 95\% HDI is fully outside the ROPE, leading to a rejection of the null hypothesis.
     \item In the \textbf{middle panel}, a stop is triggered at iteration 598. Here, the HDI straddles the ROPE boundary, resulting in an inconclusive decision.
     \item In the \textbf{bottom panel}, we stop at iteration 804. The 95\% HDI falls fully within the ROPE, allowing us to accept $\theta_{\rm null}$.
 \end{itemize}
 
-The insights from Figure \ref{fig:posteriors} illustrate that the decision outcome may be iteration-dependent. An inconclusive outcome implies that the data collected is insufficient to justify a decision. In a live setting, a human-in-the-loop (or an algorithm, common in automated high-frequency environments) would need to either conduct a risk assessment or collect more data. Since risk assessment is highly contextual, we defer that discussion and focus on the necessity of collecting more data to avoid inconclusive outcomes.
+Figure~\ref{fig:posteriors} illustrates that the decision outcome may be iteration-dependent. An inconclusive outcome implies that the data collected is insufficient to justify a decision. In a live setting, a human-in-the-loop (or an algorithm, common in automated high-frequency environments) would need to either conduct a risk assessment or collect more data. Since risk assessment is highly contextual, we defer that discussion and focus on the necessity of collecting more data to avoid inconclusive outcomes.
 
 Algorithm \ref{alg:decision_criterion} further formalises this logic.
 
@@ -205,7 +205,7 @@ Table \ref{tab:comparison} provides a high-level comparison of the three algorit
     \end{center}
   \end{table}
 
-In the Pre-Survey column we highlight the characteristic parameter required to be determined prior to the collection of data.
+In the Key Input column we highlight the characteristic parameter required to be determined prior to the collection of data.
 \begin{enumerate}
     \item \textbf{HDI + ROPE}: Requires $N_\mathrm{min}$ (minimal sample size), e.g., 30. This is crucial as the algorithm is sensitive to early outliers.
     \item \textbf{Precision Methods}: Require $\omega_{\rm Goal}$, the target precision width.
@@ -334,7 +334,7 @@ Note that all stopping algorithms (\ref{alg:hdi_rope}--\ref{alg:epitg}) assume t
 For models where the posterior concentrates around the true parameter as data accumulate,
 a property of all regular parametric families, guaranteed asymptotically by the
 Bernstein-von Mises theorem, the HDI width shrinks proportionally to $N^{-1/2}$.
-This makes the expected minimum stopping iteration of precision-based algorithms predictable in advance.
+This makes the expected minimum stopping iteration of precision-based algorithms predictable.
 Under a normal approximation (central limit theorem; CLT), the expected sample size to achieve a precision goal
 $\omega_{\rm goal}$ is proportional to the per-observation variance $V(\theta)$ of the
 estimator (see Appendix~\ref{app:expected_stop} for the full derivation).
@@ -380,7 +380,10 @@ the setup of \S13.3 of \cite{kruschke2015doing} and expand upon it with a broade
 range of $\theta_{\rm true}$ scenarios, systematic performance metrics across $M=2{,}000$
 simulations, and visualisations designed to directly compare all three algorithms.}
 
-We generate $M=2,000$ independent sequences of $N_{\rm max}=1,500$ trials each. This maximum sample size is chosen to simulate a typical medium-sized survey or experiment.
+We generate $M=2,000$ independent sequences of $N_{\rm max}=1,500$ trials each.
+This choice exceeds $N_{\rm goal}$ at the most demanding setting tested ($\omega_{\rm goal}=0.06$,
+$\theta_{\rm true}=0.5$), where Equation~\ref{eq:pitg_stop_iteration} gives $N_{\rm goal}\approx 1{,}067$,
+ensuring that ePitG can reach its stopping criterion in the vast majority of experiments.
 
 We test multiple scenarios for the ground truth probability $0.5 \le \theta_{\rm true} \le 0.8$
 against a null hypothesis of $\theta_{\rm null}=0.5$, including the fair-coin case
