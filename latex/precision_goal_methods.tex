@@ -208,7 +208,7 @@ In the Key Input column we highlight the characteristic parameter required to be
 \begin{enumerate}
     \item \textbf{HDI + ROPE}: Requires $N_\mathrm{min}$ (minimal sample size), e.g., 30. This is crucial since the algorithm is sensitive to early outliers.
     \item \textbf{Precision Methods}: Require $\omega_{\rm Goal}$, the target precision width.
-    By definition it must be narrower than the ROPE width $\Delta_\mathrm{ROPE}$ to ensure
+    By definition it must be narrower of equal to the ROPE width $\Delta_\mathrm{ROPE}$ to ensure
     that it could be fully contained within.
 \end{enumerate}
 
@@ -256,7 +256,8 @@ than true effect.
     \end{algorithmic}
 \end{algorithm}
 
-This method is efficient but, as detailed in Section \ref{sec:results}, serves as a cautionary use case of ``confirmation bias'' or ``peeking'' intent if not bounded by $N_\mathrm{min}$.
+This method is efficient but, as detailed in Section \ref{sec:results}, serves as a
+cautionary use case of ``confirmation bias'' or ``peeking'' intent. %% if not bounded by $N_\mathrm{min}$.
 
 \subsubsection{Precision is the Goal Stopping: Precision Only}
 
@@ -349,8 +350,7 @@ the largest sample for any given precision goal, and $N_{\rm goal}$ decreases mo
 as $\theta$ approaches $0$ or $1$.
 Figure~\ref{fig:min_sample_by_goal} illustrates this dependence
 %for both the Bernoulli and continuous cases
-for the Bernoulli case
-across a range of precision goals.
+for the Bernoulli case across $\omega_{\rm goal}$.
 
 \begin{figure}[h!]
   \centering
@@ -392,7 +392,7 @@ $\theta_{\rm true}=\theta_{\rm null}=0.5$.
 Unless stated otherwise, we use the following default parameters, chosen to reflect realistic experimental conditions (e.g., opinion polling):
 
 \begin{itemize}
-    \item \textbf{ROPE}: Considering an effect size of $0.05$ around the $\theta_{\rm null}$, we define the Region of Practical Equivalence as $\mathrm{ROPE}_{\rm max}^{\rm min}=[0.45,\,0.55]$. ($\Delta_{\rm ROPE}=0.1$)
+    \item \textbf{ROPE}: Considering an effect size of $0.05$ around the $\theta_{\rm null}$, we define $\mathrm{ROPE}_{\rm max}^{\rm min}=[0.45,\,0.55]$. ($\Delta_{\rm ROPE}=0.1$)
     \item \textbf{Precision Goal} $\omega_{\rm goal}=0.08$: We set the target precision (HDI width) to 80\% of $\Delta_{\rm ROPE}$.
     \item \textbf{Minimum Sample Size ($N_{\rm min}=30$)}: A practical lower bound to guard against misleadingly decisive stops at small $N$, where aleatoric variability can drive the HDI into or out of the ROPE before sufficient data have accumulated (see Section~\ref{sec:hdi_rope_stopping} for a detailed discussion).
     This parameter is required for the HDI+ROPE algorithm but not the precision-based algorithms.
