@@ -75,22 +75,10 @@ should consider the lower thresholds noted above.}
 
 \subsubsection{The Decision Rule}\label{sec:decision_criterion}
 
-Crucially, we distinguish between the \textbf{Stopping Rule} (when to stop collecting data) and the \textbf{Decision Rule} (what to conclude once stopped). While the three algorithms discussed later differ in their \textit{stopping} criteria, they all share an identical \textbf{Decision Rule}.
-
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=1\textwidth]{cherry_posteriors.png}
-    \caption{Posteriors at three stop iterations from a hand-picked experiment
-    illustrating the three possible decision outcomes.
-    Shaded areas are 95\% HDIs; their widths $\omega_{\rm HDI}$ are annotated.
-    Vertical dashed lines mark the ROPE boundaries.
-    \textit{Top} (iteration 126): HDI fully outside the ROPE $\rightarrow$ Reject $\theta_{\rm null}$.
-    \textit{Middle} (iteration 598): HDI straddles the ROPE $\rightarrow$ Inconclusive.
-    \textit{Bottom} (iteration 804): HDI fully within the ROPE $\rightarrow$ Accept $\theta_{\rm null}$.
-    See Figure~\ref{fig:iterations} for the full sequence of iterations for this experiment.
-    }
-    \label{fig:posteriors}
-\end{figure}
+Crucially, we distinguish between the \textbf{Stopping Rule} (when to stop collecting data)
+and the \textbf{Decision Rule} (what to conclude once stopped). While the three algorithms
+discussed later differ in their \textit{stopping} criteria, they all share an identical
+\textbf{Decision Rule}.
 
 Once the stopping criterion is triggered, the decision is determined solely by the
 relationship between the HDI and the ROPE.
@@ -107,6 +95,21 @@ Let ${\rm ROPE} = [{\rm ROPE}_{\rm min}, {\rm ROPE}_{\rm max}]$ and the posterio
 The interpretation of these outcomes, particularly what it means to \textit{accept}
 the null in a Bayesian framework, differs meaningfully from the frequentist convention
 and is worth examining carefully; we do so in Section~\ref{sec:accept_reject_meaning}.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=1\textwidth]{cherry_posteriors.png}
+    \caption{Posteriors at three stop iterations from a hand-picked experiment
+    illustrating the three possible decision outcomes.
+    Shaded areas are 95\% HDIs; their widths $\omega_{\rm HDI}$ are annotated.
+    Vertical dashed lines mark the ROPE boundaries.
+    \textit{Top} (iteration 126): HDI fully outside the ROPE $\rightarrow$ Reject $\theta_{\rm null}$.
+    \textit{Middle} (iteration 598): HDI straddles the ROPE $\rightarrow$ Inconclusive.
+    \textit{Bottom} (iteration 804): HDI fully within the ROPE $\rightarrow$ Accept $\theta_{\rm null}$.
+    See Figure~\ref{fig:iterations} for the full sequence of iterations for this experiment.
+    }
+    \label{fig:posteriors}
+\end{figure}
 
 In Figure \ref{fig:posteriors} we display three posteriors from different stopping points
 of the same hand-picked experiment of Bernoulli trials and their posteriors are compared
@@ -125,7 +128,7 @@ Algorithm \ref{alg:decision_criterion} further formalises this logic.
     \caption{The Decision Rule}\label{alg:decision_criterion}
     \begin{algorithmic}
     \Require $\mathrm{ROPE}_\mathrm{min}$, $\mathrm{ROPE}_\mathrm{max}$, $\mathrm{HDI}_\mathrm{min}$, $\mathrm{HDI}_\mathrm{max}$
-    \If{$(\mathrm{ROPE}_\mathrm{min} < \mathrm{HDI}_\mathrm{min}) \ \& \ (\mathrm{HDI}_\mathrm{max} < \mathrm{ROPE}_\mathrm{max})$}
+    \If{$(\mathrm{ROPE}_\mathrm{min} \leq \mathrm{HDI}_\mathrm{min}) \ \& \ (\mathrm{HDI}_\mathrm{max} \leq \mathrm{ROPE}_\mathrm{max})$}
         \State Decision = Accept $\theta_{\rm null}$ \Comment{HDI completely within ROPE}
     \ElsIf{$\mathrm{ROPE}_\mathrm{max}<\mathrm{HDI}_\mathrm{min}$}
         \State Decision = Reject $\theta_{\rm null}$ \Comment{HDI completely outside ROPE; $\theta_{\rm null}<\hat\theta$}
