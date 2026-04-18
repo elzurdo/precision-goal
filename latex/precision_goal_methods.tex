@@ -36,8 +36,8 @@ A common misconception in hypothesis testing is that a ``statistically significa
 % smallest difference a patient would perceive as beneficial. Directly supports the
 % MCID example and grounds the ROPE concept in established clinical practice.
 
-Consider a hypothetical scenario where a researcher examines whether a therapeuticdiffers in impact by gender.
-If we assume that enough data were collected to demonstrate that the difference is ``statistically significant'', e.g., the drug is 72.1\% beneficial for males and 72.3\% for females, a practitioner may consider this equivalent for all practical purposes. To justify treating the usage of the drug differently by gender, a meaningful absolute difference (e.g., 5\% or 10\%) would be required. Hence, the researcher should define in advance an ``effective area'' around the null hypothesis.
+Consider a hypothetical scenario where a researcher examines whether a therapeutic differs in impact by gender.
+If we assume that enough data were collected to demonstrate that the difference is ``statistically significant'', e.g., the drug is 72.1\% beneficial for males and 72.3\% for females, a practitioner may consider this equivalent for all practical purposes. To justify prescribing the drug differently by gender, a meaningful absolute difference (e.g., 5\% or 10\%) would be required. Hence, the researcher should define in advance an ``effective area'' around the null hypothesis.
 
 One principled way to operationalise effect size is the \textbf{Region of Practical Equivalence} (ROPE).
 The ROPE is defined as an area around the null value considered ``similar enough to the null hypothesis''
@@ -111,9 +111,8 @@ and is worth examining carefully; we do so in Section~\ref{sec:accept_reject_mea
     \label{fig:posteriors}
 \end{figure}
 
-Figure~\ref{fig:posteriors} displays posteriors from three stopping points of the same
-hand-picked Bernoulli experiment, compared against $\theta_{\rm null}=0.5$ and
-ROPE width $\Delta_{\rm ROPE}=0.1$.
+Figure~\ref{fig:posteriors} illustrates all three outcomes using a hand-picked Bernoulli
+experiment ($\theta_{\rm null}=0.5$, $\Delta_{\rm ROPE}=0.1$):
 \begin{itemize}
     \item In the \textbf{top panel}, we examine a stop at iteration 126. The 95\% HDI is fully outside the ROPE, leading to a rejection of the null hypothesis.
     \item In the \textbf{middle panel}, a stop is triggered at iteration 598. Here, the HDI straddles the ROPE boundary, resulting in an inconclusive decision.
@@ -207,7 +206,7 @@ Table \ref{tab:comparison} provides a high-level comparison of the three algorit
 
 In the Key Input column we highlight the characteristic parameter required to be determined prior to the collection of data.
 \begin{enumerate}
-    \item \textbf{HDI + ROPE}: Requires $N_\mathrm{min}$ (minimal sample size), e.g., 30. This is crucial as the algorithm is sensitive to early outliers.
+    \item \textbf{HDI + ROPE}: Requires $N_\mathrm{min}$ (minimal sample size), e.g., 30. This is crucial since the algorithm is sensitive to early outliers.
     \item \textbf{Precision Methods}: Require $\omega_{\rm Goal}$, the target precision width.
     By definition it must be narrower than the ROPE width $\Delta_\mathrm{ROPE}$ to ensure
     that it could be fully contained within.
@@ -366,7 +365,7 @@ across a range of precision goals.
   \label{fig:min_sample_by_goal}
 \end{figure}
 
-For completeness we mention that for continuous outcomes, $V(\theta)$ is replaced by the
+For completeness, we mention that for continuous outcomes, $V(\theta)$ is replaced by the
 estimand variance $\sigma^2$; see Appendix~\ref{app:expected_stop} for the full
 derivation, including a Student-$t$ variant for small samples.
 
