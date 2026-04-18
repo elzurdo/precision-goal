@@ -71,10 +71,9 @@ is met is the \textit{decision rule} applied to accept or reject the null hypoth
 eliminates the early-peeking bias in outcome sampling. However, our analysis reveals an important
 limitation: when the null hypothesis is true, or practically so, PitG often yields a high rate of inconclusive
 results, rather than correctly accepting the null.\footnote{\citealt{kruschke2015doing} noted in passing that PitG ``did remain undecided
-in some cases'' (\S13.3.2, page 391); our analysis shows this is a systematic and striking effect ---
-as high as $63.3\%$ inconclusive in fair coin simulations ($\theta_{\rm true}=\theta_{\rm null}=0.5$,
-$\omega_{\rm goal}=0.08$) --- and identifies the sampling budget $N_{\rm max}$ and precision goal $\omega_{\rm goal}$
-as the key governing parameters.}
+in some cases'' (\S13.3.2, page 391); our analysis shows this is a systematic and
+striking effect, with the sampling budget $N_{\rm max}$ and precision goal $\omega_{\rm goal}$
+as the key governing parameters. See below for quantitative examples.}
 
 While scientific incentives often favor the discovery of new effects,
 rigorous confirmation of the null hypothesis is equally critical in many fields ---
@@ -95,12 +94,12 @@ of inconclusive outcomes. For example, in the fair coin case
 ($\theta_{\rm true}=\theta_{\rm null}=0.5$) with precision goal $\omega_{\rm goal}=0.08$,
 ePitG reduces PitG's inconclusive rate from 63.3\% to just 2.3\%,
 at a median cost of only 4.7\% more samples.
-This gain is most pronounced when the null is true or practically so --- precisely the
-regime where PitG's inconclusive rate is highest --- while ePitG also maintains decisive
-outcomes when the null is false, yielding a robust decision mechanism across experimental conditions.
 Moreover, ePitG's conclusiveness is robust to the choice of precision goal: across
 $\omega_{\rm goal}=0.06$--$0.10$, it varies by less than one percentage point
 ($0.972$--$0.979$), while PitG's conclusiveness ranges from $82.5\%$ to $0\%$.
+This gain is most pronounced when the null is true or practically so --- precisely the
+regime where PitG's inconclusive rate is highest --- while ePitG also maintains decisive
+outcomes when the null is false, yielding a robust decision mechanism across experimental conditions.
 
 Our results are demonstrated through simulations with single-group dichotomous data, though the
 framework extends naturally to continuous outcomes (Appendix~\ref{app:expected_stop}) and
