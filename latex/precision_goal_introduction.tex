@@ -1,7 +1,7 @@
 
 Empirical hypothesis testing is foundational to scientific progress, enabling researchers
 to assess how well a sample represents an underlying truth.
-A central challenge in this process is determining when enough data has been collected
+A central challenge in this process is determining when enough data have been collected
 to make a reliable decision, especially as the accuracy of statistical assessments
 depends heavily on sample size.  Careful planning for statistical power and precision
 is essential to avoid biased inference and ensure meaningful results \citep{cohen1988}.
@@ -68,15 +68,23 @@ is met is the \textit{decision rule} applied to accept or reject the null hypoth
 % precursor to Kruschke's PitG.  Citation IS independently justified; it is not merely
 % echoing Kruschke's bibliography.
 \cite{kruschke2015doing} demonstrated that this ``Precision is the Goal'' (PitG) method
-eliminates bias in outcome sampling. However, our analysis reveals a subtle but important
+eliminates the early-peeking bias in outcome sampling. However, our analysis reveals an important
 limitation: when the null hypothesis is true, or practically so, PitG often yields a high rate of inconclusive
-results, rather than correctly accepting the null.
+results, rather than correctly accepting the null.\footnote{\citealt{kruschke2015doing} noted in passing that PitG ``did remain undecided
+in some cases'' (\S13.3.2, page 391); our analysis shows this is a systematic and striking effect ---
+as high as $63.3\%$ inconclusive in fair coin simulations ($\theta_{\rm true}=\theta_{\rm null}=0.5$,
+$\omega_{\rm goal}=0.08$) --- and identifies the sampling budget $N_{\rm max}$ and precision goal $\omega_{\rm goal}$
+as the key governing parameters.}
 
 While scientific incentives often favor the discovery of new effects,
-the rigorous confirmation of the null hypothesis is equally critical in fields ranging
+rigorous confirmation of the null hypothesis is equally critical in many fields ---
 from bioequivalence trials for generic drugs \citep{karalis2012} to ``do-no-harm''
-regression testing in software deployment and determining the futility of expensive
-public policy interventions. In this paper, we propose an improved variant we call
+regression testing in software deployment and the futility assessment of expensive
+public policy interventions.
+Yet unlike \textit{Null Hypothesis Significance Testing} (NHST, see Appendix~\ref{app:nhst}),
+the precision-based framework enables exactly this: positive acceptance of the null
+is a genuine and actionable verdict.
+In this paper, we propose an improved variant we call
 ``Enhanced Precision is the Goal'' (ePitG), which recouples the stopping and decision
 rules in a conservative manner.
 Specifically, ePitG requires that \textit{both} the precision goal (stopping rule) and a
@@ -95,7 +103,7 @@ $\omega_{\rm goal}=0.06$--$0.10$, it varies by less than one percentage point
 ($0.972$--$0.979$), while PitG's conclusiveness ranges from $82.5\%$ to $0\%$.
 
 Our results are demonstrated through simulations with single-group dichotomous data, though the
-framework extends naturally to continuous outcomes and two-group comparisons (see Discussion in Section \ref{sec:discussion}).
-We provide practical guidance, analytical insights, code, and tools to facilitate adoption
-of the method across applied settings.
-
+framework extends naturally to continuous outcomes (Appendix~\ref{app:expected_stop}) and
+two-group comparisons (Appendix~\ref{app:extensions}).
+We provide practical guidance, analytical insights, open-source code, and an online calculator
+to facilitate adoption of the method across applied settings.
