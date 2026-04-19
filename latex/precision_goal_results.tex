@@ -78,7 +78,7 @@ statistics in Tables~\ref{tab:fair_overall} and~\ref{tab:fair_conclusive}.
   \label{fig:fair_iter_vs_rate}
 \end{figure}
 
-In Figure~\ref{fig:fair_iter_vs_rate} we see that HDI+ROPE yields a wide range of stop iterations and sample proportions $\hat{\theta}$, with a
+In Figure~\ref{fig:fair_iter_vs_rate}, we see that HDI+ROPE yields a wide range of stop iterations and sample proportions $\hat{\theta}$, with a
 significant portion of results falling outside the ROPE, leading to incorrect rejections
 of $\theta_{\rm null}$. Its $N_{\rm stop}$ distribution is skewed towards early stopping
 at $\sim\!400$, well before $N_{\rm goal}\sim 600$, with a long tail extending to later
@@ -89,7 +89,9 @@ $\theta_{\rm true}=0.5$. However, many of these stops occur when the HDI straddl
 ROPE boundary, yielding a high rate of inconclusive decisions
 (see Figure~\ref{fig:fair_decisions} and Table~\ref{tab:fair_overall}).
 ePitG exhibits a narrower $\hat{\theta}(N_{\rm stop})$ distribution than PitG but extends
-to later iterations, achieving more conclusive results while maintaining unbiased estimates.
+to later iterations, achieving more conclusive results while maintaining zero estimation bias
+(see Figure~\ref{fig:success_by_truth_conclusive} for how bias emerges as symmetry breaks).
+
 
 \begin{figure}[h!]
   \centering
@@ -145,7 +147,7 @@ stop-iteration and sample-proportion statistics across all and conclusive experi
 \end{table}
 
 HDI+ROPE achieves the highest conclusiveness rate (98.2\%), but at the cost of a 6.2\%
-false positive rate. PitG delivers zero false positives, but its conclusiveness rate of
+false-positive rate. PitG delivers zero false positives, but its conclusiveness rate of
 only 36.7\% is strikingly low, with stop iterations all clustering at $N_{\rm goal}$.
 ePitG strikes the intended balance: a 97.7\% conclusiveness rate with zero false
 positives. Its lower quartile $N_{\rm 25\%}\approx N_{\rm goal}$ shows that roughly half
@@ -247,7 +249,7 @@ departs from $\theta_{\rm null}$.
 Building on the fair coin baseline, we now examine how all three algorithms perform as
 $\theta_{\rm true}$ increases from $0.5$ upwards, across and beyond the ROPE,\footnote{By symmetry, results for $\theta_{\rm true}<0.5$ mirror those shown
 here, as reflected in Equation~\ref{eq:pitg_stop_iteration} and Figure~\ref{fig:min_sample_by_goal}.}
-with $\rm ROPE_{\rm max}=0.55$ serving as a key inflection point.
+with ${\rm ROPE}_{\rm max}=0.55$ serving as a key inflection point.
 
 \begin{figure}[h!]
   \centering
@@ -261,8 +263,7 @@ with $\rm ROPE_{\rm max}=0.55$ serving as a key inflection point.
   at each $\theta_{\rm true}$ their sum equals the respective conclusiveness rate.
   \textit{Right}: accuracy rates (proportion of correct decisions out of all
   $M$ experiments); inconclusive experiments are assigned a decision based on whether
-  $\hat{\theta}$ falls inside or outside the ROPE
-  (cf.\ Section~\ref{sec:trends}).}
+  $\hat{\theta}$ falls inside or outside the ROPE.}
   \label{fig:conclusiveness_rates}
 \end{figure}
 
@@ -278,7 +279,7 @@ $\theta_{\rm true}\approx 0.64$, at which point ePitG and PitG become effectivel
 equivalent (for $\theta_{\rm null}=0.5$).
 
 This dip is by design: the ROPE boundaries are natural inflection points, as algorithms
-are constructed to accept $\theta_{\rm null}$ within the ROPE and reject it outside 
+are constructed to accept $\theta_{\rm null}$ within the ROPE and reject it outside
 (see Section~\ref{sec:accept_reject_meaning}).
 The precision-based methods are deliberately conservative near these boundaries, yielding
 lower conclusiveness rates than HDI+ROPE in this region. At the boundary itself, ePitG
@@ -357,11 +358,12 @@ experiments, ePitG decision accuracy exceeds PitG's at every $\theta_{\rm true}$
 (cf.\ Figure~\ref{fig:conclusiveness_rates}, right panel).
 
 
-The preceding analysis has shown that ePitG is decisively superior to PitG
-near and within the ROPE, at the cost of a larger median $N_{\rm stop}$.
+ePitG is decisively superior to PitG near and within the ROPE, at the cost of a larger
+median $N_{\rm stop}$.
 Figure~\ref{fig:stop_iterations_by_truth_conclusive} quantifies this cost for all three
-algorithms, restricting to conclusive outcomes since the stop iteration of inconclusive
-experiments is not informative; including HDI+ROPE also illustrates why the precision
+algorithms, restricting to conclusive outcomes since inconclusive experiments always stop
+at $N_{\rm max}$ and their stop iteration therefore carries no information about
+algorithm behaviour; including HDI+ROPE also illustrates why the precision
 requirement matters.
 
 \begin{figure}[h!]
@@ -397,9 +399,9 @@ towards $0$ or $1$, the direction of the gap depends on where $\theta_{\rm true}
 relative to $\theta_{\rm null}$.
 
 For $\theta_{\rm null}=0.5$, any deviation of $\theta_{\rm true}$ from $0.5$ implies
-$N_{\rm goal}(\theta_{\rm true}) < N_{\rm goal}(\theta_{\rm null})$: the planned budget
-of 599 samples is a conservative upper bound, and experiments stop earlier whenever
-the truth differs from the null.
+$N_{\rm goal}(\theta_{\rm true}) < N_{\rm goal}(\theta_{\rm null})$: the expected stop
+iteration of $N_{\rm goal}=599$ is a conservative upper bound on $N_{\rm stop}$,
+and experiments stop earlier whenever the truth differs from the null.
 
 For $\theta_{\rm null}=0.7$, the picture is asymmetric. When $\theta_{\rm true}>
 \theta_{\rm null}$ (further from $0.5$), $N_{\rm goal}(\theta_{\rm true})<
