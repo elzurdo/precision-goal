@@ -9,18 +9,19 @@ that both precision-based methods exhibit by design.
 
 \subsection{Fair Coin ($\theta_{\rm true}=0.5$)}\label{sec:fair_coin}
 
-fFigure \ref{fig:iterations} presents a hand-picked fair coin experiment chosen to
+\subsubsection{A Hand-Picked Sequence}\label{sec:fair_coin_sequence}
+
+Figure \ref{fig:iterations} presents a hand-picked fair coin experiment chosen to
 illustrate stark differences in outcomes across the three algorithms.\footnote{This figure
 is similar to the top panels in \cite{kruschke2015doing} Figures 13.4 and 13.5.
 The sequence itself may be found in the open source material as 
-available \href{https://github.com/elzurdo/precision-goal/blob/main/py/utils_experiments.py\#L28}{\texttt{SEQUENCE\_HANDPICKED}}.}
-%\href{https://github.com/elzurdo/precision-goal/blob/main/py/utils_experiments.py#L28}{here}.}
+\href{https://github.com/elzurdo/precision-goal/blob/main/py/utils_experiments.py\#L28}{\texttt{SEQUENCE\_HANDPICKED}}.}
 The posteriors in Figure~\ref{fig:posteriors} correspond to three specific iterations
 of this same experiment.
 
 Despite arising from the same sequence of coin tosses, the three algorithms reach
-sharply different conclusions. HDI+ROPE stops early and confidently, though incorrectly,
-rejects $\theta_{\rm null}$. PitG stops at the expected precision iteration but is left
+sharply different conclusions. HDI+ROPE stops early and, incorrectly, rejects
+$\theta_{\rm null}$. PitG stops at the expected precision iteration but is left
 inconclusive, as the HDI straddles the ROPE boundary. ePitG waits until both conditions
 are jointly satisfied and correctly accepts $\theta_{\rm null}$. This divergence from a
 single experiment motivates the large-scale analysis that follows.
@@ -49,6 +50,8 @@ single experiment motivates the large-scale analysis that follows.
   \label{fig:iterations}
 \end{figure}
 
+\subsubsection{Large-Scale Experiments}\label{sec:fair_coin_large_scale}
+
 We expand this analysis to $M=2{,}000$ experiments, displaying outcomes in
 Figures~\ref{fig:fair_iter_vs_rate} and~\ref{fig:fair_decisions},\footnote{Both of these
 visuals are inspired by Figure~13.6 of \cite{kruschke2015doing}.} and summarising key
@@ -75,7 +78,7 @@ statistics in Tables~\ref{tab:fair_overall} and~\ref{tab:fair_conclusive}.
   \label{fig:fair_iter_vs_rate}
 \end{figure}
 
-In Figure ~\ref{fig:fair_iter_vs_rate} we see that HDI+ROPE yields a wide range of stop iterations and sample proportions $\hat{\theta}$, with a
+In Figure~\ref{fig:fair_iter_vs_rate} we see that HDI+ROPE yields a wide range of stop iterations and sample proportions $\hat{\theta}$, with a
 significant portion of results falling outside the ROPE, leading to incorrect rejections
 of $\theta_{\rm null}$. Its $N_{\rm stop}$ distribution is skewed towards early stopping
 at $\sim\!400$, well before $N_{\rm goal}\sim 600$, with a long tail extending to later
@@ -102,7 +105,7 @@ to later iterations, achieving more conclusive results while maintaining unbiase
   \label{fig:fair_decisions}
 \end{figure}
 
-As seen in Figure~\ref{fig:fair_decisions}, HDI+ROPE's rejection rate (left panel) quickly asymptotes at 6\%, while its acceptance
+Figure~\ref{fig:fair_decisions} shows that HDI+ROPE's rejection rate (left panel) quickly asymptotes to 6\%, while its acceptance
 rate begins rising near $N\sim 400$, reflecting a gradual shift from incorrect rejections
 to correct acceptances as more data accumulate.
 
@@ -177,7 +180,7 @@ PitG.
 \end{center}
 \end{table}
 
-\subsubsection{Goal Impact}\label{sec:goal_impact}
+\subsubsection{Sensitivity to $\omega_{\rm goal}$}\label{sec:goal_impact}
 
 The choice of $\omega_{\rm goal}$ governs the fundamental precision--conclusiveness
 trade-off for PitG. Table~\ref{tab:goal_impact} shows the effect across a range of values
@@ -242,12 +245,9 @@ departs from $\theta_{\rm null}$.
 \subsection{General Trends Across $\theta_{\rm true}$ Values}\label{sec:trends}
 
 Building on the fair coin baseline, we now examine how all three algorithms perform as
-$\theta_{\rm true}$ increases from $0.5$ upwards, across and beyond the ROPE.\footnote{By symmetry, results for $\theta_{\rm true}<0.5$ mirror those shown
+$\theta_{\rm true}$ increases from $0.5$ upwards, across and beyond the ROPE,\footnote{By symmetry, results for $\theta_{\rm true}<0.5$ mirror those shown
 here, as reflected in Equation~\ref{eq:pitg_stop_iteration} and Figure~\ref{fig:min_sample_by_goal}.}
-
-Figure~\ref{fig:conclusiveness_rates} shows how all three algorithms perform as
-$\theta_{\rm true}$ varies across and beyond the ROPE, with ${\rm ROPE}_{\rm max}=0.55$
-serving as a key inflection point in all three panels.
+with $\rm ROPE_{\rm max}=0.55$ serving as a key inflection point.
 
 \begin{figure}[h!]
   \centering
@@ -266,7 +266,7 @@ serving as a key inflection point in all three panels.
   \label{fig:conclusiveness_rates}
 \end{figure}
 
-As established in Section~\ref{sec:fair_coin}, HDI+ROPE and ePitG open near 100\%
+As established in Section~\ref{sec:fair_coin_large_scale}, HDI+ROPE and ePitG open near 100\%
 conclusiveness at $\theta_{\rm true}=0.5$, while PitG sits at only 36.7\%, with the
 trade-off against $\omega_{\rm goal}$ discussed there. The qualitative trends shown
 below generalise across values of $\omega_{\rm goal}$ (Section~\ref{sec:goal_impact}).
@@ -294,7 +294,7 @@ $\sim\!10\%$ at the ROPE boundary before dropping to $0\%$ by
 $\theta_{\rm true}=0.57$. Both precision-based methods maintain a near-zero
 false-positive rate throughout, exactly zero well within the ROPE interior, rising to a
 small level near the ROPE boundary (ePitG at the same $\sim\!10\%$, PitG lower due to
-its much lower conclusiveness rate), with only a small false negative rate near the ROPE
+its much lower conclusiveness rate), with only a small false-negative rate near the ROPE
 that similarly drops quickly.
 
 The right panel shows overall \textit{accuracy}, the proportion of correct decisions
@@ -309,7 +309,7 @@ compared to PitG's 98.5\%. Outside the ROPE, HDI+ROPE and ePitG reach 100\% by
 $\theta_{\rm true}=0.58$, whereas PitG achieves this only at
 $\theta_{\rm true}\approx 0.60$.
 
-That HDI+ROPE reaches 100\% accuracy at $\theta_{\rm true}=0.58$ while simultaneously
+That HDI+ROPE reaches 100\% accuracy at $\theta_{\rm true}=0.58$ despite
 producing biased $\hat{\theta}$ estimates motivates a closer look at the observed
 sample proportion statistics. Figure~\ref{fig:success_by_truth_conclusive} shows, for
 conclusive experiments, the IQR of $\hat{\theta}(N_{\rm stop})$ (left panel) and the
@@ -458,6 +458,6 @@ The apparent flattening of both ratios near ${\rm ROPE}_{\rm max}$ is an artefac
 the finite cap $N_{\rm max}=1{,}500$; with a larger cap both curves would peak sharply
 at the boundary.
 The ePitG advantage documented here generalises: qualitatively similar conclusiveness
-gains hold for $\theta_{\rm null}=0.7$ (as per results shown in the right panel of
+gains hold for $\theta_{\rm null}=0.7$ (as shown in the right panel of
 Figure~\ref{fig:stop_iterations_by_truth_conclusive}) and across $\omega_{\rm goal}$
 values (see Section~\ref{sec:goal_impact} for the fair coin case).
