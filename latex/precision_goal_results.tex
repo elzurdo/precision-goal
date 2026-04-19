@@ -11,7 +11,7 @@ that both precision-based methods exhibit by design.
 
 \subsubsection{A Hand-Picked Sequence}\label{sec:fair_coin_sequence}
 
-Figure \ref{fig:iterations} presents a hand-picked fair coin experiment chosen to
+Figure~\ref{fig:iterations} presents a hand-picked fair coin experiment chosen to
 illustrate stark differences in outcomes across the three algorithms.\footnote{This figure
 is similar to the top panels in \cite{kruschke2015doing} Figures 13.4 and 13.5.
 The sequence itself may be found in the open source material as 
@@ -78,7 +78,7 @@ statistics in Tables~\ref{tab:fair_overall} and~\ref{tab:fair_conclusive}.
   \label{fig:fair_iter_vs_rate}
 \end{figure}
 
-In Figure~\ref{fig:fair_iter_vs_rate}, we see that HDI+ROPE yields a wide range of stop iterations and sample proportions $\hat{\theta}$, with a
+Figure~\ref{fig:fair_iter_vs_rate} shows that HDI+ROPE yields a wide range of stop iterations and sample proportions $\hat{\theta}$, with a
 significant portion of results falling outside the ROPE, leading to incorrect rejections
 of $\theta_{\rm null}$. Its $N_{\rm stop}$ distribution is skewed towards early stopping
 at $\sim\!400$, well before $N_{\rm goal}\sim 600$, with a long tail extending to later
@@ -112,7 +112,7 @@ rate begins rising near $N\sim 400$, reflecting a gradual shift from incorrect r
 to correct acceptances as more data accumulate.
 
 Both precision-based methods maintain a zero rejection rate (middle and right panels),
-as they require precision criteria to be satisfied before any decision is made.
+as they require the precision criterion to be satisfied before any decision is made.
 For PitG (middle panel), the acceptance rate rises as a near step-function, jumping at
 $N_{\rm goal}$ to 36.7\%, with the inconclusive rate settling at the complement 63.3\%.
 
@@ -121,13 +121,13 @@ property of PitG while achieving a high conclusiveness rate akin to HDI+ROPE, bu
 a more gradual transition from inconclusive to conclusive outcomes.
 
 Table~\ref{tab:fair_overall} and Table~\ref{tab:fair_conclusive} summarise, respectively,
-stop-iteration and sample-proportion statistics across all and conclusive experiments.
+stop-iteration and sample-proportion statistics for all $M$ experiments and for conclusive subsets.
 
 \begin{table}[h!]
   \begin{center}
   \begin{tabular}{c|c|c|c|c}
     \hline
-    Algorithm &  Conclusive Rate  & $N_{\rm 50\%}$ & ${\rm IQR}_{N} = N_{\rm 25\%} - N_{\rm 75\%}$ & $\Delta_{\rm IQR}$\\
+    Algorithm &  Conclusive Rate  & $N_{\rm 50\%}$ & $N_{\rm 25\%}$--$N_{\rm 75\%}$ & $\Delta_{\rm IQR}$\\
     \hline
     HDI+ROPE & 0.982 & 523 & 415 - 721& 306  \\
     PitG     & \textcolor{red}{\textbf{0.367}}  & 599 & 598 - 599& 1 \\
@@ -138,7 +138,7 @@ stop-iteration and sample-proportion statistics across all and conclusive experi
   ($\theta_{\rm true}=\theta_{\rm null}=0.5$, $\omega_{\rm goal}=0.08$;
   cf.\ Figure~\ref{fig:fair_iter_vs_rate}).
   $N_{\rm 50\%}$: median stop iteration;
-  $N_{\rm 25\%} - N_{\rm 75\%}$: interquartile range of stop iteration.
+  $N_{\rm 25\%}$--$N_{\rm 75\%}$: interquartile range of stop iteration.
   Conclusive Rate values are color-coded: \textcolor{red}{\textbf{red}} flags a
   concerningly low rate (PitG); \textcolor{green}{\textbf{green}} highlights a
   strong rate with zero false positives (ePitG; cf.\ Table~\ref{tab:fair_conclusive}).}
@@ -203,7 +203,7 @@ inconclusive, but ePitG still achieves 97.9\% conclusiveness by collecting more 
 both precision and conclusiveness are jointly satisfied.
 
 The conclusiveness of ePitG is more sensitive to $N_{\rm max}$ (fixed at $1{,}500$ in this
-example) than to $\omega_{\rm goal}$, whereas PitG always stops at $N_{\rm goal}$ regardless.
+example) than to $\omega_{\rm goal}$, whereas PitG always stops at $N_{\rm goal}$ regardless of $N_{\rm max}$.
 Consequently, $N_{\rm goal}$ serves as a minimum budget for ePitG: for tight precision goals
 it is sufficient to achieve high conclusiveness; for looser goals, the researcher should
 set $N_{\rm max}$ generously to allow ePitG to reach its full potential.
@@ -341,7 +341,7 @@ the ROPE.
 
 HDI+ROPE's $\hat{\theta}$ bias is therefore more telling as a symptom of its lack of a
 precision requirement than as a decision-quality metric. At $\theta_{\rm true}=0.5$,
-all three algorithms show near-zero bias, as expected from the symmetry of the fair coin
+all three algorithms show zero bias, as expected from the symmetry of the fair coin
 case. Once $\theta_{\rm true}$ deviates from $0.5$, HDI+ROPE's bias grows markedly: its
 median bias approaches ${\rm ROPE}_{\rm max}$, with the upper
 IQR extending substantially further---because HDI+ROPE can stop on skewed samples before
