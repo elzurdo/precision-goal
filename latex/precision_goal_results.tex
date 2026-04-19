@@ -1,7 +1,11 @@
-We begin with a detailed examination of the fair coin case $\theta_{\rm true}=0.5$
-to establish the strengths and limitations of each algorithm.
-We then present general trends across $\theta_{\rm true}$ values from $0.5$ upwards,
-spanning the ROPE and its boundaries.
+Across all scenarios, ePitG substantially outperforms PitG in conclusiveness while
+keeping false-positive rates well below HDI+ROPE's, at a modest median sampling premium.
+We begin with the fair coin case ($\theta_{\rm true}=0.5$), where ePitG matches
+HDI+ROPE's near-complete conclusiveness while, like PitG, producing zero false
+positives --- a combination neither competitor achieves alone.
+We then examine general trends as $\theta_{\rm true}$ increases from $0.5$ upwards,
+across and beyond the ROPE, including the dip in conclusiveness near the ROPE boundary
+that both precision-based methods exhibit by design.
 
 \subsection{Fair Coin ($\theta_{\rm true}=0.5$)}\label{sec:fair_coin}
 
@@ -219,9 +223,8 @@ set $N_{\rm max}$ generously to allow ePitG to reach its full potential.
   Conclusiveness: fraction of $M$ experiments with a conclusive outcome;
   Conclusiveness Ratio: ePitG/PitG conclusiveness;
   ePitG $N_{\rm stop}$: quartile statistics restricted to conclusive ePitG
-  experiments (note that results of line $\omega_{\rm goal}=0.08$ slightly differ from
-  the corresponding in
-  Table~\ref{tab:fair_overall} which summarises all experiments).;
+  experiments (note that results for $\omega_{\rm goal}=0.08$ differ slightly from
+  the corresponding entry in Table~\ref{tab:fair_overall}, which summarises all experiments).
   $\Delta_{\rm IQR} = N_{\rm 75\%} - N_{\rm 25\%}$.
   For $\omega_{\rm goal} \le 0.08$, $N_{\rm 25\%} = N_{\rm goal}$, showing that many
   ePitG experiments stop as soon as the precision goal is first met.
@@ -238,8 +241,7 @@ departs from $\theta_{\rm null}$.
 \subsection{General Trends Across $\theta_{\rm true}$ Values}\label{sec:trends}
 
 Building on the fair coin baseline, we now examine how all three algorithms perform as
-$\theta_{\rm true}$ increases from $0.5$ upwards, spanning the ROPE and its
-boundaries.\footnote{By symmetry, results for $\theta_{\rm true}<0.5$ mirror those shown
+$\theta_{\rm true}$ increases from $0.5$ upwards, across and beyond the ROPE.\footnote{By symmetry, results for $\theta_{\rm true}<0.5$ mirror those shown
 here, as reflected in Equation~\ref{eq:pitg_stop_iteration} and Figure~\ref{fig:min_sample_by_goal}.}
 
 Figure~\ref{fig:conclusiveness_rates} shows how all three algorithms perform as
@@ -282,13 +284,13 @@ lower conclusiveness rates than HDI+ROPE in this region. At the boundary itself,
 is conclusive in only 19\% of experiments and PitG in only 5\%.
 
 Breaking the conclusiveness into its acceptance and rejection components (middle panel)
-reveals the error structure. For $\theta_{\rm null}=0.5$, acceptance is the correct
-decision within the ROPE ($\theta_{\rm true}\le 0.55$) (i.e, within the ROPE) and rejection is correct outside
-it. HDI+ROPE's false positive rate (i.e., rejecting $\theta_{\rm null}$ when $\theta_{\rm true}$ is within the ROPE)
-climbs from $\sim\!6\%$ at $\theta_{\rm true}=0.5$ to $\sim\!30\%$ at
-${\rm ROPE}_{\rm max}$; its false negative rate (i.e., accepting the null when $\theta_{\rm true}$ is outside the ROPE)
-peaks at $\sim\!10\%$ at the ROPE boundary before dropping to $0\%$
-by $\theta_{\rm true}=0.57$. Both precision-based methods maintain a near-zero
+reveals the error structure.
+For $\theta_{\rm null}=0.5$, acceptance is the correct decision within the ROPE
+($\theta_{\rm true}\le 0.55$) and rejection is correct outside it.
+HDI+ROPE's false-positive rate climbs from $\sim\!6\%$ at $\theta_{\rm true}=0.5$
+to $\sim\!30\%$ at ${\rm ROPE}_{\rm max}$; its false-negative rate peaks at
+$\sim\!10\%$ at the ROPE boundary before dropping to $0\%$ by
+$\theta_{\rm true}=0.57$. Both precision-based methods maintain a near-zero
 false-positive rate throughout, exactly zero well within the ROPE interior, rising to a
 small level near the ROPE boundary (ePitG at the same $\sim\!10\%$, PitG lower due to
 its much lower conclusiveness rate), with only a small false negative rate near the ROPE
@@ -453,7 +455,8 @@ $4\%$ more samples.
 
 The apparent flattening of both ratios near ${\rm ROPE}_{\rm max}$ is an artefact of
 the finite cap $N_{\rm max}=1{,}500$; with a larger cap both curves would peak sharply
-at the boundary. Qualitatively similar results hold for
-$(\theta_{\rm null}=0.7,\ \omega_{\rm goal}=0.08$ ; not shown) and
-$(\theta_{\rm null}=0.5,\ \omega_{\rm goal}=0.06$; not shown but
-see Section~\ref{sec:goal_impact} for the $\omega_{\rm goal}$ sensitivity at $\theta_{\rm true}=0.5$).
+at the boundary.
+The ePitG advantage documented here generalises: qualitatively similar conclusiveness
+gains hold for $\theta_{\rm null}=0.7$ (as per results shown in the right panel of
+Figure~\ref{fig:stop_iterations_by_truth_conclusive}) and across $\omega_{\rm goal}$
+values (see Section~\ref{sec:goal_impact} for the fair coin case).
