@@ -1,8 +1,8 @@
 The central finding of this paper is that ePitG resolves the tension inherent in
 PitG: requiring both precision and conclusiveness simultaneously yields a 97.7\%
 conclusiveness rate with a zero false-positive rate (none observed across $M=2{,}000$ simulations) at
-$\theta_{\rm true}=\theta_{\rm null}=0.5$ (assuming $\omega_{\rm goal}=0.08$ and $N_{\rm max}=1,500$),
-at a median sample cost of only 4.7\% over PitG --- an advantage that persists across
+$\theta_{\rm true}=\theta_{\rm null}=0.5$ (assuming $\omega_{\rm goal}=0.08$ and $N_{\rm max}=1{,}500$),
+at a median sample cost of only 4.7\% over PitG --- an advantage in conclusiveness that persists across
 $\theta_{\rm true}$ values (Section~\ref{sec:trends}).
 Moreover, ePitG's conclusiveness is robust to the choice of $\omega_{\rm goal}$:
 across $\omega_{\rm goal}=0.06$--$0.10$, it varies by less than one percentage
@@ -16,28 +16,6 @@ precision-goal framework extends naturally to single-group continuous outcomes
 (see Appendix~\ref{app:expected_stop}) and to two-group comparisons, both binomial
 and continuous (see Appendix~\ref{app:extensions} for the adaptations and
 corresponding sample-size planning equations).
-
-ePitG is a generic sequential stopping rule that applies to any posterior from which
-a HDI can be computed, including non-conjugate and hierarchical settings that require
-MCMC.
-The analysis in this paper is deliberately restricted to models with conjugate or
-otherwise tractable posteriors: for Bernoulli data the Beta posterior and its HDI are
-fully analytical, reducing the algorithm to a short loop with no specialist
-probabilistic programming software.
-% More precisely, the tractable-posterior claim holds case by case as follows:
-% - Single-group Bernoulli (this paper): conjugate Beta posterior, fully analytical
-%   HDI; no sampling of any kind needed.
-% - Single-group continuous (conjugate normal prior): normal or Student-t posterior,
-%   fully analytical; no MCMC needed.
-% - Two-group binomial: no closed form for the difference of two Betas, but
-%   direct i.i.d. Monte Carlo suffices (draw from Beta_1, draw from Beta_2, subtract);
-%   this is plain Monte Carlo, not a Markov chain.
-% - Two-group continuous (weakly informative prior): by the Bernstein--von Mises
-%   theorem the posterior converges to a normal, so Welch's standard error gives the
-%   HDI width without sampling.
-% - Non-conjugate informative priors: MCMC would be required; this case is deferred
-%   to future work.
-% - Hierarchical models: MCMC required; also out of scope here.
 
 ePitG operates under a different philosophy from classical sequential methods.
 Group sequential designs \citep{jennison2000} control the familywise Type~I error rate
@@ -58,6 +36,30 @@ The key distinction is that BFDA targets evidential strength (ratio of marginal
 likelihoods) whereas ePitG targets posterior precision; the two are complementary
 as planning tools, and a design requiring both a conclusive HDI+ROPE verdict and a
 minimum Bayes Factor is a natural extension.
+
+While comparisons with competing sequential methods clarify ePitG's positioning,
+it is worth noting its computational scope.
+ePitG is a generic sequential stopping rule that applies to any posterior from which
+an HDI can be computed, including non-conjugate and hierarchical settings that require
+MCMC.
+The analysis in this paper is deliberately restricted to models with conjugate or
+otherwise tractable posteriors: for Bernoulli data the Beta posterior and its HDI are
+fully analytical, reducing the algorithm to a short loop with no specialist
+probabilistic programming software.
+% More precisely, the tractable-posterior claim holds case by case as follows:
+% - Single-group Bernoulli (this paper): conjugate Beta posterior, fully analytical
+%   HDI; no sampling of any kind needed.
+% - Single-group continuous (conjugate normal prior): normal or Student-t posterior,
+%   fully analytical; no MCMC needed.
+% - Two-group binomial: no closed form for the difference of two Betas, but
+%   direct i.i.d. Monte Carlo suffices (draw from Beta_1, draw from Beta_2, subtract);
+%   this is plain Monte Carlo, not a Markov chain.
+% - Two-group continuous (weakly informative prior): by the Bernstein--von Mises
+%   theorem the posterior converges to a normal, so Welch's standard error gives the
+%   HDI width without sampling.
+% - Non-conjugate informative priors: MCMC would be required; this case is deferred
+%   to future work.
+% - Hierarchical models: MCMC required; also out of scope here.
 
 The HDI+ROPE framework for the decision step offers a structural
 methodological advantage over frequentist approaches: unlike NHST
@@ -110,11 +112,13 @@ Appendix~\ref{app:practical_guidance} discusses principled approaches for settin
 and sensitivity analyses --- together with three broader considerations supporting
 ePitG's adoption (equivalence testing, pre-registration, and the replication crisis).
 
-The joint operating characteristics of ePitG --- its false-accept and false-reject
-rates as a function of $\theta_{\rm true}$ --- are determined by the interplay of the
-ROPE, $\omega_{\rm goal}$, and $N_{\rm max}$, and can be assessed prospectively.
+The joint operating characteristics of ePitG can be assessed prospectively.
+Here we use \textit{false-accept} to mean a conclusive acceptance when $\theta_{\rm true}$
+lies outside the ROPE, and \textit{false-reject} to mean a conclusive rejection when
+$\theta_{\rm true}$ lies inside it; both rates are determined by the interplay of the
+ROPE, $\omega_{\rm goal}$, and $N_{\rm max}$.
 As the Results demonstrate, false-accept rates are negligible except when
-$\theta_{\rm true}$ lies within the ROPE boundary region, and false-reject rates are
+$\theta_{\rm true}$ lies near the ROPE boundary, and false-reject rates are
 suppressed by the precision requirement.
 A researcher can therefore calibrate the operating characteristics in advance
 by checking, analytically or via simulation, that the planned $N_{\rm max}$
@@ -130,7 +134,7 @@ $\omega_{\rm goal}$, and $N_{\rm max}$ --- all of which must be committed to bef
 data collection begins.
 A narrower ROPE increases the sample size required for acceptance and raises the
 inconclusive rate near its boundaries; a tighter $\omega_{\rm goal}$ or a smaller
-$N_{\rm max}$ both raise the inconclusive rate similarly.
+$N_{\rm max}$ both raise the inconclusive rate.
 Second, the stopping properties are validated empirically only for Bernoulli trials
 with a conjugate Beta posterior; the normal approximation underpinning
 $N_{\rm goal}$ (Equation~\ref{eq:pitg_stop_iteration}) may underestimate the required
@@ -166,6 +170,5 @@ theoretical arguments rather than empirically validated results.
 Confirming that the stopping properties demonstrated here for the Bernoulli case carry
 over --- in particular the reduction in inconclusive rates and the calibration of
 $N_{\rm stop}$ relative to $N_{\rm goal}$ --- requires a dedicated simulation study.
-We flag this, together with a formal treatment of informative prior selection, as the
-primary directions for future work.
+We flag this simulation validation as the primary empirical direction for future work.
 
