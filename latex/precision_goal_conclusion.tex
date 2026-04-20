@@ -11,10 +11,10 @@ rule. In the fair-coin case, PitG achieves zero false positives, but at the cost
 high inconclusive rate of 63.3\%, because precision and conclusiveness
 are not required to coincide.
 
-We have proposed Enhanced Precision is the Goal (ePitG), which re-couples the two
+We have proposed Enhanced Precision is the Goal (ePitG), which recouples the two
 criteria conservatively: data collection continues until the HDI is simultaneously
 narrower than $\omega_{\rm goal}$ \textit{and} falls cleanly inside or outside the
-ROPE\@. The effect of this single change is substantial. At $\theta_{\rm true}=\theta_{\rm null}=0.5$,
+ROPE\@. At $\theta_{\rm true}=\theta_{\rm null}=0.5$,
 ePitG achieves a 97.7\% conclusiveness rate with zero false positives, compared to
 PitG's 36.7\% --- a $2.7\times$ gain in conclusiveness at a median cost of only 4.7\%
 more samples. The efficiency gain is most pronounced near the ROPE boundaries, precisely
@@ -43,7 +43,8 @@ are collected. $N_{\rm goal}(\theta_{\rm null})$ is a guaranteed lower bound
 for the required sample size. Because $\theta(1-\theta)$ is maximised at $\theta=0.5$,
 this bound is largest for the fair-coin null, making it the most demanding null for
 planning purposes. For other nulls, $\theta_{\rm true}$ may lie closer to $0.5$ than
-$\theta_{\rm null}$ does, raising the actual minimum above the planned one;
+$\theta_{\rm null}$ does, potentially raising the required sample size above
+$N_{\rm goal}(\theta_{\rm null})$;
 $N_{\rm max}$ should be set generously to cover this.
 
 The framework extends naturally to single-group continuous data
@@ -59,8 +60,8 @@ Equation~\ref{eq:pitg_stop_iteration} is available at
 Stopping-property validation for settings beyond the single-group Bernoulli case
 remains to be completed.
 ePitG is the method of choice whenever a conclusive verdict --- acceptance, rejection,
-or an inconclusive outcome --- is required and the cost per observation is low enough
-to reach $\omega_{\rm goal}$; the closed-form $N_{\rm goal}$ makes this judgement
+or an inconclusive outcome --- is required and the budget is sufficient to reach
+$N_{\rm goal}(\theta_{\rm null})$; the closed-form $N_{\rm goal}$ makes this judgement
 transparent before any data are collected.
 
 % Unlike NHST (see Appendix~\ref{app:nhst}), which can only reject or fail to reject
