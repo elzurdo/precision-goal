@@ -6,7 +6,7 @@ none observed across $M=2{,}000$ simulations),
 at a median sample cost of only 4.7\% over PitG --- an advantage in conclusiveness that persists across
 $\theta_{\rm true}$ values (Section~\ref{sec:trends}).
 Moreover, ePitG's conclusiveness is robust to the choice of $\omega_{\rm goal}$:
-across $\omega_{\rm goal}=0.06$--$0.10$, in the fair coin case the conclusiveness varies by less than one percentage
+for the fair coin case, across $\omega_{\rm goal}=0.06$--$0.10$, the conclusiveness varies by less than one percentage
 point ($0.972$--$0.979$), while PitG's conclusiveness spans from $82.5\%$ to
 $0\%$ (Section~\ref{sec:goal_impact}).
 We now place this result in methodological context, draw out its
@@ -39,7 +39,7 @@ as planning tools, and a design requiring both a conclusive HDI+ROPE verdict and
 minimum Bayes Factor is a natural extension.
 
 While comparisons with competing sequential methods clarify ePitG's positioning,
-it is worth noting its computational scope.
+its computational scope deserves equal attention.
 ePitG is a generic sequential stopping rule that applies to any posterior from which
 an HDI can be computed, including non-conjugate and hierarchical settings that require
 MCMC.
@@ -88,7 +88,7 @@ $\omega_{\rm goal}$ implies (J.K.\ Kruschke, pers.\ comm.\ 2022). This is not a 
 in the method but a form of epistemic honesty: imprecise posteriors produce inconclusive
 results regardless of the algorithm applied; ePitG simply refuses to declare a verdict
 until the posterior is genuinely informative. Setting $\omega_{\rm goal}$ thus forces
-realistic planning rather than concealing underpowerment behind a false positive or a
+realistic planning rather than masking insufficient power behind a false positive or a
 silently inconclusive stop.
 This discipline is a feature, not a limitation, for any analyst whose conclusions
 must rest on genuinely informative data.
@@ -167,7 +167,7 @@ calibration --- particularly in early data collection when the posterior is diff
 and this remains an open question for subsequent investigation.
 
 The extensions to continuous outcomes and two-group comparisons described above are
-theoretical arguments rather than empirically validated results.
+theoretical derivations rather than empirically validated results.
 Confirming that the stopping properties demonstrated here for the Bernoulli case carry
 over --- in particular the reduction in inconclusive rates and the calibration of
 $N_{\rm stop}$ relative to $N_{\rm goal}$ --- requires a dedicated simulation study,
