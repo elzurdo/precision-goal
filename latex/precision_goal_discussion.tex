@@ -1,7 +1,8 @@
 The central finding of this paper is that ePitG resolves the tension inherent in
 PitG: requiring both precision and conclusiveness simultaneously yields a 97.7\%
-conclusiveness rate with a zero false-positive rate (none observed across $M=2{,}000$ simulations) at
-$\theta_{\rm true}=\theta_{\rm null}=0.5$ (assuming $\omega_{\rm goal}=0.08$ and $N_{\rm max}=1{,}500$),
+conclusiveness rate with a zero false-positive rate at
+$\theta_{\rm true}=\theta_{\rm null}=0.5$ (assuming $\omega_{\rm goal}=0.08$ and $N_{\rm max}=1{,}500$;
+none observed across $M=2{,}000$ simulations),
 at a median sample cost of only 4.7\% over PitG --- an advantage in conclusiveness that persists across
 $\theta_{\rm true}$ values (Section~\ref{sec:trends}).
 Moreover, ePitG's conclusiveness is robust to the choice of $\omega_{\rm goal}$:
@@ -81,7 +82,7 @@ full and covers all three types of Bayesian power analysis (prospective, retrosp
 and replication).
 
 A recurring concern about PitG --- and by extension ePitG --- is that the precision
-requirement feels too demanding in practice.
+requirement can seem too demanding in practice.
 Researchers frequently underestimate the noise in their measurements and are consequently surprised by the sample sizes that
 $\omega_{\rm goal}$ implies (J.K.\ Kruschke, pers.\ comm.\ 2022). This is not a flaw
 in the method but a form of epistemic honesty: imprecise posteriors produce inconclusive
@@ -126,7 +127,7 @@ achieves the target conclusiveness rate at the effect sizes of interest.
 Notably, ePitG's conclusiveness is more sensitive to $N_{\rm max}$ than to
 $\omega_{\rm goal}$ (Section~\ref{sec:goal_impact}); setting $N_{\rm max}$
 generously is therefore the primary practical lever for ensuring high
-decisiveness across a range of precision goals.
+conclusiveness across a range of precision goals.
 
 Four limitations of the present work deserve acknowledgement.
 First, the results are sensitive to the three design parameters --- the ROPE,
@@ -138,11 +139,11 @@ $N_{\rm max}$ both raise the inconclusive rate.
 Second, the stopping properties are validated empirically only for Bernoulli trials
 with a conjugate Beta posterior; the normal approximation underpinning
 $N_{\rm goal}$ (Equation~\ref{eq:pitg_stop_iteration}) may underestimate the required
-sample size in small-sample settings or for highly skewed likelihoods --- the exact
-Binomial result in Appendix~\ref{app:expected_stop} should be preferred in such cases
-(the Student-$t$ variant for continuous outcomes is also provided there).
-Third, the present analysis uses a flat (uniform) prior throughout, as a deliberately
-conservative choice that avoids imposing unverified assumptions.
+sample size in small-sample settings or for highly skewed likelihoods.
+In such cases the exact Binomial result in Appendix~\ref{app:expected_stop} should be
+preferred (the Student-$t$ variant for continuous outcomes is also provided there).
+Third, the present analysis uses a flat (uniform) prior throughout, as a conservative
+choice that avoids imposing unverified assumptions.
 The flat prior contributes no pseudo-observations, requiring more data to achieve
 $\omega_{\rm goal}$ than a well-justified informative prior would \citep{gelman2013bayesian}.
 % \citet{gelman2013bayesian}: BDA3 (Chapter~2) establishes the prior-as-pseudo-data
@@ -163,12 +164,12 @@ computed, this paper does not characterise its behaviour when the HDI is estimat
 from MCMC samples.
 In such settings the HDI estimate carries Monte Carlo error that could affect stopping
 calibration --- particularly in early data collection when the posterior is diffuse ---
-and this remains an open question for future work.
+and this is deferred to future work.
 
 The extensions to continuous outcomes and two-group comparisons described above are
 theoretical arguments rather than empirically validated results.
 Confirming that the stopping properties demonstrated here for the Bernoulli case carry
 over --- in particular the reduction in inconclusive rates and the calibration of
-$N_{\rm stop}$ relative to $N_{\rm goal}$ --- requires a dedicated simulation study.
-We flag this simulation validation as the primary empirical direction for future work.
+$N_{\rm stop}$ relative to $N_{\rm goal}$ --- requires a dedicated simulation study,
+which we flag as the primary empirical direction for future work.
 
