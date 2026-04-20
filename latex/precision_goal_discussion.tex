@@ -1,6 +1,6 @@
 The central finding of this paper is that ePitG resolves the tension inherent in
 PitG: requiring both precision and conclusiveness simultaneously yields a 97.7\%
-conclusiveness rate with a zero false-positive rate at
+conclusiveness rate with a zero false-positive rate (none observed across $M=2{,}000$ simulations) at
 $\theta_{\rm true}=\theta_{\rm null}=0.5$ (assuming $\omega_{\rm goal}=0.08$ and $N_{\rm max}=1,500$),
 at a median sample cost of only 4.7\% over PitG --- an advantage that persists across
 $\theta_{\rm true}$ values (Section~\ref{sec:trends}).
@@ -8,8 +8,8 @@ Moreover, ePitG's conclusiveness is robust to the choice of $\omega_{\rm goal}$:
 across $\omega_{\rm goal}=0.06$--$0.10$, it varies by less than one percentage
 point ($0.972$--$0.979$), while PitG's conclusiveness spans from $82.5\%$ to
 $0\%$ (Section~\ref{sec:goal_impact}).
-The following section (and references within) places this result in methodological context, draws out its
-practical implications, and candidly acknowledges its limitations.
+We now place this result in methodological context, draw out its
+practical implications, and candidly acknowledge its limitations.
 
 While the present study focuses on single-group Bernoulli data, the HDI+ROPE
 precision-goal framework extends naturally to single-group continuous outcomes
@@ -59,15 +59,17 @@ likelihoods) whereas ePitG targets posterior precision; the two are complementar
 as planning tools, and a design requiring both a conclusive HDI+ROPE verdict and a
 minimum Bayes Factor is a natural extension.
 
-TODO: revise opening "Regarldess of copmputaional setting" which was used in a different ordering of the text.
-
-Regardless of the computational setting, the HDI+ROPE framework for the decision step offers a structural
+The HDI+ROPE framework for the decision step offers a structural
 methodological advantage over frequentist approaches: unlike NHST
 (see Appendix~\ref{app:nhst}), where conducting
 multiple simultaneous tests inflates the Type~I error rate and requires corrections
 (e.g.\ Bonferroni) that reduce per-test power, the Bayesian posterior is unaffected ---
 $\omega_{\rm goal}$ and the ePitG stopping rule apply unchanged across independent
 simultaneous tests without correction \citep{gelman2012, kruschke2015doing}.
+% \citet{gelman2012}: Gelman, Hill \& Yajima (2012) is the standard journal reference
+% for the claim that Bayesian posteriors typically require no multiple-comparison
+% correction when tests are based on independent models.
+% \citet{kruschke2015doing}: DBDA2 (Chapter~11) provides the pedagogical treatment.
 For prospective sample-size planning, $N_{\rm goal}$
 (Equation~\ref{eq:pitg_stop_iteration}) provides a closed-form lower bound on the
 samples required to achieve $\omega_{\rm goal}$; ePitG may need additional samples
@@ -122,16 +124,6 @@ $\omega_{\rm goal}$ (Section~\ref{sec:goal_impact}); setting $N_{\rm max}$
 generously is therefore the primary practical lever for ensuring high
 decisiveness across a range of precision goals.
 
-One option to increase signal with a limited budget is to incorporate informative priors.
-We defer a full treatment of prior selection to future work, noting that informative
-priors, where available and well-justified, offer a practical mitigation by contributing
-effective pseudo-observations that narrow the starting HDI width and lower the required
-sample size \citep{gelman2013bayesian}.
-% \citet{gelman2013bayesian}: BDA3 (Chapter 2) establishes the prior-as-pseudo-data
-% interpretation for conjugate models: a Beta(a,b) prior is equivalent to having
-% previously observed a successes and b failures, directly supporting the claim that
-% informative priors contribute effective pseudo-observations.
-
 Four limitations of the present work deserve acknowledgement.
 First, the results are sensitive to the three design parameters --- the ROPE,
 $\omega_{\rm goal}$, and $N_{\rm max}$ --- all of which must be committed to before
@@ -141,13 +133,27 @@ inconclusive rate near its boundaries; a tighter $\omega_{\rm goal}$ or a smalle
 $N_{\rm max}$ both raise the inconclusive rate similarly.
 Second, the stopping properties are validated empirically only for Bernoulli trials
 with a conjugate Beta posterior; the normal approximation underpinning
-$N_{\rm goal}$ (Equation~\ref{eq:pitg_stop_iteration}) may require greater caution in
-small-sample settings or for highly skewed likelihoods
-(see Appendix~\ref{app:expected_stop} for the exact Binomial result and the
-Student-$t$ variant for continuous outcomes).
-Third, the flat prior used throughout contributes no pseudo-observations; an analyst
-who encodes a materially incorrect informative prior may bias the posterior in a way
-that the precision criterion alone cannot detect.
+$N_{\rm goal}$ (Equation~\ref{eq:pitg_stop_iteration}) may underestimate the required
+sample size in small-sample settings or for highly skewed likelihoods --- the exact
+Binomial result in Appendix~\ref{app:expected_stop} should be preferred in such cases
+(the Student-$t$ variant for continuous outcomes is also provided there).
+Third, the present analysis uses a flat (uniform) prior throughout, as a deliberately
+conservative choice that avoids imposing unverified assumptions.
+The flat prior contributes no pseudo-observations, requiring more data to achieve
+$\omega_{\rm goal}$ than a well-justified informative prior would \citep{gelman2013bayesian}.
+% \citet{gelman2013bayesian}: BDA3 (Chapter~2) establishes the prior-as-pseudo-data
+% interpretation for conjugate models: a Beta(a,b) prior is equivalent to having
+% previously observed a successes and b failures, directly supporting the claim that
+% informative priors contribute effective pseudo-observations.
+Informative priors, where available and well-justified, can therefore serve as a
+practical mitigation by narrowing the starting HDI width and lowering the required
+sample size.
+Conversely, a materially incorrect informative prior may bias the posterior in a way
+that the precision criterion alone cannot detect \citep{gelman2013bayesian};
+% \citet{gelman2013bayesian}: BDA3 (Chapter~6) covers posterior predictive checks
+% and prior sensitivity analysis --- the standard treatment for detecting and
+% diagnosing prior misspecification.
+we defer a full treatment of principled prior selection to future work.
 Fourth, while ePitG applies in principle to any posterior from which an HDI can be
 computed, this paper does not characterise its behaviour when the HDI is estimated
 from MCMC samples.
