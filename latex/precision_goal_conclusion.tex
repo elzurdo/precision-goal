@@ -10,11 +10,6 @@ pre-specified precision goal $\omega_{\rm goal}$, then applies the HDI+ROPE deci
 rule. In the fair-coin case, PitG achieves zero false positives, but at the cost of a
 high inconclusive rate of 63.3\%, because precision and conclusiveness
 are not required to coincide.
-Moreover, unlike NHST (see Appendix~\ref{app:nhst}), which can only reject or fail to reject the null,
-the HDI+ROPE decision rule enables positive \textit{acceptance} of the null
-when the entire HDI falls within the ROPE, a critical advantage for confirmatory
-research areas such as bioequivalence, safety testing, and software regression testing.
-% do-no-harm
 
 We have proposed Enhanced Precision is the Goal (ePitG), which re-couples the two
 criteria conservatively: data collection continues until the HDI is simultaneously
@@ -35,17 +30,24 @@ conclusiveness at the cost of proportionally larger samples for both methods.
 Quantitatively, ePitG's conclusiveness varies by less than one percentage point
 ($0.972$--$0.979$) across $\omega_{\rm goal}=0.06$--$0.10$, while the
 conclusiveness ratio (ePitG/PitG) starts at $1.17\times$ at the tightest
-setting and grows exponentially. At $\omega_{\rm goal}=0.10$, PitG yields no conclusive
+setting and grows rapidly with $\omega_{\rm goal}$.
+At $\omega_{\rm goal}=0.10$, PitG yields no conclusive
 outcomes (Table~\ref{tab:goal_impact}).
+
+% Unlike NHST (see Appendix~\ref{app:nhst}), which can only reject or fail to reject
+% the null, the HDI+ROPE decision rule enables positive \textit{acceptance} of the null
+% when the entire HDI falls within the ROPE, a critical advantage for confirmatory
+% research areas such as bioequivalence, safety testing, and software regression testing.
+% do-no-harm
 
 Both precision-based methods share an important analytical property: the expected stop
 iteration is given in closed form by
 $N_{\rm goal}(\theta,\omega_{\rm goal}) \propto \theta(1-\theta)/\omega_{\rm goal}^2$
 (Equation~\ref{eq:pitg_stop_iteration}), enabling prospective planning before any data
-are collected. $N_{\rm goal}(\theta_{\rm null})$ is always a theoretical minimum
+are collected. $N_{\rm goal}(\theta_{\rm null})$ is a guaranteed lower bound
 for the required sample size. Because $\theta(1-\theta)$ is maximised at $\theta=0.5$,
-this minimum is largest for the fair-coin null, making it a safe worst-case planning
-ceiling. For other nulls, $\theta_{\rm true}$ may lie closer to $0.5$ than
+this minimum is largest for the fair-coin null, making it the most demanding null for
+planning purposes. For other nulls, $\theta_{\rm true}$ may lie closer to $0.5$ than
 $\theta_{\rm null}$ does, raising the actual minimum above the planned one;
 $N_{\rm max}$ should be set generously to cover this.
 
@@ -53,13 +55,15 @@ The framework extends naturally to single-group continuous data
 (Appendix~\ref{app:expected_stop}) and to two-group comparisons such as A/B testing
 (Appendix~\ref{app:extensions}); a full empirical evaluation across
 these settings awaits a dedicated simulation study.
-ePitG is the method of choice whenever a conclusive verdict --- acceptance, rejection,
-or an inconclusive outcome --- is required and the cost per observation is low enough
-to reach $\omega_{\rm goal}$; the closed-form $N_{\rm goal}$ makes this judgement
-transparent before any data are collected.
-To support adoption, all algorithms are implemented in openly available
+All algorithms, including these extensions, are already implemented in openly available
 code\footnote{\textcolor{red}{\textbf{[TODO: replace repo URL]}}
 \href{https://github.com/elzurdo/precision-goal}{https://github.com/elzurdo/precision-goal}},
 and an interactive online calculator for prospective sample-size planning via
 Equation~\ref{eq:pitg_stop_iteration} is available at
-\href{https://r-w-t-y.streamlit.app}{https://r-w-t-y.streamlit.app}.
+\href{https://r-w-t-y.streamlit.app}{https://r-w-t-y.streamlit.app},
+though stopping-property validation for settings beyond the single-group Bernoulli case
+remains to be completed.
+ePitG is the method of choice whenever a conclusive verdict --- acceptance, rejection,
+or an inconclusive outcome --- is required and the cost per observation is low enough
+to reach $\omega_{\rm goal}$; the closed-form $N_{\rm goal}$ makes this judgement
+transparent before any data are collected.
