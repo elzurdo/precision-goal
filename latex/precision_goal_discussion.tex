@@ -6,7 +6,7 @@ none observed across $M=2{,}000$ simulations),
 at a median sample cost of only 4.7\% over PitG --- an advantage in conclusiveness that persists across
 $\theta_{\rm true}$ values (Section~\ref{sec:trends}).
 Moreover, ePitG's conclusiveness is robust to the choice of $\omega_{\rm goal}$:
-across $\omega_{\rm goal}=0.06$--$0.10$, it varies by less than one percentage
+across $\omega_{\rm goal}=0.06$--$0.10$, in the fair coin case the conclusiveness varies by less than one percentage
 point ($0.972$--$0.979$), while PitG's conclusiveness spans from $82.5\%$ to
 $0\%$ (Section~\ref{sec:goal_impact}).
 We now place this result in methodological context, draw out its
@@ -158,13 +158,13 @@ that the precision criterion alone cannot detect \citep{gelman2013bayesian};
 % \citet{gelman2013bayesian}: BDA3 (Chapter~6) covers posterior predictive checks
 % and prior sensitivity analysis --- the standard treatment for detecting and
 % diagnosing prior misspecification.
-we defer a full treatment of principled prior selection to future work.
+we defer a full treatment of principled prior selection to a later study.
 Fourth, while ePitG applies in principle to any posterior from which an HDI can be
 computed, this paper does not characterise its behaviour when the HDI is estimated
 from MCMC samples.
 In such settings the HDI estimate carries Monte Carlo error that could affect stopping
 calibration --- particularly in early data collection when the posterior is diffuse ---
-and this is deferred to future work.
+and this remains an open question for subsequent investigation.
 
 The extensions to continuous outcomes and two-group comparisons described above are
 theoretical arguments rather than empirically validated results.
