@@ -4,8 +4,8 @@ collecting data and \textit{what} to conclude once stopped. Conflating these ste
 as in the HDI+ROPE algorithm, risks stopping on imprecise, unrepresentative posteriors
 and produces a systematic false-positive rate ($\sim\!6\%$ in our simulations, even
 when $\theta_{\rm true}=\theta_{\rm null}$).
-\citet{kruschke2015doing}'s Precision is the Goal (PitG) eliminates this bias by
-decoupling the two steps: it stops only once the posterior HDI narrows below a
+\citet{kruschke2015doing}'s Precision is the Goal (PitG) eliminates this systematic
+bias by decoupling the two steps: it stops only once the posterior HDI narrows below a
 pre-specified precision goal $\omega_{\rm goal}$, then applies the HDI+ROPE decision
 rule. In the fair-coin case, PitG achieves zero false positives, but at the cost of a
 high inconclusive rate of 63.3\%, because precision and conclusiveness
@@ -14,8 +14,8 @@ are not required to coincide.
 We have proposed Enhanced Precision is the Goal (ePitG), which recouples the two
 criteria conservatively: data collection continues until the HDI is simultaneously
 narrower than $\omega_{\rm goal}$ \textit{and} falls cleanly inside or outside the
-ROPE\@. At $\theta_{\rm true}=\theta_{\rm null}=0.5$,
-ePitG achieves a 97.7\% conclusiveness rate with zero false positives, compared to
+ROPE\@. This single change yields a 97.7\% conclusiveness rate with zero false
+positives at $\theta_{\rm true}=\theta_{\rm null}=0.5$, compared to
 PitG's 36.7\% --- a $2.7\times$ gain in conclusiveness at a median cost of only 4.7\%
 more samples. The efficiency gain is most pronounced near the ROPE boundaries, precisely
 where correct decisions matter most; once $\theta_{\rm true}$ moves well outside the
@@ -24,16 +24,15 @@ These figures correspond to a ROPE width of $\Delta_{\rm ROPE}=0.1$ and a precis
 goal of $\omega_{\rm goal}=0.08$ --- a $\pm 4$ percentage-point margin of error that
 represents standard reporting precision in single-group binomial analyses
 such as opinion polling and survey-based research.
-The qualitative advantage of ePitG over PitG is robust
-across precision goals: looser goals (larger $\omega_{\rm goal}$) worsen PitG's
+This advantage of ePitG over PitG is robust across precision goals: looser goals (larger $\omega_{\rm goal}$) worsen PitG's
 inconclusive rate and amplify ePitG's gain, while tighter goals improve PitG's
 conclusiveness at the cost of proportionally larger samples for both methods.
 Quantitatively, ePitG's conclusiveness varies by less than one percentage point
 ($0.972$--$0.979$) across $\omega_{\rm goal}=0.06$--$0.10$, while the
-conclusiveness ratio (ePitG/PitG) starts at $1.17\times$ at the tightest
+conclusiveness ratio (ePitG/PitG) is $1.17\times$ at the tightest
 setting and grows rapidly with $\omega_{\rm goal}$.
-At $\omega_{\rm goal}=0.10$, PitG yields no conclusive
-outcomes (Table~\ref{tab:goal_impact}).
+At $\omega_{\rm goal}=0.10$, PitG yields no conclusive outcomes while ePitG
+remains 97.9\% conclusive (Table~\ref{tab:goal_impact}).
 
 Both ePitG and PitG share an important analytical property: the expected precision-goal
 iteration is given in closed form by
