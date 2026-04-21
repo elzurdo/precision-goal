@@ -17,12 +17,14 @@ FIG_WIDTH = 8
 FIG_HEIGHT = 6
 
 theta_str = r"$\theta$"
+hat_theta_str = r"$\hat{\theta}$"
 theta_null_str = r"$\theta_{\rm null}$"
 theta_true_str = r"$\theta_{\rm true}$"
 delta_rope_str = r"$\Delta_{\rm ROPE}$"
 n_true_str = r"$N_{\rm goal}$"
 n_stop_str = r"$N_{\rm stop}$"
 goal_str = r"$\omega_{\rm goal}$"
+width_str = r"$\omega_{\rm HDI}$"
 
 ALGO_COLORS = {"pitg": "blue", "epitg": "lightgreen", "hdi_rope": "red"}
 ALGO_LINEWIDTH =  {"hdi_rope":1, "pitg": 2, "epitg":3}
@@ -634,20 +636,20 @@ def viz_one_sample_results(df_sample_results, precision_goal, rope_min, rope_max
 
     #for iteration, row in df_sample_goal.iterrows():
     #    plt.plot([iteration, iteration], [row['hdi_min'], row['hdi_max']], color='blue', alpha=0.1, linewidth=1)
-    plt.scatter(df_sample_goal["decision_iteration"], df_sample_goal["hdi_min"], color="purple", label=f"{precision_goal:0.3} goal achieved", marker="o", s=20)
+    plt.scatter(df_sample_goal["decision_iteration"], df_sample_goal["hdi_min"], color="purple", label=f"{width_str}≤{goal_str}={precision_goal:0.3} met", marker="o", s=20)
     plt.scatter(df_sample_goal["decision_iteration"], df_sample_goal["hdi_max"], color="purple", label=None, marker="o", s=20)
 
-    plot_vhlines_lines(vertical=None, label='ROPE', horizontal=rope_min, linestyle="--", color="purple")
-    plot_vhlines_lines(vertical=None, horizontal=rope_max, linestyle="--", color="purple")
+    plot_vhlines_lines(vertical=None, label='ROPE', horizontal=rope_min, linestyle="--", color="orange", alpha=0.7)
+    plot_vhlines_lines(vertical=None, horizontal=rope_max, linestyle="--", color="orange", alpha=0.7)
 
     plt.legend()
-    plt.xlabel("iteration")
-    plt.ylabel(f"success rate {theta_str}")
+    plt.xlabel(r"$N$")
+    plt.ylabel(f"{hat_theta_str}")
 
     if success_rate is not None:
         plt.title(f"{theta_true_str}={success_rate:0.3f}")
 
-
+omega_hdi_str = r"$\omega_{\rm HDI}$"
 def plot_pdf(sr_experiment_stats, rope_min, rope_max, xlim=None, xtitle=r"success rate $\theta$"):
     pp = np.linspace(0, 1, 1000)
     pp_hdi = np.linspace(sr_experiment_stats["hdi_min"], sr_experiment_stats["hdi_max"], 1000)
@@ -658,13 +660,14 @@ def plot_pdf(sr_experiment_stats, rope_min, rope_max, xlim=None, xtitle=r"succes
     n_ = successes + failures
 
     hdi_min, hdi_max = successes_failures_to_hdi_ci_limits(successes, failures)
+    print(hdi_min, hdi_max)
 
     pdf = beta.pdf(pp, successes, failures)
     pdf_hdi = beta.pdf(pp_hdi, successes, failures)
 
     theta_hat_str = r"$\hat{\theta}$"
     plt.plot(pp, pdf, color="purple", label=f"pdf {theta_hat_str}={rate:0.3f}; n={n_:,}")
-    label_hdi = f"95% HDI: {hdi_max - hdi_min:0.3f}"
+    label_hdi = f"{omega_hdi_str}={hdi_max - hdi_min:0.3f}"
     plt.fill_between(pp_hdi, pdf_hdi, color="purple", alpha=0.2, label=label_hdi)
     plot_vhlines_lines(vertical=rope_min, label='ROPE', horizontal=None, linestyle="--")
     plot_vhlines_lines(vertical=rope_max, horizontal=None, linestyle="--")
@@ -708,13 +711,15 @@ def plot_sample_pdf_methods(method_df_stats, isample, rope_min, rope_max, xlim =
         plt.subplot(nrows, ncols, imethod + 1)
 
         if imethod == len(method_names) - 1:
-            xtitle = r"success rate $\theta$"
+            xtitle = r"$\theta$"
         else:
             xtitle = None
         plot_pdf(experiment_stats, rope_min, rope_max, xlim=xlim, xtitle=xtitle)
-        plt.title(f"{METHOD_FULL[method_name]}")
+        n_stop = experiment_stats["successes"] + experiment_stats["failures"]
+        plt.title(f"Stop Iteration: {n_stop:,}")
+        #plt.title(f"{METHOD_FULL[method_name]}")
 
-    plt.suptitle(f"Outcomes depending on Stop Criterion", fontsize=18)
+    #plt.suptitle(f"Outcomes depending on Stop Criterion", fontsize=18)
     plt.tight_layout()
 
 
