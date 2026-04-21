@@ -1,5 +1,21 @@
 # -*- coding: utf-8 -*-
-# +
+# ---
+# jupyter:
+#   jupytext:
+#     cell_metadata_filter: -all
+#     custom_cell_magics: kql
+#     text_representation:
+#       extension: .py
+#       format_name: percent
+#       format_version: '1.3'
+#       jupytext_version: 1.11.2
+#   kernelspec:
+#     display_name: scrappy-3.8.11
+#     language: python
+#     name: python3
+# ---
+
+# %%
 import numpy as np
 import pandas as pd
 
@@ -7,8 +23,8 @@ import matplotlib.pyplot as plt
 
 # https://en.wikipedia.org/wiki/Binomial_test
 from scipy.stats import binom_test # binomtest (in later versions ...)
-# -
 
+# %%
 print(f"numpy: {np.__version__}")
 print(f"pandas: {pd.__version__}")
 import matplotlib
@@ -16,7 +32,7 @@ print(f"matplotlib: {matplotlib.__version__}")
 import scipy
 print(f"scipy: {scipy.__version__}")
 
-# +
+# %%
 import matplotlib.pyplot as plt
 
 SMALL_SIZE = 12
@@ -40,13 +56,17 @@ plt.rcParams['axes.spines.right'] = False
 plt.rcParams['axes.spines.top'] = False
 
 
-# -
-
+# %% [markdown]
 # # Null Hypothesis Statistic Testing 
 # (p-Value Stopping Criterion)
 #
 # As per [blog post](http://doingbayesiandataanalysis.blogspot.com/2013/11/optional-stopping-in-data-collection-p.html):
 # > *For every new flip of the coin, stop and reject the null hypothesis, that θ=0.50, if p < .05 (two-tailed, conditionalizing on the current N), otherwise flip again.*
+
+# %%
+# May be deleted. 
+# Moved to utils_experiments.sequence_to_sequential_pvalues
+# TODO: import it and update all the `sequence_to_pvalues` to `sequence_to_sequential_pvalues` below.
 
 def sequence_to_pvalues(sequence, success_rate_null=0.5):
     p_values = []
@@ -60,10 +80,10 @@ def sequence_to_pvalues(sequence, success_rate_null=0.5):
     return p_values
 
 
-# +
+# %%
 seed = 13 #98 #31
 
-success_rate = 0.65 #0.65 #0.5
+success_rate = 0.5 #0.65 #0.65 #0.5
 n_samples = 1500
 
 np.random.seed(seed)
@@ -74,8 +94,9 @@ success_rate_null=0.5
 p_values = sequence_to_pvalues(sequence, success_rate_null=success_rate_null)
 
 
-# +
-p_value_thresh = 0.001 #0.001 #0.01 #0.05 # 0.0001 #0.05
+# %%
+#p_value_thresh = 0.001 #0.001 #0.01 #0.05 # 0.0001 #0.05
+p_value_thresh = 0.05
 # ----------
 xlabel = "iteration"
 title = f"true success rate = {success_rate:0.2f}"
@@ -110,16 +131,17 @@ plt.ylim(-0.1, 0.5)
 plt.tight_layout()
 print(len(sequence_idx[p_values < p_value_thresh]))
 
-# +
+# %%
+# %%time
 # NHST stop criterion:
 # For every new flip of the coin, stop and reject the null hypothesis, that θ=0.50, if p < .05 (two-tailed, conditionalizing on the current N), otherwise flip again.
 
 # used for to show that success_rate = 0.5 can go higher than 50%
-#experiments = 50 # 200
-#n_samples = 30000
+experiments = 50 # 200
+n_samples = 30000
 
-experiments = 1000 #200
-n_samples = 350 #1500
+# experiments = 1000 #200
+# n_samples = 350 #1500
 
 alternative = 'two-sided' # 'greater'
 # ----------
@@ -148,7 +170,7 @@ for sample in samples:
     experiement_stop_results['trials'].append(this_iteration)
     experiement_stop_results['p_value'].append(p_value)
 
-# +
+# %%
 sr_iteration_stopping_on_or_prior = pd.Series(iteration_stopping_on_or_prior)
 sr_nhst_reject = sr_iteration_stopping_on_or_prior / experiments
 
@@ -159,18 +181,21 @@ plt.xscale('log')
 plt.xlabel(xlabel)
 plt.title(title)
 
-# +
+# %%
 sr_iteration_stopping_on_or_prior = pd.Series(iteration_stopping_on_or_prior)
 sr_nhst_reject = sr_iteration_stopping_on_or_prior / experiments
 
-plt.scatter(sr_nhst_reject.index, sr_nhst_reject + 0.01, alpha=0.7, s=msize, color="purple")
-plt.scatter(sr_nhst_reject.index, 1. - sr_nhst_reject, alpha=0.7, s=msize, color="gray")
+plt.scatter(sr_nhst_reject.index, sr_nhst_reject + 0.01, alpha=0.7, s=msize, color="red", label="Reject")
+plt.scatter(sr_nhst_reject.index, 1. - sr_nhst_reject, alpha=0.7, s=msize, color="gray", label="No Reject")
 
-plt.xscale('log')
+plt.legend(title="decision")
+#plt.xscale('log')
 plt.xlabel(xlabel)
 plt.title(title)
+plt.grid(alpha=0.3)
+plt.ylabel(f"proportion of {experiments:,} experiments")
 
-# +
+# %%
 df_stop_results = pd.DataFrame(experiement_stop_results)
 df_stop_results.index.name = 'experiment_number'
 df_stop_results['sample_success_rate'] = df_stop_results['successes'] * 1. / df_stop_results['trials']
@@ -201,8 +226,8 @@ plt.plot([success_rate], [0], fillstyle='none' , **marker_style)
 
 plt.title(title)
 pass
-# -
 
+# %%
 plt.scatter(df_stop_results['trials'], df_stop_results['sample_success_rate'], color="purple", alpha=0.1)
 plt.xlabel('no. of trials')
 plt.ylabel('sample stop success rate')
@@ -210,19 +235,19 @@ plt.title(title)
 plt.hlines(success_rate, 0, df_stop_results['trials'].max() + 1, color="gray", linestyle='--', alpha=0.3)
 
 
-# +
+# %%
 df_plot = df_stop_results.copy()
 
 df_plot['p_value'].hist(bins=20)
-# -
 
+# %% [markdown]
 # # Bayesian HDI with ROPE 
 #
 # As per [blog post](http://doingbayesiandataanalysis.blogspot.com/2013/11/optional-stopping-in-data-collection-p.html):
 #
 # > *For every flip of the coin, compute the 95% HDI on θ. If the HDI is completely contained in a ROPE from 0.45 to 0.55, stop and accept the null. If the HDI falls completely outside the ROPE stop and reject the null. Otherwise flip again.*
 
-# +
+# %%
 from utils_stats import (
     hdi_ci_limits,
     successes_failures_to_hdi_ci_limits
@@ -233,8 +258,7 @@ from utils_viz import (
 )
 
 
-# -
-
+# %%
 def successes_failures_to_hdi_within_rope(successes, failures, rope_min, rope_max):
     ci_min, ci_max = successes_failures_to_hdi_ci_limits(successes, failures)
     
@@ -244,7 +268,7 @@ def successes_failures_to_hdi_within_rope(successes, failures, rope_min, rope_ma
     return False, ci_min, ci_max
 
 
-# +
+# %%
 def sequence_to_hdi_within_rope(sequence, rope_min, rope_max):
     within_rope = []
     ci_mins = []
@@ -274,10 +298,10 @@ def sequence_to_hdi_within_rope(sequence, rope_min, rope_max):
 #sequence_to_hdi_within_rope(sequence[:4], rope_min, rope_max)
 
 
-# +
+# %%
 #successes_failures_to_hdi_within_rope(successes, failures, rope_min, rope_max)
 
-# +
+# %%
 success_rate_null = 0.5
 success_rate = 0.55
 dsuccess_rate = 0.05 #success_rate * 0.1
@@ -293,19 +317,19 @@ print("-" * 20)
 print(f"{success_rate:0.2}: true")
 
 
-# +
+# %%
 seed = 317 #13 #98 #31
 
 n_samples = 1500
 
 np.random.seed(seed)
 sequence = np.random.binomial(1, success_rate, n_samples)
-# -
 
+# %%
 within_rope, ci_mins, ci_maxs = sequence_to_hdi_within_rope(sequence, rope_min, rope_max)
 hdi_widths = ci_maxs - ci_mins
 
-# +
+# %%
 title = f"true success rate = {success_rate:0.2f}"
 
 sequence_idx = np.arange(n_samples)+ 1
@@ -339,7 +363,7 @@ plt.xlabel(xlabel)
 
 plt.tight_layout()
 
-# +
+# %%
 experiments = 300 #200
 n_samples = 2500 #1000 #1500
 # ----------
@@ -386,14 +410,14 @@ for sample in samples:
     experiment_stop_results_hdi['within_rope'].append(this_within_rope)
     experiment_stop_results_hdi['ci_min'].append(ci_min)
     experiment_stop_results_hdi['ci_max'].append(ci_max)
-# -
 
+# %%
 rope_min, rope_max
 
-# +
+# %%
 #pd.Series(iteration_stopping_on_or_prior_hdi_within).value_counts()
 
-# +
+# %%
 df_hdi_counts = pd.DataFrame({'within': iteration_stopping_on_or_prior_hdi_within,
                'below': iteration_stopping_on_or_prior_hdi_below, 
               'above': iteration_stopping_on_or_prior_hdi_above,
@@ -405,14 +429,14 @@ df_hdi_counts['inconclusive'] = experiments - df_hdi_counts['within'] - df_hdi_c
 
 print(df_hdi_counts.shape)
 df_hdi_counts.head(4)
-# -
 
+# %%
 df_hdi_counts.tail(4)
 
-# +
+# %%
 #(df_hdi_counts['within'] / experiments).describe()
 
-# +
+# %%
 plt.plot(df_hdi_counts.index, df_hdi_counts['within'] / experiments, color="green")
 plt.plot(df_hdi_counts.index, df_hdi_counts['reject'] / experiments, color="red")
 plt.plot(df_hdi_counts.index, df_hdi_counts['inconclusive'] / experiments, color="gray")
@@ -422,7 +446,7 @@ plt.plot(df_hdi_counts.index, df_hdi_counts['inconclusive'] / experiments, color
 plt.xlabel(xlabel)
 plt.title(title)
 
-# +
+# %%
 plt.plot(df_hdi_counts.index, df_hdi_counts['within'] / experiments, color="green")
 plt.plot(df_hdi_counts.index, df_hdi_counts['reject'] / experiments, color="purple")
 plt.plot(df_hdi_counts.index, df_hdi_counts['inconclusive'] / experiments, color="gray")
@@ -431,7 +455,7 @@ plt.xscale('log')
 plt.xlabel(xlabel)
 plt.title(title)
 
-# +
+# %%
 df_stop_results_hdi = pd.DataFrame(experiment_stop_results_hdi)
 #df_stop_results_hdi['success_rate'] = df_stop_results_hdi['successes'] / df_stop_results_hdi['trials']
 
@@ -441,16 +465,18 @@ df_stop_results_hdi['sample_success_rate'] = df_stop_results_hdi['successes'] * 
 
 print(df_stop_results_hdi.shape)
 df_stop_results_hdi.head(4)
-# -
 
+# %%
 df_stop_results_hdi.tail()
 
+# %%
 df_stop_results_hdi.describe()
 
+# %%
 df_stop_results_hdi['outside'] = False
 df_stop_results_hdi.loc[df_stop_results_hdi.query('(ci_min > @rope_max) | (ci_max > @rope_min)').index, 'outside'] = True
 
-# +
+# %%
 df_plot = df_stop_results_hdi.copy()
 #df_plot = df_stop_results.query(f"trials < {df_stop_results['trials'].describe()['25%'] / 2}").copy()
 df_plot = df_plot.query('within_rope | outside')
@@ -478,14 +504,15 @@ plt.xlabel("sample success rate at decision")
 plt.ylabel("frequency")
 
 pass
-# -
+# %%
 
 
-
+# %% [markdown]
 # # Precision Is The Goal
 #
 # > *For every flip of the coin, compute the 95% HDI on θ. If its width is less than 0.08 (.8*width of ROPE) then stop, otherwise flip again. Once stopped, check whether null can be  accepted or rejected according to HDI with ROPE criteria.*
 
+# %%
 def sequence_to_ci_details(sequence):
     ci_mins = []
     ci_maxs = []
@@ -512,7 +539,7 @@ def sequence_to_ci_details(sequence):
     return ci_mins, ci_maxs
 
 
-# +
+# %%
 success_rate_null = 0.5
 dsuccess_rate = 0.05 #success_rate * 0.1
 rope_precision_fraction = 0.8
@@ -535,18 +562,18 @@ print("-" * 20)
 print(f"{success_rate:0.2}: true")
 
 
-# +
+# %%
 seed =  13 #317 #98 #31
 
 n_samples = 1500
 
 np.random.seed(seed)
 sequence = np.random.binomial(1, success_rate, n_samples)
-# -
 
+# %%
 ci_mins, ci_maxs = sequence_to_ci_details(sequence)
 
-# +
+# %%
 reject_lower = np.where(ci_maxs < rope_min, True, False)
 reject_higher = np.where(ci_mins > rope_max, True, False)
 accept_within = (ci_mins >= rope_min) & (ci_maxs <= rope_max)
@@ -555,7 +582,7 @@ inconclusive_hdi_plus_rope = ~(accept_within | reject_outside)
 
 precision_goal_achieved = np.where(ci_maxs - ci_mins <= precision_goal, True, False)
 
-# +
+# %%
 title = f"true success rate = {success_rate:0.2f}"
 xlabel = "iteration"
 
@@ -600,7 +627,7 @@ plt.hlines(success_rate, sequence_idx[0], sequence_idx[-1], color="gray", linest
 
 plt.tight_layout()
 
-# +
+# %%
 experiments = 500 #200 #300 #200
 n_samples = 2500 #2500 #1000 #1500
 # ----------
@@ -660,11 +687,11 @@ for sample in samples:
     experiment_stop_results_pitg['ci_min'].append(ci_min)
     experiment_stop_results_pitg['ci_max'].append(ci_max)
 
-# -
 
+# %%
 len(iteration_stopping_on_or_prior_pitg_reject_above)
 
-# +
+# %%
 
 df_pitg_counts = pd.DataFrame({'accept': iteration_stopping_on_or_prior_pitg_accept,
                'reject_below': iteration_stopping_on_or_prior_pitg_reject_below, 
@@ -679,13 +706,14 @@ print(df_pitg_counts.shape)
 df_pitg_counts.head(4)
 #hdi
 
-# -
 
+# %%
 df_pitg_counts.tail(4)
 
+# %%
 df_pitg_counts['accept'].notnull().sum()
 
-# +
+# %%
 plt.plot(df_pitg_counts.index, df_pitg_counts['accept'] / experiments, color="green")
 plt.plot(df_pitg_counts.index, df_pitg_counts['reject'] / experiments, color="red")
 plt.plot(df_pitg_counts.index, df_pitg_counts['inconclusive'] / experiments, color="gray")
@@ -695,7 +723,7 @@ plt.plot(df_pitg_counts.index, df_pitg_counts['inconclusive'] / experiments, col
 plt.xlabel(xlabel)
 plt.title(title)
 
-# +
+# %%
 df_stop_results_pitg = pd.DataFrame(experiment_stop_results_pitg)
 #df_stop_results_hdi['success_rate'] = df_stop_results_hdi['successes'] / df_stop_results_hdi['trials']
 
@@ -707,13 +735,14 @@ df_stop_results_pitg['stop_criterion'] = df_stop_results_pitg['ci_max'] - df_sto
 
 print(df_stop_results_pitg.shape)
 df_stop_results_pitg.head(4)
-# -
 
+# %%
 df_stop_results_pitg['stop_criterion'].value_counts(dropna=False)
 
+# %%
 df_stop_results_pitg.describe()
 
-# +
+# %%
 df_plot = df_stop_results_pitg.copy()
 #df_plot = df_stop_results.query(f"trials < {df_stop_results['trials'].describe()['25%'] / 2}").copy()
 df_plot = df_plot.query('stop_criterion')
@@ -740,11 +769,11 @@ plt.title(title)
 plt.xlabel("sample success rate at decision")
 plt.ylabel("frequency")
 
-# -
 
+# %% [markdown]
 # # Ultra Precision Is The Goal
 
-# +
+# %%
 success_rate_null = 0.5
 dsuccess_rate = 0.05 #success_rate * 0.1
 rope_precision_fraction = 0.8
@@ -767,7 +796,7 @@ print("-" * 20)
 print(f"{success_rate:0.2}: true")
 
 
-# +
+# %%
 experiments = 500 #200 #300 #200
 n_samples = 2500 #2500 #1000 #1500
 # ----------
@@ -831,7 +860,7 @@ for sample in samples:
     experiment_stop_results_upitg['ci_min'].append(ci_min)
     experiment_stop_results_upitg['ci_max'].append(ci_max)
 
-# +
+# %%
 
 df_upitg_counts = pd.DataFrame({'accept': iteration_stopping_on_or_prior_upitg_accept,
                'reject_below': iteration_stopping_on_or_prior_upitg_reject_below, 
@@ -845,7 +874,7 @@ df_upitg_counts['inconclusive'] = experiments - df_upitg_counts['accept'] - df_u
 print(df_upitg_counts.shape)
 df_upitg_counts.head(4)
 
-# +
+# %%
 title = f"true success rate = {success_rate:0.2f}"
 
 
@@ -858,7 +887,7 @@ plt.plot(df_upitg_counts.index, df_upitg_counts['inconclusive'] / experiments, c
 plt.xlabel(xlabel)
 plt.title(title)
 
-# +
+# %%
 title = f"true success rate = {success_rate:0.2f}"
 
 
@@ -871,17 +900,16 @@ plt.plot(df_pitg_counts.index, df_pitg_counts['accept'] / experiments, color="gr
 plt.plot(df_upitg_counts.index, df_upitg_counts['reject'] / experiments, color="red", linestyle=linestyle)
 plt.plot(df_upitg_counts.index, df_upitg_counts['inconclusive'] / experiments, color="gray", linestyle=linestyle)
 
-# +
+# %%
 df_pitg_counts
 
 df_upitg_counts.equals(df_pitg_counts)
-# -
+# %%
+
+# %%
 
 
-
-
-
-# +
+# %%
 df_stop_results_upitg = pd.DataFrame(experiment_stop_results_upitg)
 #df_stop_results_hdi['success_rate'] = df_stop_results_hdi['successes'] / df_stop_results_hdi['trials']
 
@@ -894,7 +922,7 @@ df_stop_results_upitg['stop_criterion'] = df_stop_results_upitg['ci_max'] - df_s
 print(df_stop_results_upitg.shape)
 df_stop_results_upitg.head(4)
 
-# +
+# %%
 df_plot = df_stop_results_upitg.copy()
 #df_plot = df_stop_results.query(f"trials < {df_stop_results['trials'].describe()['25%'] / 2}").copy()
 df_plot = df_plot.query('stop_criterion')
@@ -921,19 +949,19 @@ plt.title(title)
 plt.xlabel("sample success rate at decision")
 plt.ylabel("frequency")
 
-# -
+# %%
+
+# %%
+
+# %%
 
 
-
-
-
-
-
+# %% [markdown]
 # # Old Scripts
 #
 # Consdier deleting
 
-# +
+# %%
 # NHST stop criterion:
 # For every new flip of the coin, stop and reject the null hypothesis, that θ=0.50, if p < .05 (two-tailed, conditionalizing on the current N), otherwise flip again.
 
@@ -972,18 +1000,17 @@ for iexperiment in np.arange(experiments):
     #sequence = np.random.binomial(1, success_rate, samples)
     #p_values = sequence_to_pvalues(sequence, success_rate_null=success_rate_null)
 
-# +
+# %%
 sr_iteration_stopping = pd.Series(iteration_stopping)
 sr_iteration_counts = pd.Series(iteration_counts).sort_index()
 
 plt.scatter(sr_iteration_stopping.index, (sr_iteration_stopping * 1. / sr_iteration_counts))
-# -
+# %%
+
+# %%
 
 
-
-
-
-# +
+# %%
 # searching for extreme cases
 
 success_rate = 0.5
@@ -1002,7 +1029,7 @@ for seed in np.arange(100):
     if n_reject:
         print(f"{seed}: {n_reject}")
 
-# +
+# %%
 # NHST stop criterion:
 # For every new flip of the coin, stop and reject the null hypothesis, that θ=0.50, if p < .05 (two-tailed, conditionalizing on the current N), otherwise flip again.
 
@@ -1022,14 +1049,14 @@ for seed in np.arange(experiments):
     experiment_results[seed, :] = (p_values < p_value_thresh)
 
 
-# +
+# %%
 df_experiment_results = pd.DataFrame(experiment_results)
 df_experiment_results.index += 1
 
 print(df_experiment_results.shape)
 
 
-# +
+# %%
 def temp(x):
     if x > 0:
         return x
@@ -1038,7 +1065,7 @@ def temp(x):
 
 iter_to_stop = df_experiment_results.idxmax(axis=1).map(temp)
 
-# +
+# %%
 iteration_stopping_on_or_prior = {iteration: 0 for iteration in range(1, samples + 1)}
 
 for iteration in iter_to_stop.values:
@@ -1047,7 +1074,7 @@ for iteration in iter_to_stop.values:
             iteration_stopping_on_or_prior[this_iteration] += 1
 
 
-# +
+# %%
 sr_iteration_stopping_on_or_prior = pd.Series(iteration_stopping_on_or_prior)
 
 sr_nhst_reject = sr_iteration_stopping_on_or_prior / experiments
@@ -1055,16 +1082,16 @@ sr_nhst_reject = sr_iteration_stopping_on_or_prior / experiments
 plt.scatter(sr_nhst_reject.index, sr_nhst_reject, alpha=0.7, s=msize, color="purple")
 plt.scatter(sr_nhst_reject.index, 1. - sr_nhst_reject, alpha=0.7, s=msize, color="gray")
 plt.xscale('log')
-# -
+# %%
 
 
-
+# %%
 sequence_idx = np.arange(samples)+ 1
 plt.scatter(sequence_idx, experiment_results.mean(axis=0))
 plt.xscale('log')
 
 
-# +
+# %%
 
 iteration_stop = []
 for iexperiment in range(experiment_results.shape[0]):
@@ -1073,27 +1100,30 @@ for iexperiment in range(experiment_results.shape[0]):
     else:
         iteration_stop.append(-1)
         
-# -
 
+# %%
 for n in range(1, experiment_results.shape[0] + 1):
     None
 
+# %%
 list(range(1, 10 + 1))
 
-# +
+# %%
 
 np.unique(iteration_stop, return_counts=True)
-# -
+# %%
 
 
-
+# %%
 sequence_idx = np.arange(samples)+ 1
 plt.scatter(sequence_idx, experiment_results.mean(axis=0))
 plt.xscale('log')
 
 
+# %%
 iexperiment = 0
 
+# %%
 for idx in range(len(sequence)):
     p_value = binom_test(sum(sequence[:idx]), n=idx + 1, p=success_rate_null, alternative='two-sided') 
     
@@ -1101,6 +1131,6 @@ for idx in range(len(sequence)):
         iteration_stop.append()
         break
 
+# %%
 
-
-
+# %%

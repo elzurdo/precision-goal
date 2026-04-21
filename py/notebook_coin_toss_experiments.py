@@ -41,7 +41,7 @@ plt.rcParams['axes.spines.top'] = False
 
 # # One Sequence Experiment
 
-from utils_stats import sequence_to_sequential_pvalues
+from py.utils_experiments import sequence_to_sequential_pvalues
 from utils_data import generate_biomial_sequence
 from utils_viz import plot_sequence_experiment_nhst_combo_results
 
