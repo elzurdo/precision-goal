@@ -350,15 +350,13 @@ sufficient data have accumulated to constrain the posterior.
 The precision-based methods exhibit substantially smaller $\hat{\theta}$ bias, well
 within the ROPE width across all $\theta_{\rm true}$ values, as a natural consequence
 of their precision requirement. Among conclusive experiments within the ROPE, PitG
-shows the highest bias and ePitG the lowest.\footnote{For inconclusive experiments,
+shows the higher bias than ePitG.\footnote{For inconclusive experiments (not shown),
 where PitG contributes far more experiments than ePitG or HDI+ROPE, PitG's
-$\hat{\theta}$ bias is slightly \textit{lower} than ePitG's, though this ordering
-reverses when compounding all experiments.} Compounding conclusive and inconclusive
+$\hat{\theta}$ bias is slightly \textit{lower} than ePitG's. Considering
+both conclusive and inconclusive experiments, both yield near-zero bias at all $\theta_{\rm true}$ values.}
+Accounting for both conclusive and inconclusive
 experiments, ePitG decision accuracy exceeds PitG's at every $\theta_{\rm true}$ value
 (cf.\ Figure~\ref{fig:conclusiveness_rates}, right panel).
-
-
-TODO: revisit the "componding" statements and consider revising.
 
 ePitG is decisively superior to PitG near and within the ROPE, at the cost of a larger
 median $N_{\rm stop}$.

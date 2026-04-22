@@ -1121,7 +1121,7 @@ def plot_conclusiveness_decisions_and_correctness_rates(algo_stats_df, df_correc
         plt.axvline(x=param_null - dsuccess_rate, color="black", linestyle="--", alpha=0.5)
     plt.axhline(y=0.5, color="gray", linestyle=":", alpha=0.5)
 
-    plt.title("Decision Correctness Rates")
+    plt.title("Accuracy")
     plt.ylabel(ylabel)
     plt.xlim(xlim)
     plt.ylim(ylim)
