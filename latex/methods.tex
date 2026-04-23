@@ -84,13 +84,13 @@ Once the stopping criterion is triggered, the decision is determined solely by t
 relationship between the HDI and the ROPE.
 Let ${\rm ROPE} = [{\rm ROPE}_{\rm min}, {\rm ROPE}_{\rm max}]$ and the posterior HDI limits be $[{\rm HDI}_{\rm min}, {\rm HDI}_{\rm max}]$.
 
-\begin{itemize}
+\begin{enumerate}[label=(\alph*)]
     \item \textbf{Accept Null}: The HDI is completely \textit{inside} the ROPE. \\
     $({\rm ROPE}_{\rm min} \leq {\rm HDI}_{\rm min}) \land ({\rm HDI}_{\rm max} \leq {\rm ROPE}_{\rm max})$
     \item \textbf{Reject Null}: The HDI is completely \textit{outside} the ROPE. \\
     $ ({\rm HDI}_{\rm max} < {\rm ROPE}_{\rm min}) \lor ({\rm ROPE}_{\rm max} < {\rm HDI}_{\rm min} )$
     \item \textbf{Inconclusive}: The HDI \textit{straddles} the ROPE boundary. \\ Otherwise.
-\end{itemize}
+\end{enumerate}
 
 The interpretation of these outcomes, particularly what it means to \textit{accept}
 the null in a Bayesian framework, differs meaningfully from the frequentist convention
@@ -108,16 +108,21 @@ and is worth examining carefully; we do so in Section~\ref{sec:accept_reject_mea
     \textit{Bottom} (iteration 804): HDI fully within the ROPE $\rightarrow$ Accept $\theta_{\rm null}$.
     See Figure~\ref{fig:iterations} for the full sequence of iterations for this experiment.
     }
+    Alt text: Three-panel figure showing posterior probability density curves for a
+    Bernoulli rate parameter $\theta$ at three different iterations of data collection.
+    Each panel includes a shaded area representing the 95\% HDI, with annotated widths.
+    Vertical dashed lines indicate the ROPE boundaries.
+    The top panel shows the HDI fully outside the ROPE, leading to a Reject decision;
+    the middle panel shows the HDI straddling the ROPE, resulting in an Inconclusive decision;
+    and the bottom panel shows the HDI fully within the ROPE, leading to an Accept decision.
     \label{fig:posteriors}
 \end{figure}
 
 Figure~\ref{fig:posteriors} illustrates all three outcomes using a hand-picked Bernoulli
-experiment ($\theta_{\rm null}=0.5$, $\Delta_{\rm ROPE}=0.1$):
-\begin{itemize}
-    \item In the \textbf{top panel}, we examine a stop at iteration 126. The 95\% HDI is fully outside the ROPE, leading to a rejection of the null hypothesis.
-    \item In the \textbf{middle panel}, a stop is triggered at iteration 598. Here, the HDI straddles the ROPE boundary, resulting in an inconclusive decision.
-    \item In the \textbf{bottom panel}, we stop at iteration 804. The 95\% HDI falls fully within the ROPE, allowing us to accept $\theta_{\rm null}$.
-\end{itemize}
+experiment ($\theta_{\rm null}=0.5$, $\Delta_{\rm ROPE}=0.1$).
+In the top panel, a stop at iteration 126 finds the 95\% HDI fully outside the ROPE, leading to rejection of the null hypothesis.
+In the middle panel, a stop at iteration 598 finds the HDI straddling the ROPE boundary, resulting in an inconclusive decision.
+In the bottom panel, a stop at iteration 804 finds the 95\% HDI fully within the ROPE, allowing us to accept $\theta_{\rm null}$.
 
 Figure~\ref{fig:posteriors} illustrates that the decision outcome may be iteration-dependent. An inconclusive outcome implies that the data collected is insufficient to justify a decision. In a live setting, a human-in-the-loop (or an algorithm, common in automated high-frequency environments) would need to either conduct a risk assessment or collect more data. Since risk assessment is highly contextual, we defer that discussion and focus on the necessity of collecting more data to avoid inconclusive outcomes.
 
@@ -168,7 +173,7 @@ quantifies the uncertainty surrounding it.
 The panels of Figure~\ref{fig:posteriors} make this concrete under the default setup
 ($\theta_{\rm null}=0.5$, $\mathrm{ROPE}_{\rm max}^{\rm min}=[0.45,\,0.55]$):
 
-\begin{itemize}
+\begin{enumerate}[label=(\alph*)]
   \item \textbf{Bottom panel} (iteration 804, \textbf{Accept}):
         $\hat\theta=0.515$ and the 95\% HDI is
         $[0.480,\,0.549]$.
@@ -181,7 +186,7 @@ The panels of Figure~\ref{fig:posteriors} make this concrete under the default s
         Both bounds lie above $\mathrm{ROPE}_{\rm max}=0.55$, so we \textbf{reject}
         $\theta_{\rm null}=0.5$: positive evidence that the true rate is meaningfully
         above $0.5$. We are \textit{not} claiming the true rate equals $0.635$.
-\end{itemize}
+\end{enumerate}
 
 \subsection{Sequential Stopping Algorithms}\label{sec:sequential_stopping_algorithms}
 
@@ -205,7 +210,7 @@ Table \ref{tab:comparison} provides a high-level comparison of the three algorit
   \end{table}
 
 In the Key Input column we highlight the characteristic parameter required to be determined prior to the collection of data.
-\begin{enumerate}
+\begin{enumerate}[label=(\alph*)]
     \item \textbf{HDI + ROPE}: Requires $N_\mathrm{min}$ (minimal sample size), e.g., 30. This is crucial since the algorithm is sensitive to early outliers.
     \item \textbf{Precision Methods}: Require $\omega_{\rm Goal}$, the target precision width.
     By definition it must be narrower of equal to the ROPE width $\Delta_\mathrm{ROPE}$ to ensure
@@ -213,13 +218,13 @@ In the Key Input column we highlight the characteristic parameter required to be
 \end{enumerate}
 
 For brevity, the table excludes two universal parameters required for all three algorithms:
-\begin{itemize}
+\begin{enumerate}[label=(\alph*), resume]
     \item The ROPE boundaries $\mathrm{ROPE}_\mathrm{min}$ and $\mathrm{ROPE}_\mathrm{max}$: By definition
     this is the region of practical equivalence which quantifies the effect size of interest,
     which below it is considered negligible for practical purposes.
     $\Delta_\mathrm{ROPE} \equiv \mathrm{ROPE}_\mathrm{max} - \mathrm{ROPE}_\mathrm{min}$ is the ROPE width.
     \item $N_\mathrm{max}$ (Final Budget): The maximum sample size or budget limit.
-\end{itemize}
+\end{enumerate}
 
 \subsubsection{HDI + ROPE Stopping: Location Only}\label{sec:hdi_rope_stopping}
 
@@ -391,12 +396,12 @@ $\theta_{\rm true}=\theta_{\rm null}=0.5$.
 
 Unless stated otherwise, we use the following default parameters, chosen to reflect realistic experimental conditions (e.g., opinion polling):
 
-\begin{itemize}
+\begin{enumerate}[label=(\alph*)]
     \item \textbf{ROPE}: Considering an effect size of $0.05$ around the $\theta_{\rm null}$, we define $\mathrm{ROPE}_{\rm max}^{\rm min}=[0.45,\,0.55]$. ($\Delta_{\rm ROPE}=0.1$)
     \item \textbf{Precision Goal} $\omega_{\rm goal}=0.08$: We set the target precision (HDI width) to 80\% of $\Delta_{\rm ROPE}$.
     \item \textbf{Minimum Sample Size ($N_{\rm min}=30$)}: A practical lower bound to guard against misleadingly decisive stops at small $N$, where aleatoric variability can drive the HDI into or out of the ROPE before sufficient data have accumulated (see Section~\ref{sec:hdi_rope_stopping} for a detailed discussion).
     This parameter is required for the HDI+ROPE algorithm but not the precision-based algorithms.
     \item \textbf{Maximum Sample Size ($N_{\rm max}=1,500$)}: An upper bound for budgetary considerations. Experiments that are not decisive by this iteration are flagged as \textit{indecisive}.
-\end{itemize}
+\end{enumerate}
 
 In the following section, we present the results of these simulations, first under these default settings and subsequently by varying key parameters to explore robustness.
