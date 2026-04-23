@@ -1,3 +1,10 @@
+To created pdf
+
+```bash
+latexmk -pdf dptig.tex
+```
+
+
 For word counts:
 
 ```bash
