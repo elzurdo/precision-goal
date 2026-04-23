@@ -1,11 +1,11 @@
-The central finding of this paper is that ePitG resolves the tension inherent in
-PitG: requiring both precision and conclusiveness simultaneously yields a 97.7\%
+The central finding of this paper is that DPitG resolves the tension inherent in
+PitG: requiring both precision and decisiveness simultaneously yields a 97.7\%
 conclusiveness rate with a zero false-positive rate at
 $\theta_{\rm true}=\theta_{\rm null}=0.5$ (assuming $\omega_{\rm goal}=0.08$ and $N_{\rm max}=1{,}500$;
 none observed across $M=2{,}000$ simulations),
 at a median sample cost of only 4.7\% over PitG --- an advantage in conclusiveness that persists across
 $\theta_{\rm true}$ values (Section~\ref{sec:trends}).
-Moreover, ePitG's conclusiveness is robust to the choice of $\omega_{\rm goal}$:
+Moreover, DPitG's conclusiveness is robust to the choice of $\omega_{\rm goal}$:
 for the fair coin case, across $\omega_{\rm goal}=0.06$--$0.10$, the conclusiveness varies by less than one percentage
 point ($0.972$--$0.979$), while PitG's conclusiveness spans from $82.5\%$ to
 $0\%$ (Section~\ref{sec:goal_impact}).
@@ -18,11 +18,11 @@ precision-goal framework extends naturally to single-group continuous outcomes
 and continuous (see Appendix~\ref{app:extensions} for the adaptations and
 corresponding sample-size planning equations).
 
-ePitG operates under a different philosophy from classical sequential methods.
+DPitG operates under a different philosophy from classical sequential methods.
 Group sequential designs \citep{jennison2000} control the familywise Type~I error rate
 across interim analyses via alpha-spending functions, and are therefore tied to the
 number and timing of planned looks.
-ePitG requires no such correction, since the Bayesian posterior accounts for all
+DPitG requires no such correction, since the Bayesian posterior accounts for all
 accumulated data without reference to the stopping intention.
 Closest in spirit among Bayesian sequential designs is Bayes Factor Design Analysis
 (BFDA) \citep{schonbrodt2018}, which plans sample size to achieve a target Bayes Factor
@@ -32,15 +32,15 @@ for a discussion of BF stopping and its limitations).
 % \citet{schonbrodt2018}: Sch\"onbrodt \& Wagenmakers (2018) introduce BFDA as the
 % natural Bayesian sequential counterpart to power analysis: it targets evidential
 % strength (Bayes Factor) rather than posterior precision, making it complementary to
-% rather than competing with ePitG.
+% rather than competing with DPitG.
 The key distinction is that BFDA targets evidential strength (ratio of marginal
-likelihoods) whereas ePitG targets posterior precision; the two are complementary
+likelihoods) whereas DPitG targets posterior precision; the two are complementary
 as planning tools, and a design requiring both a conclusive HDI+ROPE verdict and a
 minimum Bayes Factor is a natural extension.
 
-While comparisons with competing sequential methods clarify ePitG's positioning,
+While comparisons with competing sequential methods clarify DPitG's positioning,
 its computational scope deserves equal attention.
-ePitG is a generic sequential stopping rule that applies to any posterior from which
+DPitG is a generic sequential stopping rule that applies to any posterior from which
 an HDI can be computed, including non-conjugate and hierarchical settings that require
 MCMC.
 The analysis in this paper is deliberately restricted to models with conjugate or
@@ -67,7 +67,7 @@ methodological advantage over frequentist approaches: unlike NHST
 (see Appendix~\ref{app:nhst}), where conducting
 multiple simultaneous tests inflates the Type~I error rate and requires corrections
 (e.g.\ Bonferroni) that reduce per-test power, the Bayesian posterior is unaffected ---
-$\omega_{\rm goal}$ and the ePitG stopping rule apply unchanged across independent
+$\omega_{\rm goal}$ and the DPitG stopping rule apply unchanged across independent
 simultaneous tests without correction \citep{gelman2012, kruschke2015doing}.
 % \citet{gelman2012}: Gelman, Hill \& Yajima (2012) is the standard journal reference
 % for the claim that Bayesian posteriors typically require no multiple-comparison
@@ -75,18 +75,18 @@ simultaneous tests without correction \citep{gelman2012, kruschke2015doing}.
 % \citet{kruschke2015doing}: DBDA2 (Chapter~11) provides the pedagogical treatment.
 For prospective sample-size planning, $N_{\rm goal}$
 (Equation~\ref{eq:pitg_stop_iteration}) provides a closed-form lower bound on the
-samples required to achieve $\omega_{\rm goal}$; ePitG may need additional samples
+samples required to achieve $\omega_{\rm goal}$; DPitG may need additional samples
 when $\theta_{\rm true}$ lies near a ROPE boundary (see Section~\ref{sec:trends}).
 Appendix~\ref{app:multiple_comparisons} develops the multiple-comparisons point in
 full and covers all three types of Bayesian power analysis (prospective, retrospective,
 and replication).
 
-A recurring concern about PitG --- and by extension ePitG --- is that the precision
+A recurring concern about PitG --- and by extension DPitG --- is that the precision
 requirement can seem too demanding in practice.
 Researchers frequently underestimate the noise in their measurements and are consequently surprised by the sample sizes that
 $\omega_{\rm goal}$ implies (J.K.\ Kruschke, pers.\ comm.\ 2022). This is not a flaw
 in the method but a form of epistemic honesty: imprecise posteriors produce inconclusive
-results regardless of the algorithm applied; ePitG simply refuses to declare a verdict
+results regardless of the algorithm applied; DPitG simply refuses to declare a verdict
 until the posterior is genuinely informative. Setting $\omega_{\rm goal}$ thus forces
 realistic planning rather than masking insufficient power behind a false positive or a
 silently inconclusive stop.
@@ -111,9 +111,9 @@ in domain knowledge rather than chosen to suit the data \citep{kruschke2018}.
 Appendix~\ref{app:practical_guidance} discusses principled approaches for setting it
 --- including the Minimal Clinically Important Difference, bioequivalence standards,
 and sensitivity analyses --- together with three broader considerations supporting
-ePitG's adoption (equivalence testing, pre-registration, and the replication crisis).
+DPitG's adoption (equivalence testing, pre-registration, and the replication crisis).
 
-The joint operating characteristics of ePitG can be assessed prospectively.
+The joint operating characteristics of DPitG can be assessed prospectively.
 Here we use \textit{false-accept} to mean a conclusive acceptance when $\theta_{\rm true}$
 lies outside the ROPE, and \textit{false-reject} to mean a conclusive rejection when
 $\theta_{\rm true}$ lies inside it; both rates are determined by the interplay of the
@@ -124,7 +124,7 @@ suppressed by the precision requirement.
 A researcher can therefore calibrate the operating characteristics in advance
 by checking, analytically or via simulation, that the planned $N_{\rm max}$
 achieves the target conclusiveness rate at the effect sizes of interest.
-Notably, ePitG's conclusiveness is more sensitive to $N_{\rm max}$ than to
+Notably, DPitG's conclusiveness is more sensitive to $N_{\rm max}$ than to
 $\omega_{\rm goal}$ (Section~\ref{sec:goal_impact}); setting $N_{\rm max}$
 generously is therefore the primary practical lever for ensuring high
 conclusiveness across a range of precision goals.
@@ -159,7 +159,7 @@ that the precision criterion alone cannot detect \citep{gelman2013bayesian};
 % and prior sensitivity analysis --- the standard treatment for detecting and
 % diagnosing prior misspecification.
 we defer a full treatment of principled prior selection to a later study.
-Fourth, while ePitG applies in principle to any posterior from which an HDI can be
+Fourth, while DPitG applies in principle to any posterior from which an HDI can be
 computed, this paper does not characterise its behaviour when the HDI is estimated
 from MCMC samples.
 In such settings the HDI estimate carries Monte Carlo error that could affect stopping

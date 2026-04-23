@@ -30,7 +30,7 @@ monitoring,
 % with pre-specified interim analyses (\S4.10), reflecting regulatory acceptance of
 % precision-based and sequential Bayesian stopping in clinical trials. The guidance
 % requires type~I error rate control and pre-specified stopping rules --- requirements
-% that ePitG satisfies analytically and without case-by-case simulation.
+% that DPitG satisfies analytically and without case-by-case simulation.
 % \citet{johari2022}: ``A/B tests are typically analyzed via frequentist p-values and
 % confidence intervals, but these inferences are wholly unreliable if users endogenously
 % choose sample sizes by continuously monitoring their tests.'' Johari et al.\ propose
@@ -84,21 +84,21 @@ Yet unlike \textit{Null Hypothesis Significance Testing} (NHST, see Appendix~\re
 the precision-based framework enables exactly this: positive acceptance of the null
 is a genuine and actionable verdict.
 In this paper, we propose an improved variant we call
-``Enhanced Precision is the Goal'' (ePitG), which recouples the stopping and decision
+``Decisive Precision is the Goal'' (DPitG), which recouples the stopping and decision
 rules in a conservative manner.
-Specifically, ePitG requires that \textit{both} the precision goal (stopping rule) and a
-conclusive hypothesis outcome (decision rule) be met simultaneously to cease data collection.
+Specifically, DPitG requires that \textit{both} the precision goal (stopping rule) and a
+decisive hypothesis outcome (decision rule) be met simultaneously to cease data collection.
 
 Applied to dichotomous data, this more conservative rule substantially reduces the rate
 of inconclusive outcomes. For example, in the fair coin case
 ($\theta_{\rm true}=\theta_{\rm null}=0.5$) with precision goal $\omega_{\rm goal}=0.08$,
-ePitG reduces PitG's inconclusive rate from 63.3\% to just 2.3\%,
+DPitG reduces PitG's inconclusive rate from 63.3\% to just 2.3\%,
 at a median cost of only 4.7\% more samples.
-Moreover, ePitG's conclusiveness is robust to the choice of precision goal: across
+Moreover, DPitG's conclusiveness is robust to the choice of precision goal: across
 $\omega_{\rm goal}=0.06$--$0.10$, it varies by less than one percentage point
 ($0.972$--$0.979$), while PitG's conclusiveness ranges from $82.5\%$ to $0\%$.
 This gain is most pronounced when the null is true or practically so --- precisely the
-regime where PitG's inconclusive rate is highest --- while ePitG also maintains decisive
+regime where PitG's inconclusive rate is highest --- while DPitG also maintains decisive
 outcomes when the null is false, yielding a robust decision mechanism across experimental conditions.
 
 Our results are demonstrated through simulations with single-group dichotomous data, though the

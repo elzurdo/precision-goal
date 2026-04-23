@@ -8,18 +8,18 @@ Methods that decouple the stopping criterion from the decision criterion, such a
 posterior precision is reached.
 Yet we show that PitG frequently yields inconclusive outcomes, most notably when the
 null hypothesis is true.
-To address this, we propose ``Enhanced Precision is the Goal'' (ePitG), which requires
-both the precision target and a conclusive hypothesis outcome (i.e., accept or reject the null)
+To address this, we propose ``Decisive Precision is the Goal'' (DPitG), which requires
+both the precision target and a decisive hypothesis outcome (i.e., accept or reject the null)
 to be met simultaneously before stopping.
 In fair coin experiments ($\theta_{\rm true}= \theta_{\rm null}=0.5$,
 equivalence region width $0.10$ and precision goal of
 $\omega_{\rm goal}=0.08$), PitG yields
-$63.3\%$ inconclusive outcomes; ePitG reduces this to just $2.3\%$,
+$63.3\%$ inconclusive outcomes; DPitG reduces this to just $2.3\%$,
 with only a $4.7\%$ increase in median sample size.
-Moreover, ePitG's conclusiveness remains essentially flat ($0.972$--$0.979$)
+Moreover, DPitG's conclusiveness remains essentially flat ($0.972$--$0.979$)
 across a broad range of precision goals ($\omega_{\rm goal}=0.06$--$0.10$),
 while PitG's conclusiveness spans from $82.5\%$ to $0\%$ (entirely inconclusive
-at the loosest setting), demonstrating ePitG's robustness to the choice of $\omega_{\rm goal}$.
+at the loosest setting), demonstrating DPitG's robustness to the choice of $\omega_{\rm goal}$.
 This advantage of high conclusiveness, zero false-positive rate, and modest sample cost 
 holds broadly across $\theta_{\rm true}$ and $\theta_{\rm null}$ values.
 %More broadly, unlike methods that can only reject the null hypothesis, the
@@ -44,16 +44,16 @@ and interpretation of sequential experiments.
 % (PitG) eliminate this bias but produce high rates of inconclusive outcomes,
 % especially when the null hypothesis is true.
 %
-% \textbf{Method.} We propose ``Enhanced Precision is the Goal'' (ePitG), which
+% \textbf{Method.} We propose ``Decisive Precision is the Goal'' (DPitG), which
 % requires both a target posterior precision and a conclusive hypothesis outcome
 % to be satisfied simultaneously before stopping.
 %
 % \textbf{Results.} In fair coin simulations ($\theta_{\rm true}=0.5$,
-% $\omega_{\rm goal}=0.08$), PitG yields 63.3\% inconclusive outcomes; ePitG
+% $\omega_{\rm goal}=0.08$), PitG yields 63.3\% inconclusive outcomes; DPitG
 % reduces this to 2.3\% with only a 4.7\% median increase in sample size,
 % while preserving zero false positives.
 %
-% \textbf{Impact.} ePitG offers a practical and principled solution for sequential
+% \textbf{Impact.} DPitG offers a practical and principled solution for sequential
 % testing when decisive outcomes are required. Open-source code and an interactive
 % calculator are provided.
 %% -----------------------------------------------------------------------

@@ -1,6 +1,6 @@
-Across all scenarios, ePitG substantially outperforms PitG in conclusiveness while
+Across all scenarios, DPitG substantially outperforms PitG in conclusiveness while
 keeping false-positive rates well below HDI+ROPE's, at a modest median sampling premium.
-We begin with the fair coin case ($\theta_{\rm true}=0.5$), where ePitG matches
+We begin with the fair coin case ($\theta_{\rm true}=0.5$), where DPitG matches
 HDI+ROPE's near-complete conclusiveness while, like PitG, producing zero false
 positives --- a combination neither competitor achieves alone.
 We then examine general trends as $\theta_{\rm true}$ increases from $0.5$ upwards,
@@ -22,7 +22,7 @@ of this same experiment.
 Despite arising from the same sequence of coin tosses, the three algorithms reach
 sharply different decisions. HDI+ROPE stops early and, incorrectly, rejects
 $\theta_{\rm null}$. PitG stops at the expected precision iteration but is left
-inconclusive, as the HDI straddles the ROPE boundary. ePitG waits until both conditions
+inconclusive, as the HDI straddles the ROPE boundary. DPitG waits until both conditions
 are jointly satisfied and correctly accepts $\theta_{\rm null}$. This divergence from a
 single experiment motivates the large-scale analysis that follows.
 
@@ -44,7 +44,7 @@ single experiment motivates the large-scale analysis that follows.
   PitG stops at iteration 598 (first purple dot); with the HDI straddling the ROPE boundary,
   the decision is inconclusive
   (cf.\ middle panel).
-  ePitG stops at iteration 804 (green line), where precision and conclusiveness are jointly
+  DPitG stops at iteration 804 (green line), where precision and decisiveness are jointly
   satisfied, correctly accepting $\theta_{\rm null}$
   (cf.\ bottom panel).}
   \label{fig:iterations}
@@ -64,7 +64,7 @@ statistics in Tables~\ref{tab:fair_overall} and~\ref{tab:fair_conclusive}.
   $\omega_{\rm goal}=0.08$).
   \textit{Main panel}: scatter plot of sample proportion $\hat{\theta}(N_{\rm stop})$
   vs.\ stop iteration $N_{\rm stop}$.
-  \textit{Symbols}: red squares: HDI+ROPE; blue circles: PitG; green Xs: ePitG.
+  \textit{Symbols}: red squares: HDI+ROPE; blue circles: PitG; green Xs: DPitG.
   \textit{Solid horizontal line}: $\theta_{\rm true}$.
   \textit{Horizontal dashed lines}: ROPE boundaries.
   \textit{Vertical dashed line}: expected goal stop iteration $N_{\rm goal}$
@@ -88,7 +88,7 @@ PitG consistently stops near $N_{\rm goal}$, with sample proportions clustered t
 $\theta_{\rm true}=0.5$. However, many of these stops occur when the HDI straddles the
 ROPE boundary, yielding a high rate of inconclusive decisions
 (see Figure~\ref{fig:fair_decisions} and Table~\ref{tab:fair_overall}).
-ePitG exhibits a narrower $\hat{\theta}(N_{\rm stop})$ distribution than PitG but extends
+DPitG exhibits a narrower $\hat{\theta}(N_{\rm stop})$ distribution than PitG but extends
 to later iterations, achieving more conclusive results while maintaining zero estimation bias
 (see Figure~\ref{fig:success_by_truth_conclusive} for how bias emerges as symmetry breaks).
 
@@ -100,7 +100,7 @@ to later iterations, achieving more conclusive results while maintaining zero es
   ($\theta_{\rm true}=\theta_{\rm null}=0.5$, $\omega_{\rm goal}=0.08$).
   At each iteration $N$, the plotted proportions count all experiments that reached
   a decision at or before $N$; their sum is 100\% at every point.
-  \textit{Left}: HDI+ROPE; \textit{Middle}: Precision is the Goal; \textit{Right}: Enhanced Precision is the Goal.
+  \textit{Left}: HDI+ROPE; \textit{Middle}: Precision is the Goal; \textit{Right}: Decisive Precision is the Goal.
   \textit{Red dashed line}: reject $\theta_{\rm null}$.
   \textit{Green solid line}: accept $\theta_{\rm null}$.
   \textit{Gray dot-dashed line}: inconclusive.}
@@ -116,7 +116,7 @@ as they require the precision criterion to be satisfied before any decision is m
 For PitG (middle panel), the acceptance rate rises as a near step-function, jumping at
 $N_{\rm goal}$ to 36.7\%, with the inconclusive rate settling at the complement 63.3\%.
 
-ePitG (right panel) presents a hybrid of the other two: it preserves the zero-rejection
+DPitG (right panel) presents a hybrid of the other two: it preserves the zero-rejection
 property of PitG while achieving a high conclusiveness rate akin to HDI+ROPE, but with
 a more gradual transition from inconclusive to conclusive outcomes.
 
@@ -131,7 +131,7 @@ stop-iteration and sample-proportion statistics for all $M$ experiments and for 
     \hline
     HDI+ROPE & 0.982 & 523 & 415 - 721& 306  \\
     PitG     & \textcolor{red}{\textbf{0.367}}  & 599 & 598 - 599& 1 \\
-    ePitG    & \textcolor{green}{\textbf{0.977}}  & 627 & 598 - 794& 196 \\
+    DPitG    & \textcolor{green}{\textbf{0.977}}  & 627 & 598 - 794& 196 \\
     \hline
   \end{tabular}
   \caption{Summary statistics for all $M=2{,}000$ fair coin experiments
@@ -141,7 +141,7 @@ stop-iteration and sample-proportion statistics for all $M$ experiments and for 
   $N_{\rm 25\%}$--$N_{\rm 75\%}$: interquartile range of stop iteration.
   Conclusive Rate values are color-coded: \textcolor{red}{\textbf{red}} flags a
   concerningly low rate (PitG); \textcolor{green}{\textbf{green}} highlights a
-  strong rate with zero false positives (ePitG; cf.\ Table~\ref{tab:fair_conclusive}).}
+  strong rate with zero false positives (DPitG; cf.\ Table~\ref{tab:fair_conclusive}).}
   \label{tab:fair_overall}
 \end{center}
 \end{table}
@@ -149,9 +149,9 @@ stop-iteration and sample-proportion statistics for all $M$ experiments and for 
 HDI+ROPE achieves the highest conclusiveness rate (98.2\%), but at the cost of a 6.2\%
 false-positive rate. PitG delivers zero false positives, but its conclusiveness rate of
 only 36.7\% is strikingly low, with stop iterations all clustering at $N_{\rm goal}$.
-ePitG strikes the intended balance: a 97.7\% conclusiveness rate with zero false
+DPitG strikes the intended balance: a 97.7\% conclusiveness rate with zero false
 positives. Its lower quartile $N_{\rm 25\%}\approx N_{\rm goal} \sim N_{\rm 50\%}$ shows that roughly half
-of ePitG experiments stop as soon as the precision goal is first met; the wider IQR of
+of DPitG experiments stop as soon as the precision goal is first met; the wider IQR of
 $598$--$794$ reflects those that require additional iterations to satisfy the joint
 precision-and-conclusiveness criterion, at a median cost of only 4.7\% more samples than
 PitG.
@@ -165,7 +165,7 @@ PitG.
     \hline
     HDI+ROPE & 1964 & 0.938 & \textcolor{red}{\textbf{0.062}} & 0.5000 & 0.4919-0.5075 \\
     PitG     &  \textcolor{red}{\textbf{734}} & 1     & 0     & 0.5008 & 0.4958-0.5041 \\
-    ePitG    & 1953 & 1     & 0     & 0.5008 & 0.4895-0.5105\\
+    DPitG    & 1953 & 1     & 0     & 0.5008 & 0.4895-0.5105\\
     \hline
   \end{tabular}
   \caption{Summary statistics for the conclusive subsets of experiments in
@@ -189,31 +189,31 @@ trade-off for PitG. Table~\ref{tab:goal_impact} shows the effect across a range 
 at $\theta_{\rm true}=0.5$. Tightening $\omega_{\rm goal}$ (decreasing it) raises PitG's
 conclusiveness at the cost of a larger required sample size: $N_{\rm goal}$ grows
 quadratically as $\omega_{\rm goal}$ decreases (Equation~\ref{eq:pitg_stop_iteration}).
-ePitG's conclusiveness, by contrast, remains essentially flat across the full range
+DPitG's conclusiveness, by contrast, remains essentially flat across the full range
 ($0.972$--$0.979$), demonstrating robustness to the choice of $\omega_{\rm goal}$.
-The conclusiveness ratio (ePitG/PitG) captures this contrast directly: it grows from
+The conclusiveness ratio (DPitG/PitG) captures this contrast directly: it grows from
 $1.17$ at $\omega_{\rm goal}=0.06$ to infinity at $\omega_{\rm goal}=0.10$, where PitG
 becomes entirely inconclusive.
 
-At the tightest setting ($\omega_{\rm goal}=0.06$), the ePitG $N_{\rm stop}$ $\Delta_{\rm IQR}$ is zero:
+At the tightest setting ($\omega_{\rm goal}=0.06$), the DPitG $N_{\rm stop}$ $\Delta_{\rm IQR}$ is zero:
 all experiments stop at exactly $N_{\rm goal}$, leaving no room for the additional
-iterations that ePitG normally uses to resolve borderline cases.
+iterations that DPitG normally uses to resolve borderline cases.
 At the loosest setting ($\omega_{\rm goal}=0.10=\Delta_{\rm ROPE}$, equal to the ROPE width), PitG is always
-inconclusive, but ePitG still achieves 97.9\% conclusiveness by collecting more data until
+inconclusive, but DPitG still achieves 97.9\% conclusiveness by collecting more data until
 both precision and conclusiveness are jointly satisfied.
 
-The conclusiveness of ePitG is more sensitive to $N_{\rm max}$ (fixed at $1{,}500$ in this
+The conclusiveness of DPitG is more sensitive to $N_{\rm max}$ (fixed at $1{,}500$ in this
 example) than to $\omega_{\rm goal}$, whereas PitG always stops at $N_{\rm goal}$ regardless of $N_{\rm max}$.
-Consequently, $N_{\rm goal}$ serves as a minimum budget for ePitG: for tight precision goals
+Consequently, $N_{\rm goal}$ serves as a minimum budget for DPitG: for tight precision goals
 it is sufficient to achieve high conclusiveness; for looser goals, the researcher should
-set $N_{\rm max}$ generously to allow ePitG to reach its full potential.
+set $N_{\rm max}$ generously to allow DPitG to reach its full potential.
 
 \begin{table}[h!]
   \begin{center}
   \begin{tabular}{c|c|c|c|c|c|c|c}
     \hline
-    & &\multicolumn{1}{c|}{PitG} & \multicolumn{1}{c|}{ePitG} & \multicolumn{1}{c|}{Conclusiveness Ratio} & \multicolumn{3}{c}{ePitG $N_{\rm stop}$} \\
-    $\omega_{\rm goal}$ & $N_{\rm goal}$ & Conclusiveness & Conclusiveness  &  ePitG/PitG & $ N_{\rm 25\%}$ &  $N_{\rm 75\%}$ & $\Delta_{\rm IQR}$\\
+    & &\multicolumn{1}{c|}{PitG} & \multicolumn{1}{c|}{DPitG} & \multicolumn{1}{c|}{Conclusiveness Ratio} & \multicolumn{3}{c}{DPitG $N_{\rm stop}$} \\
+    $\omega_{\rm goal}$ & $N_{\rm goal}$ & Conclusiveness & Conclusiveness  &  DPitG/PitG & $ N_{\rm 25\%}$ &  $N_{\rm 75\%}$ & $\Delta_{\rm IQR}$\\
     \hline
     0.06 & 1,066 & 0.825 & 0.972 & 1.17 & 1,066 & 1,066 & 0 \\
     0.07 & 783 & 0.594 & 0.975 & 1.64 & 783 & 832 & 49 \\
@@ -222,24 +222,24 @@ set $N_{\rm max}$ generously to allow ePitG to reach its full potential.
     0.10 & 383 & 0.    & 0.979 & --  & 428 & 730 & 302 \\
     \hline
   \end{tabular}
-  \caption{Impact of $\omega_{\rm goal}$ on PitG and ePitG performance
+  \caption{Impact of $\omega_{\rm goal}$ on PitG and DPitG performance
   ($\theta_{\rm true}=\theta_{\rm null}=0.5$, $M=2{,}000$ experiments,
   $N_{\rm max}=1{,}500$, ${\rm ROPE}_{\rm max}-{\rm ROPE}_{\rm min}=0.1$).
   $N_{\rm goal}$: expected precision-based stop iteration (Equation~\ref{eq:pitg_stop_iteration});
   Conclusiveness: fraction of $M$ experiments with a conclusive outcome;
-  Conclusiveness Ratio: ePitG/PitG conclusiveness;
-  ePitG $N_{\rm stop}$: quartile statistics restricted to conclusive ePitG
+  Conclusiveness Ratio: DPitG/PitG conclusiveness;
+  DPitG $N_{\rm stop}$: quartile statistics restricted to conclusive DPitG
   experiments (note that results for $\omega_{\rm goal}=0.08$ differ slightly from
   the corresponding entry in Table~\ref{tab:fair_overall}, which summarises all experiments).
   $\Delta_{\rm IQR} = N_{\rm 75\%} - N_{\rm 25\%}$.
   For $\omega_{\rm goal} \le 0.08$, $N_{\rm 25\%} = N_{\rm goal}$, showing that many
-  ePitG experiments stop as soon as the precision goal is first met.
+  DPitG experiments stop as soon as the precision goal is first met.
  }
   \label{tab:goal_impact}
 \end{center}
 \end{table}
 
-The fair coin case thus demonstrates a clear hierarchy: ePitG matches HDI+ROPE's
+The fair coin case thus demonstrates a clear hierarchy: DPitG matches HDI+ROPE's
 conclusiveness and PitG's zero-false-positive guarantee at a modest median cost.
 Section~\ref{sec:trends} shows that this advantage persists as $\theta_{\rm true}$
 departs from $\theta_{\rm null}$.
@@ -256,7 +256,7 @@ with ${\rm ROPE}_{\rm max}=0.55$ serving as a key inflection point.
   \includegraphics[width=1\textwidth]{conclusive_rates.png}
   \caption{Algorithm comparison across $\theta_{\rm true}$ values for $M=2{,}000$
   experiments ($\theta_{\rm null}=0.5$, $\omega_{\rm goal}=0.08$).
-  \textit{Colors}: red: HDI+ROPE; blue: PitG; green: ePitG.
+  \textit{Colors}: red: HDI+ROPE; blue: PitG; green: DPitG.
   \textit{Vertical dashed lines}: ${\rm ROPE}_{\rm max}=0.55$.
   \textit{Left}: conclusiveness rates.
   \textit{Middle}: acceptance (solid lines) and rejection (dashed lines) rates;
@@ -267,22 +267,22 @@ with ${\rm ROPE}_{\rm max}=0.55$ serving as a key inflection point.
   \label{fig:conclusiveness_rates}
 \end{figure}
 
-As established in Section~\ref{sec:fair_coin_large_scale}, HDI+ROPE and ePitG open near 100\%
+As established in Section~\ref{sec:fair_coin_large_scale}, HDI+ROPE and DPitG open near 100\%
 conclusiveness at $\theta_{\rm true}=0.5$, while PitG sits at only 36.7\%, with the
 trade-off against $\omega_{\rm goal}$ discussed there. The qualitative trends shown
 below generalise across values of $\omega_{\rm goal}$ (Section~\ref{sec:goal_impact}).
 
 All three algorithms show a dip in conclusiveness as $\theta_{\rm true}$ approaches
-${\rm ROPE}_{\rm max}$, after which conclusiveness rises again. HDI+ROPE and ePitG
+${\rm ROPE}_{\rm max}$, after which conclusiveness rises again. HDI+ROPE and DPitG
 recover to near 100\% by $\theta_{\rm true}=0.6$; PitG only asymptotes to 100\% at
-$\theta_{\rm true}\approx 0.64$, at which point ePitG and PitG become effectively
+$\theta_{\rm true}\approx 0.64$, at which point DPitG and PitG become effectively
 equivalent (for $\theta_{\rm null}=0.5$).
 
 This dip is by design: the ROPE boundaries are natural inflection points, as algorithms
 are constructed to accept $\theta_{\rm null}$ within the ROPE and reject it outside
 (see Section~\ref{sec:accept_reject_meaning}).
 The precision-based methods are deliberately conservative near these boundaries, yielding
-lower conclusiveness rates than HDI+ROPE in this region. At the boundary itself, ePitG
+lower conclusiveness rates than HDI+ROPE in this region. At the boundary itself, DPitG
 is conclusive in only 19\% of experiments and PitG in only 5\%.
 
 Breaking the conclusiveness into its acceptance and rejection components (middle panel)
@@ -294,7 +294,7 @@ to $\sim\!30\%$ at ${\rm ROPE}_{\rm max}$; its false-negative rate peaks at
 $\sim\!10\%$ at the ROPE boundary before dropping to $0\%$ by
 $\theta_{\rm true}=0.57$. Both precision-based methods maintain a near-zero
 false-positive rate throughout, exactly zero well within the ROPE interior, rising to a
-small level near the ROPE boundary (ePitG at the same $\sim\!10\%$, PitG lower due to
+small level near the ROPE boundary (DPitG at the same $\sim\!10\%$, PitG lower due to
 its much lower conclusiveness rate), with only a small false-negative rate near the ROPE
 that similarly drops quickly.
 
@@ -305,8 +305,8 @@ $\hat{\theta}$ lies within the ROPE (accept) or outside it (reject); alternative
 risk- or utility-based rules are deferred to future work.
 
 All three algorithms reach their minimum accuracy at ${\rm ROPE}_{\rm max}$. Within
-the ROPE, ePitG consistently leads PitG, reaching 99.5\% at $\theta_{\rm true}=0.5$
-compared to PitG's 98.5\%. Outside the ROPE, HDI+ROPE and ePitG reach 100\% by
+the ROPE, DPitG consistently leads PitG, reaching 99.5\% at $\theta_{\rm true}=0.5$
+compared to PitG's 98.5\%. Outside the ROPE, HDI+ROPE and DPitG reach 100\% by
 $\theta_{\rm true}=0.58$, whereas PitG achieves this only at
 $\theta_{\rm true}\approx 0.60$.
 
@@ -329,7 +329,7 @@ the ROPE.
   \caption{Sample proportion $\hat{\theta}(N_{\rm stop})$ at the stop iteration as a
   function of $\theta_{\rm true}$, for conclusive experiments only (subsets of $M=2{,}000$,
   $\theta_{\rm null}=0.5$, $\omega_{\rm goal}=0.08$).
-  \textit{Colors}: red: HDI+ROPE; blue: PitG; green: ePitG.
+  \textit{Colors}: red: HDI+ROPE; blue: PitG; green: DPitG.
   \textit{Horizontal dotted lines}: ROPE boundaries.
   \textit{Vertical dashed line}: ${\rm ROPE}_{\rm max}$.
   \textit{Left}: interquartile range $\hat{\theta}_{\rm 25\%}$--$\hat{\theta}_{\rm 75\%}$
@@ -350,15 +350,15 @@ sufficient data have accumulated to constrain the posterior.
 The precision-based methods exhibit substantially smaller $\hat{\theta}$ bias, well
 within the ROPE width across all $\theta_{\rm true}$ values, as a natural consequence
 of their precision requirement. Among conclusive experiments within the ROPE, PitG
-shows the higher bias than ePitG.\footnote{For inconclusive experiments (not shown),
-where PitG contributes far more experiments than ePitG or HDI+ROPE, PitG's
-$\hat{\theta}$ bias is slightly \textit{lower} than ePitG's. Considering
+shows the higher bias than DPitG.\footnote{For inconclusive experiments (not shown),
+where PitG contributes far more experiments than DPitG or HDI+ROPE, PitG's
+$\hat{\theta}$ bias is slightly \textit{lower} than DPitG's. Considering
 both conclusive and inconclusive experiments, both yield near-zero bias at all $\theta_{\rm true}$ values.}
 Accounting for both conclusive and inconclusive
-experiments, ePitG decision accuracy exceeds PitG's at every $\theta_{\rm true}$ value
+experiments, DPitG decision accuracy exceeds PitG's at every $\theta_{\rm true}$ value
 (cf.\ Figure~\ref{fig:conclusiveness_rates}, right panel).
 
-ePitG is decisively superior to PitG near and within the ROPE, at the cost of a larger
+DPitG is decisively superior to PitG near and within the ROPE, at the cost of a larger
 median $N_{\rm stop}$.
 Figure~\ref{fig:stop_iterations_by_truth_conclusive} quantifies this cost for all three
 algorithms, restricting to conclusive outcomes since inconclusive experiments always stop
@@ -373,7 +373,7 @@ requirement matters.
   $\theta_{\rm true}$ values ($\omega_{\rm goal}=0.08$).
   \textit{Left}: $\theta_{\rm null}=0.5$; \textit{Right}: $\theta_{\rm null}=0.7$.
   In each column the top, middle, and bottom panels correspond to HDI+ROPE, PitG,
-  and ePitG, respectively.
+  and DPitG, respectively.
   \textit{Band}: interquartile range $N_{\rm 25\%}$--$N_{\rm 75\%}$ of $N_{\rm stop}$.
   \textit{Solid line}: mean $N_{\rm stop}$.
   \textit{Dotted line}: true precision-goal iteration
@@ -417,13 +417,13 @@ precision maximum (e.g.\ $\theta_{\rm null}=0.5$), and a floor otherwise.
 The researcher should set $N_{\rm max}$ according to their resources, with
 $N_{\rm goal}(\theta_{\rm null})$ as the baseline (here $N_{\rm max}=1{,}500$).
 
-ePitG's $N_{\rm stop}$ equals or exceeds PitG's within the ROPE and in the vicinity
+DPitG's $N_{\rm stop}$ equals or exceeds PitG's within the ROPE and in the vicinity
 of its boundaries, the extra iterations being precisely what accounts for the higher
 conclusiveness seen in Figure~\ref{fig:conclusiveness_rates}. Once $\theta_{\rm true}$
-is far enough from the ROPE, ePitG converges to PitG and both stop at
+is far enough from the ROPE, DPitG converges to PitG and both stop at
 $N_{\rm goal}(\theta_{\rm true})$.
 
-Figure~\ref{fig:stop_conclusiveness_ratios} places the ePitG--PitG trade-off in direct
+Figure~\ref{fig:stop_conclusiveness_ratios} places the DPitG--PitG trade-off in direct
 comparison by overlaying the ratio of conclusiveness rates
 (from Figure~\ref{fig:conclusiveness_rates}) and the ratio of $N_{\rm stop}$
 (from Figure~\ref{fig:stop_iterations_by_truth_conclusive}) across $\theta_{\rm true}$.
@@ -432,7 +432,7 @@ comparison by overlaying the ratio of conclusiveness rates
 \begin{figure}[h!]
   \centering
   \includegraphics[width=1\textwidth]{stop_conclusiveness_ratios.png}
-  \caption{ePitG-to-PitG ratios of conclusiveness rate and stop iteration across
+  \caption{DPitG-to-PitG ratios of conclusiveness rate and stop iteration across
   $\theta_{\rm true}$ values ($M=2{,}000$, $\theta_{\rm null}=0.5$,
   $\omega_{\rm goal}=0.08$).
   \textit{Solid line}: conclusiveness ratio
@@ -447,9 +447,9 @@ The conclusiveness ratio substantially exceeds the $N_{\rm stop}$ ratio througho
 particularly within and immediately outside the ROPE. Strikingly, the conclusiveness
 ratio remains above 1 even where the $N_{\rm stop}$ ratio approaches 1---that is, where
 both algorithms stop at the same iteration---which occurs for roughly
-$0.60 \lesssim \theta_{\rm true} \lesssim 0.63$: ePitG gains conclusive outcomes at minor
+$0.60 \lesssim \theta_{\rm true} \lesssim 0.63$: DPitG gains conclusive outcomes at minor
 extra sampling cost in this region. The lower IQR band confirms that a substantial
-fraction of ePitG experiments stop exactly when PitG does, keeping the median
+fraction of DPitG experiments stop exactly when PitG does, keeping the median
 $N_{\rm stop}$ ratio low. At $\theta_{\rm true}=0.5$, the conclusiveness ratio is
 $2.66$ (cf.\ Table~\ref{tab:goal_impact} for how this ratio varies with $\omega_{\rm goal}$)
 while the $N_{\rm stop}$ ratio has an IQR of $1.00$--$1.29$ (median $1.04$,
@@ -459,7 +459,7 @@ $4\%$ more samples.
 The apparent flattening of both ratios near ${\rm ROPE}_{\rm max}$ is an artefact of
 the finite cap $N_{\rm max}=1{,}500$; with a larger cap both curves would peak sharply
 at the boundary.
-The ePitG advantage documented here generalises: qualitatively similar conclusiveness
+The DPitG advantage documented here generalises: qualitatively similar conclusiveness
 gains hold for $\theta_{\rm null}=0.7$ (as shown in the right panel of
 Figure~\ref{fig:stop_iterations_by_truth_conclusive}) and across $\omega_{\rm goal}$
 values (see Section~\ref{sec:goal_impact} for the fair coin case).
