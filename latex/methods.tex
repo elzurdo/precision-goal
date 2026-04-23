@@ -194,7 +194,7 @@ Table \ref{tab:comparison} provides a high-level comparison of the three algorit
         \hline
         HDI + ROPE & $N_\mathrm{min}$ & Decision is conclusive & Location only \\
         Precision is the Goal & $\omega_{\rm Goal}$ & $\omega_{\rm HDI}$ $\le$ $\omega_{\rm Goal}$ & Precision then Location \\
-        Enhanced PitG & $\omega_{\rm Goal}$ & $\omega_{\rm HDI}$ $\le$ $\omega_{\rm Goal}$ \textbf{AND} & Precision $+$ Location \\
+        Decisive PitG & $\omega_{\rm Goal}$ & $\omega_{\rm HDI}$ $\le$ $\omega_{\rm Goal}$ \textbf{AND} & Precision $+$ Location \\
          & & Decision is conclusive & \\
       \end{tabular}
       \caption{Comparison of stopping algorithms. `Decision is conclusive' means the HDI
@@ -295,7 +295,7 @@ to mitigate the high rate of inconclusive results. Unlike PitG, this method join
 and decision: it stops strictly when \textit{both} the precision goal is met \textit{AND}
 a decisive decision can be made.
 
-% Logic for Enhanced PitG. Will need to update variables names. E.g, L should be HDI_min, etc.
+% Logic for Decisive PitG. Will need to update variables names. E.g, L should be HDI_min, etc.
 % The following is the basic logic:
 % \begin{itemize}
 %    \item \textbf{Accept Null}: $(\omega_{\rm HDI} \leq \omega_{\rm goal}) \land ( {\rm ROPE}_{\rm min} \leq \mathrm{HDI}_\mathrm{min}) \land (\mathrm{HDI}_\mathrm{max} \leq {\rm ROPE}_{\rm max})$

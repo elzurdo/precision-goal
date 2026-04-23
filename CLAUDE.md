@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Precision Is The Goal (PitG)** is a research project implementing and evaluating sequential hypothesis testing methods that use HDI (Highest Density Interval) precision as a stopping criterion. The paper proposes **ePitG** — an enhanced dual stopping criterion (precision + conclusiveness) — compared against HDI+ROPE and standard NHST.
+**Precision Is The Goal (PitG)** is a research project implementing and evaluating sequential hypothesis testing methods that use HDI (Highest Density Interval) precision as a stopping criterion. The paper proposes **DPitG** — an dual stopping criterion (precision + decisiveness) — compared against HDI+ROPE and standard NHST.
 
 ## Environment Setup
 
