@@ -15,11 +15,13 @@ In fair coin experiments ($\theta_{\rm true}= \theta_{\rm null}=0.5$,
 equivalence region width $0.10$ and precision goal of
 $\omega_{\rm goal}=0.08$), PitG yields
 $63.3\%$ inconclusive outcomes; DPitG reduces this to just $2.3\%$,
-with only a $4.7\%$ increase in median sample size.
+at a median sampling premium of only $4\%$ relative to $N_{\rm goal}$.
 Moreover, DPitG's conclusiveness remains essentially flat ($0.972$--$0.979$)
 across a broad range of precision goals ($\omega_{\rm goal}=0.06$--$0.10$),
 while PitG's conclusiveness spans from $82.5\%$ to $0\%$ (entirely inconclusive
-at the loosest setting), demonstrating DPitG's robustness to the choice of $\omega_{\rm goal}$.
+at the loosest setting), demonstrating DPitG's robustness to the choice of $\omega_{\rm goal}$;
+the median sampling premium relative to $N_{\rm goal}$ is zero for $\omega_{\rm goal}\le 0.07$
+and rises to $41\%$ at $\omega_{\rm goal}=0.10$ (fair coin, $\Delta_{\rm ROPE}=0.1$).
 This advantage of high conclusiveness, zero false-positive rate, and modest sample cost 
 holds broadly across $\theta_{\rm true}$ and $\theta_{\rm null}$ values.
 %More broadly, unlike methods that can only reject the null hypothesis, the

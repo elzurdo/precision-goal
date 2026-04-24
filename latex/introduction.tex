@@ -93,10 +93,12 @@ Applied to dichotomous data, this more conservative rule substantially reduces t
 of inconclusive outcomes. For example, in the fair coin case
 ($\theta_{\rm true}=\theta_{\rm null}=0.5$) with precision goal $\omega_{\rm goal}=0.08$,
 DPitG reduces PitG's inconclusive rate from 63.3\% to just 2.3\%,
-at a median cost of only 4.7\% more samples.
+at a median sampling premium of only $4\%$ relative to $N_{\rm goal}$.
 Moreover, DPitG's conclusiveness is robust to the choice of precision goal: across
 $\omega_{\rm goal}=0.06$--$0.10$, it varies by less than one percentage point
-($0.972$--$0.979$), while PitG's conclusiveness ranges from $82.5\%$ to $0\%$.
+($0.972$--$0.979$), while PitG's conclusiveness ranges from $82.5\%$ to $0\%$;
+the median sampling premium relative to $N_{\rm goal}$ is zero for $\omega_{\rm goal}\le 0.07$
+and rises to $41\%$ at $\omega_{\rm goal}=0.10$ (fair coin, $\Delta_{\rm ROPE}=0.1$).
 This gain is most pronounced when the null is true or practically so --- precisely the
 regime where PitG's inconclusive rate is highest --- while DPitG also maintains decisive
 outcomes when the null is false, yielding a robust decision mechanism across experimental conditions.
