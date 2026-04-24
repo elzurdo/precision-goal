@@ -192,8 +192,11 @@ quadratically as $\omega_{\rm goal}$ decreases (Equation~\ref{eq:pitg_stop_itera
 DPitG's conclusiveness, by contrast, remains essentially flat across the full range
 ($0.972$--$0.979$), demonstrating robustness to the choice of $\omega_{\rm goal}$.
 The conclusiveness ratio (DPitG/PitG) captures this contrast directly: it grows from
-$1.17$ at $\omega_{\rm goal}=0.06$ to infinity at $\omega_{\rm goal}=0.10$, where PitG
-becomes entirely inconclusive.
+$1.17$ at $\omega_{\rm goal}=0.06$ becoming undefined at $\omega_{\rm goal}=0.10$, where PitG
+becomes entirely inconclusive. This comes at the cost of larger sample sizes, quantified
+by the $N_{\rm 50\%}/N_{\rm goal}$ column: for $\omega_{\rm goal} \le 0.07$, the median
+DPitG stop is exactly $N_{\rm goal}$ (ratio $= 1.00$); for looser goals the ratio rises
+from $1.04$ at $\omega_{\rm goal}=0.08$ to $1.41$ at $\omega_{\rm goal}=0.10$.
 
 At the tightest setting ($\omega_{\rm goal}=0.06$), the DPitG $N_{\rm stop}$ $\Delta_{\rm IQR}$ is zero:
 all experiments stop at exactly $N_{\rm goal}$, leaving no room for the additional
@@ -210,16 +213,16 @@ set $N_{\rm max}$ generously to allow DPitG to reach its full potential.
 
 \begin{table}[h!]
   \begin{center}
-  \begin{tabular}{c|c|c|c|c|c|c|c}
+  \begin{tabular}{c|c|c|c|c|c|c|c|c|c}
     \hline
-    & &\multicolumn{1}{c|}{PitG} & \multicolumn{1}{c|}{DPitG} & \multicolumn{1}{c|}{Conclusiveness Ratio} & \multicolumn{3}{c}{DPitG $N_{\rm stop}$} \\
-    $\omega_{\rm goal}$ & $N_{\rm goal}$ & Conclusiveness & Conclusiveness  &  DPitG/PitG & $ N_{\rm 25\%}$ &  $N_{\rm 75\%}$ & $\Delta_{\rm IQR}$\\
+    & & \multicolumn{3}{c|}{Conclusiveness} & \multicolumn{5}{c}{DPitG $N_{\rm stop}$, conclusive experiments} \\
+    $\omega_{\rm goal}$ & $N_{\rm goal}$ & PitG & DPitG & Ratio (DPitG/PitG) & $N_{\rm 25\%}$ & $N_{\rm 75\%}$ & $\Delta_{\rm IQR}$ & $N_{\rm 50\%}$ & $N_{\rm 50\%}/N_{\rm goal}$\\
     \hline
-    0.06 & 1,066 & 0.825 & 0.972 & 1.17 & 1,066 & 1,066 & 0 \\
-    0.07 & 783 & 0.594 & 0.975 & 1.64 & 783 & 832 & 49 \\
-    0.08 & 599 & 0.367 & 0.977 & 2.66 & 599 & 775 & 176 \\
-    0.09 & 473 & 0.127 & 0.978 & 7.73 & 487 & 752 & 265 \\
-    0.10 & 383 & 0.    & 0.979 & --  & 428 & 730 & 302 \\
+    0.06 & 1{,}066 & 0.825 & 0.972 & 1.17 & 1{,}066 & 1{,}066 &   0 & 1{,}066 & 1.00\\
+    0.07 &   783   & 0.594 & 0.975 & 1.64 &   783   &   832   &  49 &   783   & 1.00\\
+    0.08 &   599   & 0.367 & 0.977 & 2.66 &   599   &   775   & 176 &   623   & 1.04\\
+    0.09 &   473   & 0.127 & 0.978 & 7.73 &   487   &   752   & 265 &   568   & 1.20\\
+    0.10 &   383   & 0.000 & 0.979 & ---  &   428   &   730   & 302 &   538   & 1.41\\
     \hline
   \end{tabular}
   \caption{Impact of $\omega_{\rm goal}$ on PitG and DPitG performance
@@ -227,14 +230,15 @@ set $N_{\rm max}$ generously to allow DPitG to reach its full potential.
   $N_{\rm max}=1{,}500$, ${\rm ROPE}_{\rm max}-{\rm ROPE}_{\rm min}=0.1$).
   $N_{\rm goal}$: expected precision-based stop iteration (Equation~\ref{eq:pitg_stop_iteration});
   Conclusiveness: fraction of $M$ experiments with a conclusive outcome;
-  Conclusiveness Ratio: DPitG/PitG conclusiveness;
-  DPitG $N_{\rm stop}$: quartile statistics restricted to conclusive DPitG
-  experiments (note that results for $\omega_{\rm goal}=0.08$ differ slightly from
-  the corresponding entry in Table~\ref{tab:fair_overall}, which summarises all experiments).
+  Conclusiveness Ratio: DPitG/PitG conclusiveness (undefined at $\omega_{\rm goal}=0.10$
+  where PitG conclusiveness is zero);
+  DPitG $N_{\rm stop}$: quartile statistics restricted to conclusive DPitG experiments
+  (results for $\omega_{\rm goal}=0.08$ differ slightly from Table~\ref{tab:fair_overall},
+  which summarises all experiments);
   $\Delta_{\rm IQR} = N_{\rm 75\%} - N_{\rm 25\%}$.
   For $\omega_{\rm goal} \le 0.08$, $N_{\rm 25\%} = N_{\rm goal}$, showing that many
-  DPitG experiments stop as soon as the precision goal is first met.
- }
+  DPitG experiments stop as soon as the precision goal is first met; this is also reflected
+  in the $N_{\rm 50\%}/N_{\rm goal}$ column, which equals 1 for the first two settings.}
   \label{tab:goal_impact}
 \end{center}
 \end{table}

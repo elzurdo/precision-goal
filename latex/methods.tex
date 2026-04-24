@@ -108,13 +108,20 @@ and is worth examining carefully; we do so in Section~\ref{sec:accept_reject_mea
     \textit{Bottom} (iteration 804): HDI fully within the ROPE $\rightarrow$ Accept $\theta_{\rm null}$.
     See Figure~\ref{fig:iterations} for the full sequence of iterations for this experiment.
     }
-    Alt text: Three-panel figure showing posterior probability density curves for a
-    Bernoulli rate parameter $\theta$ at three different iterations of data collection.
-    Each panel includes a shaded area representing the 95\% HDI, with annotated widths.
-    Vertical dashed lines indicate the ROPE boundaries.
-    The top panel shows the HDI fully outside the ROPE, leading to a Reject decision;
-    the middle panel shows the HDI straddling the ROPE, resulting in an Inconclusive decision;
-    and the bottom panel shows the HDI fully within the ROPE, leading to an Accept decision.
+    Alt text: Three vertically stacked panels, each showing a dark purple bell-shaped
+    posterior density curve $p(\theta)$ over $\theta \in [0.40, 0.80]$, with a lightly
+    shaded purple region marking the 95\% HDI and two vertical grey dashed lines at
+    $\theta=0.45$ and $\theta=0.55$ marking the ROPE boundaries.
+    The posterior narrows across panels as data accumulate.
+    Top panel (stop iteration 126): wide posterior centred at $\hat\theta=0.635$,
+    $\omega_{\rm HDI}=0.167$; HDI lies entirely to the right of the ROPE, indicating
+    rejection of the null.
+    Middle panel (stop iteration 598): narrower posterior centred at $\hat\theta=0.525$,
+    $\omega_{\rm HDI}=0.080$; HDI straddles the right ROPE boundary, indicating an
+    inconclusive outcome.
+    Bottom panel (stop iteration 804): narrowest posterior centred at $\hat\theta=0.515$,
+    $\omega_{\rm HDI}=0.069$; HDI lies entirely within the ROPE, indicating acceptance
+    of the null.
     \label{fig:posteriors}
 \end{figure}
 
@@ -367,6 +374,18 @@ for the Bernoulli case across $\omega_{\rm goal}$.
   %Left: Bernoulli case.
   %Right: continuous case with $\sigma^2=1$.
   }
+  Alt text: A single panel showing four symmetric, bell-shaped curves of
+  $N_{\rm goal}(\theta, \omega_{\rm goal})$ plotted against $\theta \in [0, 1]$,
+  all peaking at $\theta = 0.5$ and falling to near zero as $\theta$ approaches
+  $0$ or $1$.
+  The curves are colour-coded by precision goal $\omega_{\rm goal}$:
+  blue ($\omega_{\rm goal}=0.10$, peak ${\approx}330$),
+  orange ($\omega_{\rm goal}=0.08$, peak ${\approx}560$),
+  green ($\omega_{\rm goal}=0.06$, peak ${\approx}1050$), and
+  red ($\omega_{\rm goal}=0.04$, peak ${\approx}2400$).
+  Stricter precision goals (smaller $\omega_{\rm goal}$) require substantially
+  larger samples, and the fair-coin scenario ($\theta=0.5$) is always the
+  worst case for any fixed $\omega_{\rm goal}$.
   \label{fig:min_sample_by_goal}
 \end{figure}
 
