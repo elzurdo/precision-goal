@@ -1,36 +1,26 @@
-Sequential hypothesis testing allows data collection to continue until sufficient evidence
-accumulates, offering flexibility over fixed-sample designs.
-A key challenge, however, is that stopping rules which trigger on decision criteria,
-such as p-value thresholds or posterior-based heuristics, can introduce confirmation
-bias through early peeking on unrepresentative samples.
-Methods that decouple the stopping criterion from the decision criterion, such as
-``Precision is the Goal'' (PitG), eliminate this bias by halting only once a target
-posterior precision is reached.
-Yet we show that PitG frequently yields inconclusive outcomes, most notably when the
-null hypothesis is true.
-To address this, we propose ``Decisive Precision is the Goal'' (DPitG), which requires
-both the precision target and a decisive hypothesis outcome (i.e., accept or reject the null)
-to be met simultaneously before stopping.
-In fair coin experiments ($\theta_{\rm true}= \theta_{\rm null}=0.5$,
-equivalence region width $0.10$ and precision goal of
-$\omega_{\rm goal}=0.08$), PitG yields
-$63.3\%$ inconclusive outcomes; DPitG reduces this to just $2.3\%$,
-at a median sampling premium of only $4\%$ relative to $N_{\rm goal}$.
-Moreover, DPitG's conclusiveness remains essentially flat ($0.972$--$0.979$)
-across a broad range of precision goals ($\omega_{\rm goal}=0.06$--$0.10$),
-while PitG's conclusiveness spans from $82.5\%$ to $0\%$ (entirely inconclusive
-at the loosest setting), demonstrating DPitG's robustness to the choice of $\omega_{\rm goal}$;
-the median sampling premium relative to $N_{\rm goal}$ is zero for $\omega_{\rm goal}\le 0.07$
-and rises to $41\%$ at $\omega_{\rm goal}=0.10$ (fair coin, $\Delta_{\rm ROPE}=0.1$).
-This advantage of high conclusiveness, zero false-positive rate, and modest sample cost 
-holds broadly across $\theta_{\rm true}$ and $\theta_{\rm null}$ values.
-%More broadly, unlike methods that can only reject the null hypothesis, the
-%precision-based framework also permits its positive acceptance ---
-%a property it retains with a near-zero false-positive rate: exactly zero when
-%$\theta_{\rm true}=\theta_{\rm null}$ and negligibly small near the equivalence boundary.
-We provide a closed-form sample-size planning formula,
-an online interactive calculator, and open-source code to support the planning
-and interpretation of sequential experiments.
+Sequential hypothesis testing offers flexibility over fixed-sample designs, but stopping
+rules coupled to decision criteria risk confirmation bias through early peeking.
+Methods that decouple the two, such as ``Precision is the Goal'' (PitG), eliminate this
+bias by halting only once a target posterior precision $\omega_{\rm goal}$ is reached ---
+yet PitG frequently yields inconclusive outcomes, most critically when the null hypothesis
+is true.
+We propose ``Decisive Precision is the Goal'' (DPitG), which requires \textit{both} the
+precision target and a decisive hypothesis outcome to be satisfied simultaneously before
+stopping.
+A closed-form planning formula, $N_{\rm goal} \propto 1/\omega_{\rm goal}^2$, gives the
+expected minimum sample size as a transparent lower bound before data collection begins.
+In fair coin experiments with a minimum effect size of $\pm 0.05$, PitG's conclusiveness
+ranges from $82.5\%$ to $0\%$ across precision goals $\omega_{\rm goal}=0.06$--$0.10$,
+while DPitG's remains essentially flat at $97.2\%$--$97.9\%$ over the same span.
+For instance, at $\omega_{\rm goal}=0.08$, DPitG reduces PitG's $63.3\%$ inconclusive
+rate to just $2.3\%$, at a median sampling cost of only $4\%$ over $N_{\rm goal}$,
+while preserving a zero false-positive rate.
+Results are demonstrated on single-group binary data; the framework extends naturally
+to continuous outcomes and two-group comparisons.
+This advantage holds broadly across true and null parameter values, and DPitG's
+fully pre-specified stopping rule is naturally compatible with pre-registration standards.
+We provide an online interactive calculator and open-source code to support
+prospective planning and interpretation of sequential experiments.
 
 %%TODO: note that the phrasing of "nlike methods that can only reject the null hypothesis, the precision-based framework also permits its positive acceptance" are 
 %% a bit decieinvg, b/c, e.g, Bayes Factors can also accept the null, but only when the data are extremely strong, whereas the precision-based framework can accept the null when the data are sufficiently precise, which is a more common occurrence.
