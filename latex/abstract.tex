@@ -5,22 +5,21 @@ bias by halting only once a target posterior precision $\omega_{\rm goal}$ is re
 yet PitG frequently yields inconclusive outcomes, most critically when the null hypothesis
 is true.
 We propose ``Decisive Precision is the Goal'' (DPitG), which requires \textit{both} the
-precision target and a decisive hypothesis outcome to be satisfied simultaneously before
-stopping.
-A closed-form planning formula, $N_{\rm goal} \propto 1/\omega_{\rm goal}^2$, gives the
-expected minimum sample size as a transparent lower bound before data collection begins.
+precision target and a decisive hypothesis outcome --- acceptance or rejection of the
+null --- to be satisfied simultaneously before stopping.
 In fair coin experiments with a minimum effect size of $\pm 0.05$, PitG's conclusiveness
 ranges from $82.5\%$ to $0\%$ across precision goals $\omega_{\rm goal}=0.06$--$0.10$,
 while DPitG's remains essentially flat at $97.2\%$--$97.9\%$ over the same span.
 For instance, at $\omega_{\rm goal}=0.08$, DPitG reduces PitG's $63.3\%$ inconclusive
-rate to just $2.3\%$, at a median sampling cost of only $4\%$ over $N_{\rm goal}$,
-while preserving a zero false-positive rate.
+rate to just $2.3\%$, at a median sampling cost of only $4\%$ over the expected minimum
+sample size $N_{\rm goal}$, while preserving a zero false-positive rate.
 Results are demonstrated on single-group binary data; the framework extends naturally
 to continuous outcomes and two-group comparisons.
 This advantage holds broadly across true and null parameter values, and DPitG's
 fully pre-specified stopping rule is naturally compatible with pre-registration standards.
-We provide an online interactive calculator and open-source code to support
-prospective planning and interpretation of sequential experiments.
+We provide a closed-form planning formula ($N_{\rm goal} \propto 1/\omega_{\rm goal}^2$),
+an online interactive calculator, and open-source code to support prospective planning
+and interpretation of sequential experiments.
 
 %%TODO: note that the phrasing of "nlike methods that can only reject the null hypothesis, the precision-based framework also permits its positive acceptance" are 
 %% a bit decieinvg, b/c, e.g, Bayes Factors can also accept the null, but only when the data are extremely strong, whereas the precision-based framework can accept the null when the data are sufficiently precise, which is a more common occurrence.
