@@ -1,17 +1,6 @@
-Here we describe three stopping algorithms for sequential hypothesis testing.
-We first establish the \textbf{Theoretical Framework} (ROPE, HDI, and the shared Decision Rule),
-then detail the three \textbf{Sequential Stopping Algorithms} (HDI+ROPE, Precision is the Goal,
-and Decisive Precision is the Goal), and finally describe the \textbf{Experimental Design}
-used to evaluate them on synthetic data.
-
-Before proceeding, we note that two other widely used methods --- null hypothesis
-significance testing (NHST, based on p-values) and Bayes Factors --- operate under
-a fundamentally different framework and are therefore not among the three algorithms
-studied here. Both lack an explicit effect-size criterion (the ROPE); additionally,
-NHST cannot formally accept the null hypothesis (only fail to reject it) and cannot
-guarantee a stable false-positive rate under continuous monitoring, while Bayes Factors
-lack a direct precision goal.
-We discuss these limitations and illustrate them empirically in
+Two other widely used methods --- NHST (p-value-based) and Bayes Factors --- operate
+under a fundamentally different framework and are not among the three algorithms studied
+here; their limitations relative to this framework are discussed in
 Appendices~\ref{app:nhst} and~\ref{app:app_bayes_factors}, respectively.
 
 \subsection{Theoretical Framework}\label{sec:theoretical_framework}
@@ -36,14 +25,25 @@ A common misconception in hypothesis testing is that a ``statistically significa
 % smallest difference a patient would perceive as beneficial. Directly supports the
 % MCID example and grounds the ROPE concept in established clinical practice.
 
-Consider a hypothetical scenario where a researcher examines whether a therapeutic differs in impact by gender.
-If we assume that enough data were collected to demonstrate that the difference is ``statistically significant'', e.g., the drug is 72.1\% beneficial for males and 72.3\% for females, a practitioner may consider this equivalent for all practical purposes. To justify prescribing the drug differently by gender, a meaningful absolute difference (e.g., 5\% or 10\%) would be required. Hence, the researcher should define in advance an ``effective area'' around the null hypothesis.
+Consider a hypothetical scenario where a researcher examines whether a therapeutic
+differs in impact by gender.
+Even if the data yield a ``statistically significant'' result --- say, the drug is
+72.1\% beneficial for males and 72.3\% for females --- a practitioner may consider
+this equivalent for all practical purposes.
+Hence, the researcher should define in advance a pre-specified equivalence margin
+around the null hypothesis.
 
 One principled way to operationalise effect size is the \textbf{Region of Practical Equivalence} (ROPE).
 The ROPE is defined as an area around the null value considered ``similar enough to the null hypothesis''
 such that if the true value is within this area, it is effectively the same as the null hypothesis.
 
-The width of the ROPE depends on the task at hand. For instance, a board game manufacturer requires dice to be fair to a reasonable standard, but not to a premium precision indistinguishable to a casual player. Conversely, a casino requires a much stricter tolerance (a narrower ROPE) to ensure regulatory compliance and fair play.
+The appropriate ROPE width is domain-specific: a board game manufacturer requires
+dice to be fair to a reasonable standard, but not to a precision indistinguishable
+to a casual player; conversely, a casino requires a much stricter tolerance (a narrower
+ROPE) to ensure regulatory compliance and fair play.
+Principled approaches for setting the ROPE --- including domain standards such as the
+Minimal Clinically Important Difference and bioequivalence guidelines, and sensitivity
+analyses --- are discussed in Appendix~\ref{app:practical_guidance}.
 
 \subsubsection{Precision by Highest Density Interval (HDI)}\label{sec:precision_hdi}
 
@@ -72,6 +72,11 @@ level such as 94\% is recommended for fewer samples. \cite{mcelreath2016} advoca
 posteriors in our experiments (Section~\ref{sec:experimental_design}), sampling noise is not a
 concern and 95\% is unambiguous; practitioners relying on sampled (e.g., MCMC-based) posteriors
 should consider the lower thresholds noted above.}
+% CONSIDER RESTRUCTURING THIS FOOTNOTE: make the analytical-posterior justification
+% the main clause, then fold the alternatives into a single sentence:
+% ``Because we employ analytical posteriors (Section~\ref{sec:experimental_design}),
+% 95\% is unambiguous. Practitioners using MCMC-estimated posteriors may prefer
+% 94\% \citep{kruschke2015doing} or 89\% \citep{mcelreath2016}.''
 
 \subsubsection{The Decision Rule}\label{sec:decision_criterion}
 
@@ -216,20 +221,17 @@ Table \ref{tab:comparison} provides a high-level comparison of the three algorit
     \end{center}
   \end{table}
 
-In the Key Input column we highlight the characteristic parameter required to be determined prior to the collection of data.
-\begin{enumerate}[label=(\alph*)]
-    \item \textbf{HDI + ROPE}: Requires $N_\mathrm{min}$ (minimal sample size), e.g., 30. This is crucial since the algorithm is sensitive to early outliers.
-    \item \textbf{Precision Methods}: Require $\omega_{\rm Goal}$, the target precision width.
-    By definition it must be narrower of equal to the ROPE width $\Delta_\mathrm{ROPE}$ to ensure
-    that it could be fully contained within.
-\end{enumerate}
+The Key Input column identifies the characteristic parameter that must be determined
+before data collection: $N_{\rm min}$ for HDI+ROPE (sensitive to early outliers and
+therefore requiring a minimum sample size, e.g.\ 30) and $\omega_{\rm Goal}$ for the
+precision methods, where by definition $\omega_{\rm Goal}$ must be narrower than or
+equal to the ROPE width $\Delta_{\rm ROPE}$ to allow the HDI to fit fully within the ROPE.
 
-For brevity, the table excludes two universal parameters required for all three algorithms:
-\begin{enumerate}[label=(\alph*), resume]
-    \item The ROPE boundaries $\mathrm{ROPE}_\mathrm{min}$ and $\mathrm{ROPE}_\mathrm{max}$: By definition
-    this is the region of practical equivalence which quantifies the effect size of interest,
-    which below it is considered negligible for practical purposes.
-    $\Delta_\mathrm{ROPE} \equiv \mathrm{ROPE}_\mathrm{max} - \mathrm{ROPE}_\mathrm{min}$ is the ROPE width.
+The table also excludes two universal parameters required by all three algorithms:
+\begin{enumerate}[label=(\alph*)]
+    \item The ROPE boundaries $\mathrm{ROPE}_\mathrm{min}$ and $\mathrm{ROPE}_\mathrm{max}$,
+    with $\Delta_\mathrm{ROPE} \equiv \mathrm{ROPE}_\mathrm{max} - \mathrm{ROPE}_\mathrm{min}$
+    the ROPE width.
     \item $N_\mathrm{max}$ (Final Budget): The maximum sample size or budget limit.
 \end{enumerate}
 
@@ -248,7 +250,7 @@ variability dominates, and the HDI can wander into a misleadingly decisive posit
 than true effect.
 
 \begin{algorithm}
-    \caption{HDI + ROPE}\label{alg:hdi_rope}
+    \caption{HDI + ROPE (highlighted: the stopping condition)}\label{alg:hdi_rope}
     \begin{algorithmic}
     \Require $N_\mathrm{min}$, $N_\mathrm{max}$, $\theta_{\rm null}$, $\mathrm{ROPE}_\mathrm{min}$, $\mathrm{ROPE}_\mathrm{max}$
     \State Stop = False
@@ -268,8 +270,9 @@ than true effect.
     \end{algorithmic}
 \end{algorithm}
 
-This method is efficient but, as detailed in Section \ref{sec:results}, serves as a
-cautionary use case of ``confirmation bias'' or ``peeking'' intent. %% if not bounded by $N_\mathrm{min}$.
+This method serves as the coupled baseline throughout: lacking a precision requirement,
+it is susceptible to false-positive and false-negative decisions, as demonstrated in
+Section~\ref{sec:results}.
 
 \subsubsection{Precision is the Goal Stopping: Precision Only}
 
@@ -281,7 +284,7 @@ As we later demonstrate in Section \ref{sec:results}, this can lead to situation
 the algorithm stops (precision reached) but the result is inconclusive (posterior straddles the ROPE).
 
 \begin{algorithm}
-    \caption{Precision is the Goal}\label{alg:pitg}
+    \caption{Precision is the Goal (highlighted: the stopping condition)}\label{alg:pitg}
     \begin{algorithmic}
     \Require $\omega_\mathrm{Goal}$, $N_\mathrm{max}$, $\theta_{\rm null}$, $\mathrm{ROPE}_\mathrm{min}$, $\mathrm{ROPE}_\mathrm{max}$
     \State Stop = False
@@ -318,7 +321,7 @@ a decisive decision can be made.
 As seen in Algorithm \ref{alg:dpitg}, strictly enforcing both conditions ensures that we do not stop in an indecisive state, potentially at the cost of collecting more data (up to $N_\mathrm{max}$).
 
 \begin{algorithm}
-    \caption{Decisive Precision is the Goal}\label{alg:dpitg}
+    \caption{Decisive Precision is the Goal (highlighted: the stopping condition)}\label{alg:dpitg}
     \begin{algorithmic}
     \Require $\omega_\mathrm{Goal}$, $N_\mathrm{max}$, $\theta_{\rm null}$, $\mathrm{ROPE}_\mathrm{min}$, $\mathrm{ROPE}_\mathrm{max}$
     \State Stop = False
@@ -345,7 +348,13 @@ Note that all stopping algorithms (\ref{alg:hdi_rope}--\ref{alg:dpitg}) assume t
 
 For models where the posterior concentrates around the true parameter as data accumulate,
 a property of all regular parametric families, guaranteed asymptotically by the
-Bernstein-von Mises theorem, the HDI width shrinks proportionally to $N^{-1/2}$.
+Bernstein--von Mises theorem \citep{vandervaart1998}, the HDI width shrinks
+proportionally to $N^{-1/2}$.
+% \citet{vandervaart1998}: van der Vaart's \textit{Asymptotic Statistics} (Ch.~10)
+% is the standard textbook reference for the Bernstein--von Mises theorem,
+% establishing that the posterior contracts around the true parameter at the $N^{-1/2}$
+% rate for regular parametric models --- the asymptotic justification for the
+% $N_{\rm goal} \propto \omega_{\rm goal}^{-2}$ planning formula.
 This makes the expected minimum stopping iteration of precision-based algorithms predictable.
 Under a normal approximation (central limit theorem; CLT), the expected sample size to achieve a precision goal
 $\omega_{\rm goal}$ is proportional to the per-observation variance $V(\theta)$ of the
