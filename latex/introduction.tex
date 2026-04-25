@@ -38,20 +38,36 @@ monitoring,
 % valid inference at any stopping time --- a frequentist counterpart to the decoupled
 % stopping philosophy advocated in this paper.
 offering potential benefits in efficiency, timeliness, and ethical considerations.
-Central to this approach is the distinction between two critical components:
-the \textit{stopping rule}, which dictates when data collection ends, and the \textit{decision rule}, which determines the final verdict on the hypothesis (e.g., accept, reject, or inconclusive). While these components are conceptually distinct, many operational methods conflate them, triggering a stop exactly when a decision criterion is met.
+Central to this approach is the distinction between two critical components.
+The \textit{stopping rule} dictates when data collection ends; the
+\textit{decision rule} then determines the final verdict on the hypothesis ---
+one of three outcomes: accept, reject, or inconclusive.
+While these components are conceptually distinct, many operational methods
+conflate them, triggering a stop exactly when a decision criterion is met.
 
 This simultaneous application of stopping and decision rules is common in widely used
 frequentist and Bayesian methods, such as p-value thresholds \citep{fisher1925} or posterior-based heuristics
-(e.g., HDI+ROPE \citealp{kruschke2013, kruschke2015doing}, Bayes Factors \citealp{kassraftery1995}).
+(e.g., HDI+ROPE \citealp{kruschke2011, kruschke2013, kruschke2015doing},
+Bayes Factors \citealp{kassraftery1995}).
 However, if not carefully designed, this coupling can lead to confirmation bias ---
 premature stopping on extreme or unrepresentative early samples --- a phenomenon known
 as early peeking \citep{simmons2011}.
+As a concrete illustration: in the fair coin setting
+($\theta_{\rm true}=\theta_{\rm null}=0.5$, credible interval of 95\% and minimum effect size $\pm 0.05$),
+a sequentially monitored HDI+ROPE algorithm achieves high conclusiveness
+but at a systematic 6.2\% false-positive rate (Section~\ref{sec:fair_coin}).
 % \citet{simmons2011}: ``a researcher who starts with 10 observations per condition
 % and then tests for significance after every new per-condition observation finds a
 % significant effect 22\% of the time'' even when none exists at the nominal 5\% level.
 % This paper quantified how flexible stopping rules inflate false-positive rates,
 % directly motivating the decoupled stopping and decision rules discussed here.
+% \citet{kruschke2011}: The earliest paper formalising the HDI+ROPE decision criterion
+% (Perspectives on Psychological Science, 2011), two years before the BEST paper
+% (kruschke2013). Cited here as the primary reference for HDI+ROPE, which serves as
+% the coupled-method baseline compared against PitG and DPitG in this paper.
+
+One principled remedy is to decouple the stopping criterion entirely from the hypothesis
+outcome, halting based on posterior precision rather than the direction of the result.
 
 Following the \textit{Accuracy in Parameter Estimation} paradigm \citep{maxwell2008},
 \cite{kruschke2015doing} advocated for a method that strictly decouples these two steps,
@@ -84,7 +100,12 @@ when the null is true or practically so --- making DPitG particularly valuable f
 confirming the null hypothesis.
 While scientific incentives often favour the discovery of new effects,
 rigorous confirmation of the null is equally critical in many fields: from bioequivalence
-trials for generic drugs \citep{karalis2012} to do-no-harm regression testing in software
+trials for generic drugs \citep{schuirmann1987, karalis2012}
+% \citet{schuirmann1987}: The original paper introducing the Two One-Sided Tests (TOST)
+% procedure --- the canonical frequentist approach to formal bioequivalence assessment.
+% Cited here because bioequivalence trials are a prime applied context where confirming
+% the null (practical equivalence) is the explicit goal, directly motivating DPitG.
+to do-no-harm regression testing in software
 deployment and futility stopping in programme evaluations.
 Unlike \textit{Null Hypothesis Significance Testing} (NHST, see Appendix~\ref{app:nhst}),
 which can only fail to reject the null, the precision-based framework enables positive
@@ -95,15 +116,20 @@ This fully pre-specified rule is also naturally compatible with pre-registration
 the replication crisis \citep{osc2015, gelman2014}.
 
 Applied to dichotomous data, this more conservative rule substantially reduces
-inconclusive outcomes. In the fair coin case ($\theta_{\rm true}=\theta_{\rm null}=0.5$,
-precision goal $\omega_{\rm goal}=0.08$), DPitG reduces PitG's inconclusive rate from 63.3\% to just
-2.3\% at a median sampling premium of only 4\% over the precision-goal sample size $N_{\rm goal}$, while preserving a
-zero false-positive rate. DPitG's conclusiveness is also robust to the choice of
- $\omega_{\rm goal}$ and holds broadly across true and null parameter values
-(Sections~\ref{sec:fair_coin}--\ref{sec:trends}).
+inconclusive outcomes while preserving a zero false-positive rate, at a modest
+median sampling cost --- advantages that hold broadly across precision goals and
+true parameter values (Sections~\ref{sec:fair_coin}--\ref{sec:trends}).
 
-Our results are demonstrated through simulations with single-group dichotomous data, though the
-framework extends naturally to continuous outcomes (Appendix~\ref{app:expected_stop}) and
-two-group comparisons (Appendix~\ref{app:extensions}).
+We compare DPitG and PitG against HDI+ROPE --- a coupled baseline that stops as
+soon as the posterior yields a decisive result --- through simulations with
+single-group dichotomous data; the framework extends naturally to continuous
+outcomes (Appendix~\ref{app:expected_stop}) and two-group comparisons
+(Appendix~\ref{app:extensions}).
 Alongside the empirical results we provide a closed-form planning formula, an online
 interactive calculator, and open-source code to support adoption in applied settings.
+Section~\ref{sec:methods} describes the theoretical framework and the three stopping
+algorithms; Section~\ref{sec:results} presents simulation results; and
+Section~\ref{sec:discussion} places the findings in methodological context.
+% Future extension: a design requiring both a conclusive HDI+ROPE verdict and a
+% minimum Bayes Factor (via BFDA; \citealt{schonbrodt2018}) is a natural
+% complement to DPitG.
