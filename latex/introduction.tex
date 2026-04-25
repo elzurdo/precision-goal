@@ -42,12 +42,11 @@ Central to this approach is the distinction between two critical components:
 the \textit{stopping rule}, which dictates when data collection ends, and the \textit{decision rule}, which determines the final verdict on the hypothesis (e.g., accept, reject, or inconclusive). While these components are conceptually distinct, many operational methods conflate them, triggering a stop exactly when a decision criterion is met.
 
 This simultaneous application of stopping and decision rules is common in widely used
-frequentist and Bayesian methods, such as p-value thresholds or posterior-based heuristics
-(e.g., HDI+ROPE, Bayes Factors). However, if not carefully designed, this coupling can
-lead to confirmation bias, especially when stopping is triggered by extreme or
-unrepresentative samples early in the sequence.
-This phenomenon, known as early peeking, can result in premature and biased conclusions
-\citep{simmons2011}.
+frequentist and Bayesian methods, such as p-value thresholds \citep{fisher1925} or posterior-based heuristics
+(e.g., HDI+ROPE \citealp{kruschke2013, kruschke2015doing}, Bayes Factors \citealp{kassraftery1995}).
+However, if not carefully designed, this coupling can lead to confirmation bias ---
+premature stopping on extreme or unrepresentative early samples --- a phenomenon known
+as early peeking \citep{simmons2011}.
 % \citet{simmons2011}: ``a researcher who starts with 10 observations per condition
 % and then tests for significance after every new per-condition observation finds a
 % significant effect 22\% of the time'' even when none exists at the nominal 5\% level.
@@ -59,7 +58,8 @@ Following the \textit{Accuracy in Parameter Estimation} paradigm \citep{maxwell2
 thereby addressing the risk of premature and biased conclusions from early peeking.
 He proposed using a predetermined target for posterior precision as the
 sole \textit{stopping rule}, independent of the hypothesis outcome. Only once this precision goal
-is met is the \textit{decision rule} applied to accept or reject the null hypothesis.
+is met is the \textit{decision rule} applied to accept or reject the null hypothesis
+(via a posterior credible interval criterion).
 % \citet{maxwell2008}:
 % Maxwell, Kelley \& Rausch (2008) "Sample Size Planning for Statistical Power and Accuracy
 % in Parameter Estimation", Annual Review of Psychology.  This is the foundational paper for
@@ -75,36 +75,35 @@ in some cases'' (\S13.3.2, page 391); our analysis shows this is a systematic an
 striking effect, with the sampling budget $N_{\rm max}$ and precision goal $\omega_{\rm goal}$
 as the key governing parameters. See below for quantitative examples.}
 
-While scientific incentives often favor the discovery of new effects,
-rigorous confirmation of the null hypothesis is equally critical in many fields ---
-from bioequivalence trials for generic drugs \citep{karalis2012} to ``do-no-harm''
-regression testing in software deployment and the futility assessment of expensive
-public policy interventions.
-Yet unlike \textit{Null Hypothesis Significance Testing} (NHST, see Appendix~\ref{app:nhst}),
-the precision-based framework enables exactly this: positive acceptance of the null
-is a genuine and actionable verdict.
 In this paper, we propose an improved variant we call
-``Decisive Precision is the Goal'' (DPitG), which recouples the stopping and decision
-rules in a conservative manner.
-Specifically, DPitG requires that \textit{both} the precision goal (stopping rule) and a
-decisive hypothesis outcome (decision rule) be met simultaneously to cease data collection.
+``Decisive Precision is the Goal'' (DPitG), in which precision is a necessary but no
+longer sufficient stopping condition: data collection continues until \textit{both} the
+precision goal and a decisive hypothesis outcome are satisfied simultaneously.
+The benefit is most pronounced precisely where PitG's inconclusive rate is highest ---
+when the null is true or practically so --- making DPitG particularly valuable for
+confirming the null hypothesis.
+While scientific incentives often favour the discovery of new effects,
+rigorous confirmation of the null is equally critical in many fields: from bioequivalence
+trials for generic drugs \citep{karalis2012} to do-no-harm regression testing in software
+deployment and futility stopping in programme evaluations.
+Unlike \textit{Null Hypothesis Significance Testing} (NHST, see Appendix~\ref{app:nhst}),
+which can only fail to reject the null, the precision-based framework enables positive
+acceptance as a genuine and actionable verdict --- and DPitG ensures this verdict is
+reliably reached.
+This fully pre-specified rule is also naturally compatible with pre-registration standards
+\citep{nosek2018} and directly addresses the design-stage imprecision implicated in
+the replication crisis \citep{osc2015, gelman2014}.
 
-Applied to dichotomous data, this more conservative rule substantially reduces the rate
-of inconclusive outcomes. For example, in the fair coin case
-($\theta_{\rm true}=\theta_{\rm null}=0.5$) with precision goal $\omega_{\rm goal}=0.08$,
-DPitG reduces PitG's inconclusive rate from 63.3\% to just 2.3\%,
-at a median sampling premium of only $4\%$ relative to $N_{\rm goal}$.
-Moreover, DPitG's conclusiveness is robust to the choice of precision goal: across
-$\omega_{\rm goal}=0.06$--$0.10$, it varies by less than one percentage point
-($0.972$--$0.979$), while PitG's conclusiveness ranges from $82.5\%$ to $0\%$;
-the median sampling premium relative to $N_{\rm goal}$ is zero for $\omega_{\rm goal}\le 0.07$
-and rises to $41\%$ at $\omega_{\rm goal}=0.10$ (fair coin, $\Delta_{\rm ROPE}=0.1$).
-This gain is most pronounced when the null is true or practically so --- precisely the
-regime where PitG's inconclusive rate is highest --- while DPitG also maintains decisive
-outcomes when the null is false, yielding a robust decision mechanism across experimental conditions.
+Applied to dichotomous data, this more conservative rule substantially reduces
+inconclusive outcomes. In the fair coin case ($\theta_{\rm true}=\theta_{\rm null}=0.5$,
+precision goal $\omega_{\rm goal}=0.08$), DPitG reduces PitG's inconclusive rate from 63.3\% to just
+2.3\% at a median sampling premium of only 4\% over the precision-goal sample size $N_{\rm goal}$, while preserving a
+zero false-positive rate. DPitG's conclusiveness is also robust to the choice of
+ $\omega_{\rm goal}$ and holds broadly across true and null parameter values
+(Sections~\ref{sec:fair_coin}--\ref{sec:trends}).
 
 Our results are demonstrated through simulations with single-group dichotomous data, though the
 framework extends naturally to continuous outcomes (Appendix~\ref{app:expected_stop}) and
 two-group comparisons (Appendix~\ref{app:extensions}).
-We provide practical guidance, analytical insights, open-source code, and an online calculator
-to facilitate adoption of the method across applied settings.
+Alongside the empirical results we provide a closed-form planning formula, an online
+interactive calculator, and open-source code to support adoption in applied settings.
