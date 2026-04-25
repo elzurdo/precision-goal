@@ -1,3 +1,3 @@
 # Memory Index
 
-- [Editor review Could Improve items](project_editor_followup.md) — Could Improve suggestions from /editor review to revisit after Should Fix items are done
+- [DECISIONS.md](../../../DECISIONS.md) — Version-controlled record of editorial, terminology, and structural decisions made during paper preparation
