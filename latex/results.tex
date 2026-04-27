@@ -1,30 +1,37 @@
-Across all scenarios, DPitG substantially outperforms PitG in conclusiveness while
-keeping false-positive rates well below HDI+ROPE's, at a modest median sampling premium.
-We begin with the fair coin case ($\theta_{\rm true}=0.5$), where DPitG matches
-HDI+ROPE's near-complete conclusiveness while, like PitG, producing zero false
-positives --- a combination neither competitor achieves alone.
-We then examine general trends as $\theta_{\rm true}$ increases from $0.5$ upwards,
-across and beyond the ROPE, including the dip in conclusiveness near the ROPE boundary
-that both precision-based methods exhibit by design.
+We present results in two parts.
+We open with the fair coin case ($\theta_{\rm true}=\theta_{\rm null}=0.5$):
+a hand-picked experiment to illustrate the qualitative behaviour of all three algorithms
+(Section~\ref{sec:fair_coin_sequence}), followed by a large-scale study across
+$M=2{,}000$ independent experiments (Section~\ref{sec:fair_coin_large_scale}) and a
+sensitivity analysis over the precision goal $\omega_{\rm goal}$
+(Section~\ref{sec:goal_impact}).
+We then examine how all three algorithms perform as $\theta_{\rm true}$ increases from
+$0.5$ upwards, across and beyond the ROPE (Section~\ref{sec:trends}).
 
 \subsection{Fair Coin ($\theta_{\rm true}=0.5$)}\label{sec:fair_coin}
 
 \subsubsection{A Hand-Picked Sequence}\label{sec:fair_coin_sequence}
 
 Figure~\ref{fig:iterations} presents a hand-picked fair coin experiment chosen to
-illustrate stark differences in outcomes across the three algorithms.\footnote{This figure
-is similar to the top panels in \cite{kruschke2015doing} Figures 13.4 and 13.5.
-The sequence itself may be found in the open source material as 
-\href{https://github.com/elzurdo/precision-goal/blob/main/py/utils_experiments.py\#L28}{\texttt{SEQUENCE\_HANDPICKED}}.}
+illustrate contrasting outcomes across the three algorithms (note that all performance claims
+rest on the large-scale simulation study of
+Section~\ref{sec:fair_coin_large_scale}).\footnote{This figure is similar to the top
+panels in \cite{kruschke2015doing} Figures 13.4 and 13.5.}
 The posteriors in Figure~\ref{fig:posteriors} correspond to three specific iterations
-of this same experiment.
+of this same experiment.\footnote{The sequence may be found in the open-source material
+as \href{https://github.com/elzurdo/precision-goal/blob/main/py/utils_experiments.py\#L28}{\texttt{SEQUENCE\_HANDPICKED}}.}
 
 Despite arising from the same sequence of coin tosses, the three algorithms reach
-sharply different decisions. HDI+ROPE stops early and, incorrectly, rejects
-$\theta_{\rm null}$. PitG stops at the expected precision iteration but is left
-inconclusive, as the HDI straddles the ROPE boundary. DPitG waits until both conditions
-are jointly satisfied and correctly accepts $\theta_{\rm null}$. This divergence from a
-single experiment motivates the large-scale analysis that follows.
+sharply different decisions.
+HDI+ROPE stops early at iteration 126 (vertical red dashed line) and, incorrectly,
+rejects $\theta_{\rm null}$.
+PitG stops at iteration 598 (first purple dot, where the precision goal is first met)
+but is left inconclusive, as the HDI straddles the ROPE boundary.
+DPitG waits until both conditions are jointly satisfied, stopping at iteration 804
+(first green solid line coinciding with a purple dot) and correctly accepts
+$\theta_{\rm null}$.
+This divergence from a single experiment motivates the large-scale analysis that
+follows.
 
 \begin{figure}[h!]
   \centering
@@ -38,15 +45,23 @@ single experiment motivates the large-scale analysis that follows.
   \textit{Vertical red dashed line}: Decision to reject $\theta_{\rm null}$.
   \textit{Vertical green solid line}: Decision to accept $\theta_{\rm null}$.
   \textit{Purple dots}: Precision goal met ($\omega_{\rm HDI} \le \omega_{\rm goal}$).
-  \textit{Comparison with Figure~\ref{fig:posteriors}}:
-  The HDI+ROPE algorithm stops at iteration 126, triggering an incorrect rejection of $\theta_{\rm null}$
-  (cf.\ top panel).
-  PitG stops at iteration 598 (first purple dot); with the HDI straddling the ROPE boundary,
-  the decision is inconclusive
-  (cf.\ middle panel).
-  DPitG stops at iteration 804 (green line), where precision and decisiveness are jointly
-  satisfied, correctly accepting $\theta_{\rm null}$
-  (cf.\ bottom panel).}
+  See Figure~\ref{fig:posteriors} for the posterior distributions at the three marked
+  stop iterations.}
+  Alt text: A single-panel line plot of cumulative sample proportion $\hat{\theta}(N)$
+  versus iteration $N$ (x-axis, 0--1{,}500) for a fair coin experiment
+  ($\theta_{\rm true}=0.5$).
+  A wide gray band (95\% HDI) dominates the left portion of the plot, spanning nearly
+  0--1 at $N=1$ and narrowing rapidly as data accumulate, eventually settling into a
+  tight band centred near $\hat{\theta}=0.5$.
+  Two orange horizontal dashed lines at $\theta=0.45$ and $\theta=0.55$ mark the ROPE
+  boundaries throughout.
+  A short vertical red dotted line at $N\approx126$ marks HDI+ROPE's early stop
+  (rejection of $\theta_{\rm null}$), occurring while the HDI still lies above the ROPE.
+  From $N\approx598$ onward, purple filled dots appear along the trace, indicating
+  iterations where the precision goal $\omega_{\rm HDI}\le\omega_{\rm goal}=0.08$ is met.
+  Intermittent green vertical solid lines begin near $N\approx804$, where DPitG first
+  finds both the precision goal satisfied and a conclusive acceptance; green shading
+  continues to fill the HDI band for subsequent iterations where both conditions hold.
   \label{fig:iterations}
 \end{figure}
 
