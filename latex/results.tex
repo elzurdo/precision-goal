@@ -318,6 +318,11 @@ Building on the fair coin baseline, we now examine how all three algorithms perf
 $\theta_{\rm true}$ increases from $0.5$ upwards, across and beyond the ROPE,\footnote{By symmetry, results for $\theta_{\rm true}<0.5$ mirror those shown
 here, as reflected in Equation~\ref{eq:pitg_stop_iteration} and Figure~\ref{fig:min_sample_by_goal}.}
 with ${\rm ROPE}_{\rm max}=0.55$ serving as a key inflection point.
+We present four complementary views via
+Figures~\ref{fig:conclusiveness_rates}--\ref{fig:stop_conclusiveness_ratios}:
+conclusiveness and decision rates, overall accuracy, estimation bias at stop, and a
+direct cost--benefit comparison of DPitG against PitG; qualitative trends generalise
+across $\omega_{\rm goal}$ values (Section~\ref{sec:goal_impact}).
 
 \begin{figure}[h!]
   \centering
@@ -362,42 +367,41 @@ with ${\rm ROPE}_{\rm max}=0.55$ serving as a key inflection point.
   \label{fig:conclusiveness_rates}
 \end{figure}
 
-As established in Section~\ref{sec:fair_coin_large_scale}, HDI+ROPE and DPitG open near 100\%
-conclusiveness at $\theta_{\rm true}=0.5$, while PitG sits at only 36.7\%, with the
-trade-off against $\omega_{\rm goal}$ discussed there. The qualitative trends shown
-below generalise across values of $\omega_{\rm goal}$ (Section~\ref{sec:goal_impact}).
-
-All three algorithms show a dip in conclusiveness as $\theta_{\rm true}$ approaches
+The left panel of Figure \ref{fig:conclusiveness_rates} shows that all three algorithms show a dip in conclusiveness as $\theta_{\rm true}$ approaches
 ${\rm ROPE}_{\rm max}$, after which conclusiveness rises again. HDI+ROPE and DPitG
 recover to near 100\% by $\theta_{\rm true}=0.6$; PitG only asymptotes to 100\% at
 $\theta_{\rm true}\approx 0.64$, at which point DPitG and PitG become effectively
 equivalent (for $\theta_{\rm null}=0.5$).
 
-This dip is by design: the ROPE boundaries are natural inflection points, as algorithms
-are constructed to accept $\theta_{\rm null}$ within the ROPE and reject it outside
-(see Section~\ref{sec:accept_reject_meaning}).
-The precision-based methods are deliberately conservative near these boundaries, yielding
-lower conclusiveness rates than HDI+ROPE in this region. At the boundary itself, DPitG
-is conclusive in only 19\% of experiments and PitG in only 5\%.
+The precision-based methods are deliberately conservative near the ROPE boundaries,
+yielding lower conclusiveness rates than HDI+ROPE in this region; at ${\rm ROPE}_{\rm max}$
+itself, DPitG is conclusive in only 19\% of experiments and PitG in only 5\%.
+This dip is a natural consequence of the Decision Rule
+(see Section~\ref{sec:accept_reject_meaning}): the ROPE boundaries are exactly the region
+where neither an accept nor a reject verdict is easily justified.
 
-Breaking the conclusiveness into its acceptance and rejection components (middle panel)
+Breaking the conclusiveness into its acceptance and rejection components (middle panel of Figure \ref{fig:conclusiveness_rates})
 reveals the error structure.
 For $\theta_{\rm null}=0.5$, acceptance is the correct decision within the ROPE
 ($\theta_{\rm true}\le 0.55$) and rejection is correct outside it.
 HDI+ROPE's false-positive rate climbs from $\sim\!6\%$ at $\theta_{\rm true}=0.5$
 to $\sim\!30\%$ at ${\rm ROPE}_{\rm max}$; its false-negative rate peaks at
 $\sim\!10\%$ at the ROPE boundary before dropping to $0\%$ by
-$\theta_{\rm true}=0.57$. Both precision-based methods maintain a near-zero
-false-positive rate throughout, exactly zero well within the ROPE interior, rising to a
-small level near the ROPE boundary (DPitG at the same $\sim\!10\%$, PitG lower due to
-its much lower conclusiveness rate), with only a small false-negative rate near the ROPE
-that similarly drops quickly.
+$\theta_{\rm true}=0.57$. Both precision-based methods maintain a near-zero false-positive rate throughout:
+exactly zero well within the ROPE interior, rising to a small level near the boundary ---
+DPitG reaching $\sim\!10\%$ alongside HDI+ROPE, and PitG lower only because its
+conclusiveness rate is much smaller there.
+Both also show a small false-negative rate near the ROPE boundary, which drops quickly
+as $\theta_{\rm true}$ moves outside.
 
-The right panel shows overall \textit{accuracy}, the proportion of correct decisions
+The right panel of Figure Figure \ref{fig:conclusiveness_rates} shows overall \textit{accuracy}, the proportion of correct decisions
 across all $M$ experiments. Since the three algorithms have different conclusiveness
-rates, each inconclusive experiment is assigned a decision based on whether
-$\hat{\theta}$ lies within the ROPE (accept) or outside it (reject); alternative
-risk- or utility-based rules are deferred to future work.
+rates, inconclusive experiments must be assigned a decision for comparison.
+We adopt the natural default: accept if $\hat{\theta}$ lies within the ROPE, reject
+otherwise --- the rule a practitioner would apply informally using the point estimate
+alone, and the most common approach in empirical settings where credible intervals are
+not examined; a more critical treatment of alternative imputation rules is deferred
+to future work.
 
 All three algorithms reach their minimum accuracy at ${\rm ROPE}_{\rm max}$. Within
 the ROPE, DPitG consistently leads PitG, reaching 99.5\% at $\theta_{\rm true}=0.5$
@@ -469,17 +473,21 @@ sufficient data have accumulated to constrain the posterior.
 The precision-based methods exhibit substantially smaller $\hat{\theta}$ bias, well
 within the ROPE width across all $\theta_{\rm true}$ values, as a natural consequence
 of their precision requirement. Among conclusive experiments within the ROPE, PitG
-shows the higher bias than DPitG.\footnote{For inconclusive experiments (not shown),
-where PitG contributes far more experiments than DPitG or HDI+ROPE, PitG's
-$\hat{\theta}$ bias is slightly \textit{lower} than DPitG's. Considering
-both conclusive and inconclusive experiments, both yield near-zero bias at all $\theta_{\rm true}$ values.}
-Accounting for both conclusive and inconclusive
-experiments, DPitG decision accuracy exceeds PitG's at every $\theta_{\rm true}$ value
-(cf.\ Figure~\ref{fig:conclusiveness_rates}, right panel).
+shows higher bias than DPitG; for inconclusive experiments (not shown\footnote{Bias
+statistics for inconclusive experiments and the pooled analysis are available in the
+open-source materials.}) --- where PitG contributes far more cases than DPitG ---
+the pattern reverses, PitG's bias being slightly lower.
+Pooled across both subsets, the aggregate difference is negligible: both methods yield
+near-zero bias at all $\theta_{\rm true}$ values, with DPitG's aggregate bias only
+marginally higher than PitG's.
+Despite this, DPitG decision accuracy exceeds PitG's at every $\theta_{\rm true}$ value
+(cf.\ Figure~\ref{fig:conclusiveness_rates}, right panel), because its substantially
+higher conclusiveness rate more than compensates.
 
 DPitG is decisively superior to PitG near and within the ROPE, at the cost of a larger
-median $N_{\rm stop}$.
-Figure~\ref{fig:stop_iterations_by_truth_conclusive} quantifies this cost for all three
+median $N_{\rm stop}$; having characterised the estimation properties of that superiority,
+we now quantify its sampling cost.
+Figure~\ref{fig:stop_iterations_by_truth_conclusive} quantifies $N_{\rm stop}$ for all three
 algorithms, restricting to conclusive outcomes since inconclusive experiments always stop
 at $N_{\rm max}$ and their stop iteration therefore carries no information about
 algorithm behaviour; including HDI+ROPE also illustrates why the precision
@@ -557,13 +565,28 @@ $N_{\rm goal}(\theta_{\rm true}) < N_{\rm goal}(\theta_{\rm null})$: the expecte
 iteration of $N_{\rm goal}=599$ is a conservative upper bound on $N_{\rm stop}$,
 and experiments stop earlier whenever the truth differs from the null.
 
-For $\theta_{\rm null}=0.7$, the picture is asymmetric. When $\theta_{\rm true}>
-\theta_{\rm null}$ (further from $0.5$), $N_{\rm goal}(\theta_{\rm true})<
-N_{\rm goal}(\theta_{\rm null})$ and experiments stop sooner than planned. When
-$\theta_{\rm true}<\theta_{\rm null}$ (closer to $0.5$), however,
+The right column of Figure~\ref{fig:stop_iterations_by_truth_conclusive} shows what
+happens when the null does not coincide with the precision maximum.
+The case $\theta_{\rm null}=0.7$ is representative of a researcher expecting an elevated
+base rate --- such as a presumed 70\% success probability for an established treatment ---
+who must judge whether the true rate is practically equivalent to that benchmark.
+Unlike the fair coin case, where $\theta_{\rm null}=0.5$ maximises $\theta(1-\theta)$
+so any deviation of $\theta_{\rm true}$ reduces the required sample, here the symmetry
+breaks: the same deviation can either reduce or increase $N_{\rm goal}$ depending on
+its direction.
+
+When $\theta_{\rm true}>\theta_{\rm null}=0.7$ (moving further from $0.5$),
+$N_{\rm goal}(\theta_{\rm true})<N_{\rm goal}(\theta_{\rm null})$ and experiments
+stop sooner than planned.
+When $\theta_{\rm true}<\theta_{\rm null}$ (moving closer to $0.5$), however,
 $N_{\rm goal}(\theta_{\rm true})>N_{\rm goal}(\theta_{\rm null}=0.7)\approx 503$:
 the planned budget underestimates the samples required, and
 $N_{\rm goal}(\theta_{\rm null})$ acts as a lower bound rather than an upper one.
+The PitG mean stop iteration visibly exceeds $N_{\rm goal}(\theta_{\rm null})=503$
+for $\theta_{\rm true}<0.7$, confirming this underestimate.
+DPitG shows qualitatively similar patterns to the $\theta_{\rm null}=0.5$ column near
+both ROPE boundaries, elevated above $N_{\rm goal}(\theta_{\rm true})$ where the
+conclusiveness gain is largest.
 
 In general, $N_{\rm goal}(\theta_{\rm null})$ serves as the researcher's advance
 planning estimate: a conservative upper bound when $\theta_{\rm null}$ lies at the
@@ -616,17 +639,16 @@ comparison by overlaying the ratio of conclusiveness rates
 \end{figure}
 
 The conclusiveness ratio substantially exceeds the $N_{\rm stop}$ ratio throughout,
-particularly within and immediately outside the ROPE. Strikingly, the conclusiveness
-ratio remains above 1 even where the $N_{\rm stop}$ ratio approaches 1---that is, where
-both algorithms stop at the same iteration---which occurs for roughly
-$0.60 \lesssim \theta_{\rm true} \lesssim 0.63$: DPitG gains conclusive outcomes at minor
-extra sampling cost in this region. The lower IQR band confirms that a substantial
-fraction of DPitG experiments stop exactly when PitG does, keeping the median
-$N_{\rm stop}$ ratio low. At $\theta_{\rm true}=0.5$, the conclusiveness ratio is
-$2.66$ (cf.\ Table~\ref{tab:goal_impact} for how this ratio varies with $\omega_{\rm goal}$)
-while the $N_{\rm stop}$ ratio has an IQR of $1.00$--$1.29$ (median $1.04$,
-mean $1.21$): roughly a $2.7\times$ gain in conclusiveness at a median cost of only
-$4\%$ more samples.
+particularly within and near the ROPE.
+Strikingly, the conclusiveness ratio remains above 1 even where the $N_{\rm stop}$
+ratio approaches 1 (roughly $0.60 \lesssim \theta_{\rm true} \lesssim 0.63$), confirming
+that DPitG gains conclusive outcomes at negligible extra sampling cost in this region.
+The lower IQR band confirms that a substantial fraction of DPitG experiments stop
+exactly when PitG does.
+The fair coin quantitative summary --- a $2.7\times$ conclusiveness gain at a median
+$4\%$ sampling premium --- is consistent with Table~\ref{tab:fair_overall} and
+Section~\ref{sec:fair_coin_large_scale}; Table~\ref{tab:goal_impact} shows how the
+conclusiveness ratio varies with $\omega_{\rm goal}$.
 
 The apparent flattening of both ratios near ${\rm ROPE}_{\rm max}$ is an artefact of
 the finite cap $N_{\rm max}=1{,}500$; with a larger cap both curves would peak sharply
