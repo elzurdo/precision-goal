@@ -1,22 +1,8 @@
-The central finding of this paper is that DPitG resolves the tension inherent in
-PitG: requiring both precision and decisiveness simultaneously yields a 97.7\%
-conclusiveness rate with a zero false-positive rate at
-$\theta_{\rm true}=\theta_{\rm null}=0.5$ (assuming $\omega_{\rm goal}=0.08$ and $N_{\rm max}=1{,}500$;
-none observed across $M=2{,}000$ simulations),
-at a median sample cost of only 4\% over PitG --- an advantage in conclusiveness that persists across
-$\theta_{\rm true}$ values (Section~\ref{sec:trends}).
-Moreover, DPitG's conclusiveness is robust to the choice of $\omega_{\rm goal}$:
-for the fair coin case, across $\omega_{\rm goal}=0.06$--$0.10$, the conclusiveness varies by less than one percentage
-point ($0.972$--$0.979$), while PitG's conclusiveness spans from $82.5\%$ to
-$0\%$ (Section~\ref{sec:goal_impact}).
-We now place this result in methodological context, draw out its
-practical implications, and candidly acknowledge its limitations.
-
-While the present study focuses on single-group Bernoulli data, the HDI+ROPE
-precision-goal framework extends naturally to single-group continuous outcomes
-(see Appendix~\ref{app:expected_stop}) and to two-group comparisons, both binomial
-and continuous (see Appendix~\ref{app:extensions} for the adaptations and
-corresponding sample-size planning equations).
+DPitG resolves the tension inherent in PitG --- requiring both precision and
+decisiveness simultaneously --- at a modest median sampling cost
+(Sections~\ref{sec:fair_coin_large_scale}--\ref{sec:trends}).
+We now place this result in methodological context, draw out its practical
+implications, and candidly acknowledge its limitations.
 
 DPitG operates under a different philosophy from classical sequential methods.
 Group sequential designs \citep{jennison2000} control the familywise Type~I error rate
@@ -25,7 +11,7 @@ number and timing of planned looks.
 DPitG requires no such correction, since the Bayesian posterior accounts for all
 accumulated data without reference to the stopping intention.
 Closest in spirit among Bayesian sequential designs is Bayes Factor Design Analysis
-(BFDA) \citep{schonbrodt2018}, which plans sample size to achieve a target Bayes Factor
+(BFDA; \citealt{schonbrodt2018}), which plans sample size to achieve a target Bayes Factor
 with specified probability --- a prospective planning use of the BF distinct from
 using the BF as a sequential stopping rule (see Appendix~\ref{app:app_bayes_factors}
 for a discussion of BF stopping and its limitations).
@@ -40,9 +26,9 @@ minimum Bayes Factor is a natural extension.
 
 While comparisons with competing sequential methods clarify DPitG's positioning,
 its computational scope deserves equal attention.
-DPitG is a generic sequential stopping rule that applies to any posterior from which
-an HDI can be computed, including non-conjugate and hierarchical settings that require
-MCMC.
+DPitG is a generic sequential stopping rule that applies to any posterior admitting a
+credible interval that jointly encodes location and width, including non-conjugate and
+hierarchical settings that require MCMC.
 The analysis in this paper is deliberately restricted to models with conjugate or
 otherwise tractable posteriors: for Bernoulli data the Beta posterior and its HDI are
 fully analytical, reducing the algorithm to a short loop with no specialist
@@ -93,37 +79,38 @@ silently inconclusive stop.
 This discipline is a feature, not a limitation, for any analyst whose conclusions
 must rest on genuinely informative data.
 
-The method is most naturally suited to settings where data collection is relatively
-cheap and the budget comfortably covers the required sample size: large-scale digital
-A/B testing \citep{johari2022}, opinion polling, and automated quality-control pipelines
-are typical examples.
+DPitG serves researchers in two complementary roles.
+As an operational stopping rule, it is most naturally suited to settings where data
+collection is relatively cheap and the budget comfortably exceeds $N_{\rm goal}$:
+large-scale digital A/B testing \citep{johari2022}, opinion polling, and automated
+quality-control pipelines are typical examples.
 % \citet{johari2022}: Johari et al.\ (2022) study continuous monitoring of A/B tests ---
 % a canonical high-volume, low-cost data-collection context where precision-based
 % stopping is operationally natural and the budget constraint is rarely binding.
-For settings where the required sample size is prohibitive --- longitudinal studies,
-clinical trials, or expensive policy evaluations --- the framework still serves a
-valuable diagnostic role: $N_{\rm goal}$ makes explicit what precision is achievable
-within the available budget, enabling an honest assessment of what conclusions the data
-can and cannot support.
+As a planning tool, it provides a diagnostic function even in resource-constrained
+settings --- longitudinal studies, clinical trials, or expensive policy evaluations:
+$N_{\rm goal}$ makes explicit what precision is achievable within the available budget,
+enabling an honest assessment of what conclusions the data can and cannot support,
+both prospectively (before collection begins) and retrospectively (to audit the
+precision of a completed study).
 
 The ROPE is the most consequential and subjective design input: it must be grounded
 in domain knowledge rather than chosen to suit the data \citep{kruschke2018}.
+A ROPE that misrepresents the practically meaningful effect size will produce
+systematically misleading verdicts that the precision criterion alone cannot detect;
+sensitivity analyses across a range of ROPE widths are therefore recommended before
+committing to a single value when no domain standard exists \citep{lakens2018}.
 Appendix~\ref{app:practical_guidance} discusses principled approaches for setting it
---- including the Minimal Clinically Important Difference, bioequivalence standards,
+--- including the MCID, bioequivalence standards,
 and sensitivity analyses --- together with three broader considerations supporting
 DPitG's adoption (equivalence testing, pre-registration, and the replication crisis).
 
-The joint operating characteristics of DPitG can be assessed prospectively.
-Here we use \textit{false-accept} to mean a conclusive acceptance when $\theta_{\rm true}$
-lies outside the ROPE, and \textit{false-reject} to mean a conclusive rejection when
-$\theta_{\rm true}$ lies inside it; both rates are determined by the interplay of the
-ROPE, $\omega_{\rm goal}$, and $N_{\rm max}$.
-As the Results demonstrate, false-accept rates are negligible except when
-$\theta_{\rm true}$ lies near the ROPE boundary, and false-reject rates are
-suppressed by the precision requirement.
-A researcher can therefore calibrate the operating characteristics in advance
-by checking, analytically or via simulation, that the planned $N_{\rm max}$
-achieves the target conclusiveness rate at the effect sizes of interest.
+The joint operating characteristics of DPitG can be assessed prospectively, and a
+researcher can calibrate them before data collection by checking, analytically or via
+simulation, that the planned $N_{\rm max}$ achieves the target conclusiveness rate at
+the effect sizes of interest.
+As the Results demonstrate, error rates are negligible except near the ROPE boundaries,
+where neither an accept nor a reject verdict is easily justified.
 Notably, DPitG's conclusiveness is more sensitive to $N_{\rm max}$ than to
 $\omega_{\rm goal}$ (Section~\ref{sec:goal_impact}); for the fair coin case
 ($\Delta_{\rm ROPE}=0.1$), the median sampling premium relative to $N_{\rm goal}$
@@ -131,7 +118,8 @@ is zero for $\omega_{\rm goal}\le 0.07$ and rises to 41\% at $\omega_{\rm goal}=
 so setting $N_{\rm max}$ generously is the primary practical lever for ensuring high
 conclusiveness across a range of precision goals.
 
-Four limitations of the present work deserve acknowledgement.
+We now turn to the boundaries of the present work.
+Four limitations deserve acknowledgement.
 First, the results are sensitive to the three design parameters --- the ROPE,
 $\omega_{\rm goal}$, and $N_{\rm max}$ --- all of which must be committed to before
 data collection begins.
@@ -161,17 +149,17 @@ that the precision criterion alone cannot detect \citep{gelman2013bayesian};
 % and prior sensitivity analysis --- the standard treatment for detecting and
 % diagnosing prior misspecification.
 we defer a full treatment of principled prior selection to a later study.
-Fourth, while DPitG applies in principle to any posterior from which an HDI can be
-computed, this paper does not characterise its behaviour when the HDI is estimated
-from MCMC samples.
+Fourth, while DPitG applies in principle to any posterior admitting such an interval,
+this paper does not characterise its behaviour when the HDI is estimated from MCMC
+samples.
 In such settings the HDI estimate carries Monte Carlo error that could affect stopping
 calibration --- particularly in early data collection when the posterior is diffuse ---
 and this remains an open question for subsequent investigation.
 
-The extensions to continuous outcomes and two-group comparisons described above are
-theoretical derivations rather than empirically validated results.
-Confirming that the stopping properties demonstrated here for the Bernoulli case carry
-over --- in particular the reduction in inconclusive rates and the calibration of
-$N_{\rm stop}$ relative to $N_{\rm goal}$ --- requires a dedicated simulation study,
-which we flag as the primary empirical direction for future work.
+% The extensions to continuous outcomes and two-group comparisons are
+% theoretical derivations rather than empirically validated results.
+% Confirming that the stopping properties demonstrated here for the Bernoulli case carry
+% over --- in particular the reduction in inconclusive rates and the calibration of
+% $N_{\rm stop}$ relative to $N_{\rm goal}$ --- requires a dedicated simulation study,
+% which we flag as the primary empirical direction for future work.
 
