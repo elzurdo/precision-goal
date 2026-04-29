@@ -10,11 +10,17 @@ across interim analyses via alpha-spending functions, and are therefore tied to 
 number and timing of planned looks.
 DPitG requires no such correction, since the Bayesian posterior accounts for all
 accumulated data without reference to the stopping intention.
+This property extends to simultaneous tests: the DPitG stopping rule applies
+unchanged across independent parallel experiments without multiple-comparisons
+correction; Appendix~\ref{app:multiple_comparisons} develops this in full,
+together with all three types of Bayesian power analysis (prospective,
+retrospective, and replication).
+
 Closest in spirit among Bayesian sequential designs is Bayes Factor Design Analysis
-(BFDA; \citealt{schonbrodt2018}), which plans sample size to achieve a target Bayes Factor
-with specified probability --- a prospective planning use of the BF distinct from
-using the BF as a sequential stopping rule (see Appendix~\ref{app:app_bayes_factors}
-for a discussion of BF stopping and its limitations).
+(BFDA; \citealt{schonbrodt2018}), which plans sample size to achieve a target Bayes
+Factor with specified probability.\footnote{This is a prospective planning use of the BF, distinct from using the BF as a
+sequential stopping rule (see Appendix~\ref{app:app_bayes_factors} for a discussion
+of BF stopping and its limitations).}
 % \citet{schonbrodt2018}: Sch\"onbrodt \& Wagenmakers (2018) introduce BFDA as the
 % natural Bayesian sequential counterpart to power analysis: it targets evidential
 % strength (Bayes Factor) rather than posterior precision, making it complementary to
@@ -23,17 +29,34 @@ The key distinction is that BFDA targets evidential strength (ratio of marginal
 likelihoods) whereas DPitG targets posterior precision; the two are complementary
 as planning tools, and a design requiring both a conclusive HDI+ROPE verdict and a
 minimum Bayes Factor is a natural extension.
+% [AUTHOR NOTE: standalone multiple-comparisons paragraph condensed to a pointer
+%  after the no-correction sentence above; full content preserved below for reference.]
+% The HDI+ROPE framework for the decision step offers a structural
+% methodological advantage over frequentist approaches: unlike NHST
+% (see Appendix~\ref{app:nhst}), where conducting
+% multiple simultaneous tests inflates the Type~I error rate and requires corrections
+% (e.g.\ Bonferroni) that reduce per-test power, the Bayesian posterior is unaffected ---
+% $\omega_{\rm goal}$ and the DPitG stopping rule apply unchanged across independent
+% simultaneous tests without correction \citep{gelman2012, kruschke2015doing}.
+% \citet{gelman2012}: Gelman, Hill \& Yajima (2012) is the standard journal reference
+% for the claim that Bayesian posteriors typically require no multiple-comparison
+% correction when tests are based on independent models.
+% \citet{kruschke2015doing}: DBDA2 (Chapter~11) provides the pedagogical treatment.
+% For prospective sample-size planning, $N_{\rm goal}$
+% (Equation~\ref{eq:pitg_stop_iteration}) provides a closed-form lower bound on the
+% samples required to achieve $\omega_{\rm goal}$; DPitG may need additional samples
+% when $\theta_{\rm true}$ lies near a ROPE boundary (see Section~\ref{sec:trends}).
+% Appendix~\ref{app:multiple_comparisons} develops the multiple-comparisons point in
+% full and covers all three types of Bayesian power analysis (prospective, retrospective,
+% and replication).
 
 While comparisons with competing sequential methods clarify DPitG's positioning,
 its computational scope deserves equal attention.
-DPitG is a generic sequential stopping rule that applies to any posterior admitting a
-credible interval that jointly encodes location and width, including non-conjugate and
-hierarchical settings that require MCMC.
-The analysis in this paper is deliberately restricted to models with conjugate or
-otherwise tractable posteriors: for Bernoulli data the Beta posterior and its HDI are
-fully analytical, reducing the algorithm to a short loop with no specialist
-probabilistic programming software.
-% More precisely, the tractable-posterior claim holds case by case as follows:
+DPitG is a generic sequential stopping rule applicable to any posterior admitting a
+credible interval, including non-conjugate and hierarchical settings that require MCMC;
+the present analysis restricts to conjugate posteriors, where the HDI is fully
+analytical and no specialist probabilistic programming software is required.
+% Tractable-posterior scope, case by case:
 % - Single-group Bernoulli (this paper): conjugate Beta posterior, fully analytical
 %   HDI; no sampling of any kind needed.
 % - Single-group continuous (conjugate normal prior): normal or Student-t posterior,
@@ -48,24 +71,6 @@ probabilistic programming software.
 %   to future work.
 % - Hierarchical models: MCMC required; also out of scope here.
 
-The HDI+ROPE framework for the decision step offers a structural
-methodological advantage over frequentist approaches: unlike NHST
-(see Appendix~\ref{app:nhst}), where conducting
-multiple simultaneous tests inflates the Type~I error rate and requires corrections
-(e.g.\ Bonferroni) that reduce per-test power, the Bayesian posterior is unaffected ---
-$\omega_{\rm goal}$ and the DPitG stopping rule apply unchanged across independent
-simultaneous tests without correction \citep{gelman2012, kruschke2015doing}.
-% \citet{gelman2012}: Gelman, Hill \& Yajima (2012) is the standard journal reference
-% for the claim that Bayesian posteriors typically require no multiple-comparison
-% correction when tests are based on independent models.
-% \citet{kruschke2015doing}: DBDA2 (Chapter~11) provides the pedagogical treatment.
-For prospective sample-size planning, $N_{\rm goal}$
-(Equation~\ref{eq:pitg_stop_iteration}) provides a closed-form lower bound on the
-samples required to achieve $\omega_{\rm goal}$; DPitG may need additional samples
-when $\theta_{\rm true}$ lies near a ROPE boundary (see Section~\ref{sec:trends}).
-Appendix~\ref{app:multiple_comparisons} develops the multiple-comparisons point in
-full and covers all three types of Bayesian power analysis (prospective, retrospective,
-and replication).
 
 A recurring concern about PitG --- and by extension DPitG --- is that the precision
 requirement can seem too demanding in practice.
@@ -94,21 +99,16 @@ enabling an honest assessment of what conclusions the data can and cannot suppor
 both prospectively (before collection begins) and retrospectively (to audit the
 precision of a completed study).
 
-The ROPE is the most consequential and subjective design input: it must be grounded
-in domain knowledge rather than chosen to suit the data \citep{kruschke2018}.
-A ROPE that misrepresents the practically meaningful effect size will produce
-systematically misleading verdicts that the precision criterion alone cannot detect;
-sensitivity analyses across a range of ROPE widths are therefore recommended before
-committing to a single value when no domain standard exists \citep{lakens2018}.
-Appendix~\ref{app:practical_guidance} discusses principled approaches for setting it
---- including the MCID, bioequivalence standards,
-and sensitivity analyses --- together with three broader considerations supporting
+The ROPE must be grounded in domain knowledge rather than chosen to suit the data
+\citep{kruschke2018}; Appendix~\ref{app:practical_guidance} discusses principled
+approaches for setting it --- including the MCID, bioequivalence standards, and
+sensitivity analyses --- together with three broader considerations supporting
 DPitG's adoption (equivalence testing, pre-registration, and the replication crisis).
 
-The joint operating characteristics of DPitG can be assessed prospectively, and a
-researcher can calibrate them before data collection by checking, analytically or via
-simulation, that the planned $N_{\rm max}$ achieves the target conclusiveness rate at
-the effect sizes of interest.
+With those design inputs committed, the joint operating characteristics of DPitG can
+be assessed prospectively: a researcher can check, analytically or via simulation,
+that the planned $N_{\rm max}$ achieves the target conclusiveness rate at the effect
+sizes of interest.
 As the Results demonstrate, error rates are negligible except near the ROPE boundaries,
 where neither an accept nor a reject verdict is easily justified.
 Notably, DPitG's conclusiveness is more sensitive to $N_{\rm max}$ than to
@@ -135,7 +135,7 @@ preferred (the Student-$t$ variant for continuous outcomes is also provided ther
 Third, the present analysis uses a flat (uniform) prior throughout, as a conservative
 choice that avoids imposing unverified assumptions.
 The flat prior contributes no pseudo-observations, requiring more data to achieve
-$\omega_{\rm goal}$ than a well-justified informative prior would \citep{gelman2013bayesian}.
+$\omega_{\rm goal}$ than a well-justified informative prior would \citep[][Ch.~2]{gelman2013bayesian}.
 % \citet{gelman2013bayesian}: BDA3 (Chapter~2) establishes the prior-as-pseudo-data
 % interpretation for conjugate models: a Beta(a,b) prior is equivalent to having
 % previously observed a successes and b failures, directly supporting the claim that
@@ -144,7 +144,7 @@ Informative priors, where available and well-justified, can therefore serve as a
 practical mitigation by narrowing the starting HDI width and lowering the required
 sample size.
 Conversely, a materially incorrect informative prior may bias the posterior in a way
-that the precision criterion alone cannot detect \citep{gelman2013bayesian};
+that the precision criterion alone cannot detect \citep[][Ch.~6]{gelman2013bayesian};
 % \citet{gelman2013bayesian}: BDA3 (Chapter~6) covers posterior predictive checks
 % and prior sensitivity analysis --- the standard treatment for detecting and
 % diagnosing prior misspecification.
