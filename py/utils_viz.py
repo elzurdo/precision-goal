@@ -345,7 +345,7 @@ def plot_multiple_decision_rates_separate(method_df_iteration_counts, success_ra
             if viz_epitg == "together":
                 plt.subplot(1, 2, 2)
                 if "pitg" == method_name:
-                    title = "Precision is the Goal (thin), Enhanced (thick)"
+                    title = "Precision is the Goal (thin), Decisive (thick)"
                 if "epitg" == method_name:
                     linewidth_accept, linewidth_reject, linewidth_inconclusive = 6, 6, 6
                     alpha = 0.3
@@ -356,7 +356,7 @@ def plot_multiple_decision_rates_separate(method_df_iteration_counts, success_ra
                     title = "Precision is the Goal"
                 elif "epitg" == method_name:
                     plt.subplot(1, 3, 3)
-                    title = "Enhanced Precision is the Goal"
+                    title = "Decisive Precision is the Goal"
             else:
                 if "pitg" == method_name:
                     plt.subplot(1, 2, 1)
@@ -381,7 +381,7 @@ def plot_multiple_decision_rates_separate(method_df_iteration_counts, success_ra
 
 method_pretty_short_name = {
     "pitg": "PitG",
-    "epitg": "EPitG",
+    "epitg": "DPitG",
     "hdi_rope": "HDI+ROPE"
 }
 
@@ -685,14 +685,14 @@ def plot_pdf(sr_experiment_stats, rope_min, rope_max, xlim=None, xtitle=r"succes
 METHOD_FULL = {
     "hdi_rope": "HDI + ROPE",
     "pitg": "Precision is the Goal",
-    "epitg": "Enhanced Precision is the Goal",
+    "epitg": "Decisive Precision is the Goal",
 
 }
 
 METHOD_SHORT = {
     "hdi_rope": "HDI+ROPE",
     "pitg": "PitG",
-    "epitg": "ePitG",
+    "epitg": "DPitG",
 
 }
 
@@ -943,7 +943,9 @@ def plot_stop_iterations_by_truth_two_panel(
         precision_goal_1=0.08, precision_goal_2=0.08,
         xlim_1=(0.498, 0.652), xlim_2=(0.498, 0.652),
         ylim=(0, 1500),
-        subset_name="overall"):
+        subset_name="overall",
+        average_name="mean"
+        ):
 
     algos_viz = list(METHOD_SHORT.keys())
     nrows = len(algos_viz)
@@ -964,12 +966,14 @@ def plot_stop_iterations_by_truth_two_panel(
 
             df_plot = algo_stats_df[subset_name][algo_name].query("count >= 20")
 
-            plt.plot(df_plot["param_mean"],
-                     df_plot["stop_iter_mean"],
-                     color=ALGO_COLORS[algo_name], label="mean",
+            theta_true_values = df_plot.index.tolist()
+            
+            plt.plot(theta_true_values,
+                     df_plot[f"stop_iter_{average_name}"],
+                     color=ALGO_COLORS[algo_name], label=average_name,
                      linewidth=ALGO_LINEWIDTH[algo_name])
 
-            plt.fill_between(df_plot.index.tolist(),
+            plt.fill_between(theta_true_values,
                              df_plot["stop_iter_p25"].astype(float),
                              df_plot["stop_iter_p75"].astype(float),
                              color=ALGO_COLORS[algo_name], alpha=0.2, label="IQR")
@@ -984,7 +988,7 @@ def plot_stop_iterations_by_truth_two_panel(
                 this_param_null = float(param_null_2)
             n_null = binomial_rate_ci_width_to_sample_size(this_param_null, precision_goal)
             n_truths = [binomial_rate_ci_width_to_sample_size(true_rate, precision_goal) for true_rate in df_plot.index.tolist()]
-            plt.plot(df_plot.index.tolist(), n_truths, color="orange", linestyle=":", label=label_ntruths)
+            plt.plot(theta_true_values, n_truths, color="orange", linestyle=":", label=label_ntruths)
 
             plt.axhline(y=n_null, color="black", linestyle="--", alpha=0.2)
             n_null_str = r"$N_{\rm goal}(\theta_{\rm null})$"
@@ -1035,13 +1039,14 @@ def plot_stop_and_conclusive_ratios(algo_stats_df, subset_name = "overall", para
     conclusive_ratio = algo_stats_df["overall"]["epitg"]["conclusive_mean"] / algo_stats_df["overall"]["pitg"]["conclusive_mean"]
 
     n_stop_str = r"$N_{\rm goal}$" #(\theta_{\rm true},\omega)$"
-    n_stop_epitg_str = r"$N_{\rm ePitG}$"
-    ratio_str = f"{n_stop_epitg_str}/{n_stop_str}"
+    n_stop_epitg_str = r"$N_{\rm DPitG}$"
+    n_stop_pitg_str = r"$N_{\rm PitG}$"
+    ratio_str = f"{n_stop_epitg_str}/{n_stop_pitg_str}"
     plt.plot(stop_ratio, color="purple", linewidth=1, linestyle="-.", label=f"{ratio_str} Median")
     plt.fill_between(algo_stats_df[subset_name]["epitg"].index, stop_ratio_p25, stop_ratio_p75, color="purple", alpha=0.2, label=f"{ratio_str} IQR")
     if viz_mean:
         plt.plot(stop_ratio_mean, color="gray", linewidth=0.5, label=f"{ratio_str} Mean")
-    plt.plot(conclusive_ratio, color="purple", linewidth=2, label="Conclusiveness ePitG/PitG")
+    plt.plot(conclusive_ratio, color="purple", linewidth=2, label="Conclusiveness DPitG/PitG")
     plt.ylim(0,None)
     plt.grid(alpha=0.3)
     plt.xlabel(r"$\theta_{\rm true}$")

@@ -11,10 +11,10 @@
 % rule. In the fair-coin case, PitG achieves zero false positives, but at the cost of a
 % high inconclusive rate of 63.3\%, because precision and decisiveness
 % are not required to coincide.
-\citet{kruschke2015doing} demonstrated that reliable sequential hypothesis testing
-requires the stopping criterion to be decoupled from the decision criterion; PitG
-achieves this, but at a high inconclusive rate --- up to $63.3\%$ in the fair-coin
-case --- most critically when the null is true.
+PitG decouples the stopping criterion from the decision criterion, eliminating the
+early-peeking bias of coupled methods \citep{kruschke2015doing}, but at an inconclusive
+rate ranging from $17.5\%$ to $100\%$ across $\omega_{\rm goal}=0.06$--$0.10$ in the
+fair-coin case --- most critically when the null is true.
 
 We have proposed Decisive Precision is the Goal (DPitG), a conservative variant of
 PitG that joins the two criteria: data collection continues until the HDI is
