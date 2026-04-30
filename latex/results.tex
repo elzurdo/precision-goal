@@ -502,7 +502,7 @@ requirement matters.
   In each column the top, middle, and bottom panels correspond to HDI+ROPE, PitG,
   and DPitG, respectively.
   \textit{Band}: interquartile range $N_{\rm 25\%}$--$N_{\rm 75\%}$ of $N_{\rm stop}$.
-  \textit{Solid line}: mean $N_{\rm stop}$.
+  \textit{Solid line}: median $N_{\rm 50\%}$.
   \textit{Dotted line}: true precision-goal iteration
   $N_{\rm goal}(\theta_{\rm true}, \omega_{\rm goal})$ (Equation~\ref{eq:pitg_stop_iteration}).
   \textit{Horizontal dashed line}: null precision-goal iteration
@@ -514,22 +514,22 @@ requirement matters.
   (right).
   All panels share the same $y$-axis ($N_{\rm stop}$, $0$--$1{,}000$).
   Each panel contains: a coloured band (IQR of $N_{\rm stop}$ across conclusive
-  experiments), a solid coloured mean line, an orange dotted curve
+  experiments), a solid coloured median line, an orange dotted curve
   ($N_{\rm goal}(\theta_{\rm true}\mid\omega_{\rm goal}=0.08)$, a concave-downward
   arc decreasing from its peak near the null toward $\theta_{\rm true}=0.95$), and
   a horizontal grey dashed line ($N_{\rm goal}(\theta_{\rm null})$, the researcher's
   planned budget).
   \textit{Left column} ($\theta_{\rm null}=0.5$, $N_{\rm goal}(\theta_{\rm null})=599$):
   a single vertical dashed line marks ${\rm ROPE}_{\rm max}=0.55$.
-  HDI+ROPE (top-left, red): wide pink IQR band near $\theta_{\rm true}=0.5$; mean
-  and IQR fall sharply below the $N_{\rm goal}$ curve once $\theta_{\rm true}$
-  exceeds ${\rm ROPE}_{\rm max}$, reflecting early stopping without a precision
-  requirement.
-  PitG (middle-left, blue): solid blue mean tracks the orange $N_{\rm goal}(\theta_{\rm
+  HDI+ROPE (top-left, red): wide pink IQR band near $\theta_{\rm true}=0.5$; the
+  median and IQR show a distinctive V-shaped dip centred on ${\rm ROPE}_{\rm max}=0.55$,
+  with $N_{\rm stop}$ elevated on both sides of the boundary and dropping to a narrow
+  trough right at it, before remaining low and falling monotonically outside the ROPE.
+  PitG (middle-left, blue): solid blue median tracks the orange $N_{\rm goal}(\theta_{\rm
   true})$ curve tightly; IQR band is very narrow throughout.
-  DPitG (bottom-left, green): mean lies above the $N_{\rm goal}(\theta_{\rm true})$
+  DPitG (bottom-left, green): median lies above the $N_{\rm goal}(\theta_{\rm true})$
   curve within and near the ROPE, peaking around $800$--$900$ near
-  ${\rm ROPE}_{\rm max}$; IQR is wider than PitG's in this region; both mean and IQR
+  ${\rm ROPE}_{\rm max}$; IQR is wider than PitG's in this region; both median and IQR
   converge toward PitG once $\theta_{\rm true}$ is well outside the ROPE.
   \textit{Right column} ($\theta_{\rm null}=0.7$, $N_{\rm goal}(\theta_{\rm null})=503$):
   two vertical dashed lines mark the ROPE boundaries at
@@ -538,7 +538,7 @@ requirement matters.
   the $[0.65,\,0.75]$ ROPE; IQR is widest between the two boundaries.
   PitG (middle-right, blue): for $\theta_{\rm true}<0.7$ (closer to $0.5$), the
   orange $N_{\rm goal}(\theta_{\rm true})$ curve rises above the horizontal
-  $N_{\rm goal}(\theta_{\rm null})=503$ line and PitG's mean follows, exceeding
+  $N_{\rm goal}(\theta_{\rm null})=503$ line and PitG's median follows, exceeding
   the planned budget.
   DPitG (bottom-right, green): elevated above $N_{\rm goal}(\theta_{\rm true})$ near
   both ROPE boundaries, with qualitatively similar patterns to the left column.
@@ -547,8 +547,13 @@ requirement matters.
 
 HDI+ROPE shows distinctly different behaviour inside and outside the ROPE.
 Within the ROPE, $N_{\rm stop}$ loosely tracks $N_{\rm goal}(\theta_{\rm true})$, but
-with a wide IQR reflecting the absence of a precision criterion. Outside the ROPE,
-$N_{\rm stop}$ falls well below $N_{\rm goal}(\theta_{\rm true})$: HDI+ROPE correctly
+with a wide IQR reflecting the absence of a precision criterion.
+Right at ${\rm ROPE}_{\rm max}$, a distinctive V-shaped signature is visible:
+$N_{\rm stop}$ dips to a narrow trough at the boundary, as the few conclusive
+experiments there stop early by catching a chance excursion of the HDI just outside
+the ROPE.
+Outside the ROPE, $N_{\rm stop}$ falls well below $N_{\rm goal}(\theta_{\rm true})$:
+HDI+ROPE correctly
 rejects $\theta_{\rm null}$ much faster than precision-based methods, but does so on
 the basis of imprecise posteriors, producing the strong $\hat{\theta}$ bias
 (cf.\ Figure~\ref{fig:success_by_truth_conclusive}).
@@ -582,7 +587,7 @@ When $\theta_{\rm true}<\theta_{\rm null}$ (moving closer to $0.5$), however,
 $N_{\rm goal}(\theta_{\rm true})>N_{\rm goal}(\theta_{\rm null}=0.7)\approx 503$:
 the planned budget underestimates the samples required, and
 $N_{\rm goal}(\theta_{\rm null})$ acts as a lower bound rather than an upper one.
-The PitG mean stop iteration visibly exceeds $N_{\rm goal}(\theta_{\rm null})=503$
+The PitG median stop iteration visibly exceeds $N_{\rm goal}(\theta_{\rm null})=503$
 for $\theta_{\rm true}<0.7$, confirming this underestimate.
 DPitG shows qualitatively similar patterns to the $\theta_{\rm null}=0.5$ column near
 both ROPE boundaries, elevated above $N_{\rm goal}(\theta_{\rm true})$ where the
