@@ -1,27 +1,33 @@
 Sequential hypothesis testing offers flexibility over fixed-sample designs, but stopping
 rules coupled to decision criteria risk confirmation bias through early peeking.
-Methods that decouple the two, such as ``Precision is the Goal'' (PitG), eliminate this
-bias by halting only once a target posterior precision $\omega_{\rm goal}$ is reached ---
-yet PitG frequently yields inconclusive outcomes, most critically when the null hypothesis
-is true.
-We propose ``Decisive Precision is the Goal'' (DPitG), which requires \textit{both} the
-precision target and a decisive hypothesis outcome --- acceptance or rejection of the
-null --- to be satisfied simultaneously before stopping.
-In fair coin experiments with a minimum effect size of $\pm 0.05$, PitG's conclusiveness
-ranges from $82.5\%$ to $0\%$ across precision goals $\omega_{\rm goal}=0.06$--$0.10$,
-while DPitG's remains essentially flat at $97.2\%$--$97.9\%$ over the same span.
-For instance, at $\omega_{\rm goal}=0.08$, DPitG reduces PitG's $63.3\%$ inconclusive
-rate to just $2.3\%$, at a median sampling cost of only $4\%$ over the expected minimum
-sample size $N_{\rm goal}$, while preserving a zero false-positive rate ---
-the coupled stopping approach achieves comparable conclusiveness but at a
-$6.2\%$ false-positive cost under the same conditions.
+The HDI+ROPE algorithm exemplifies this: it stops as soon as the Bayesian posterior
+Highest Density Interval (HDI) lies entirely inside or outside a pre-specified Region
+of Practical Equivalence (ROPE), enabling positive \textit{acceptance} of the null, 
+unlike Null Hypothesis Significance Testing. But without a precision requirement,
+it can stop on imprecise posteriors, incurring a systematic false-positive cost.
+Decoupled methods, such as ``Precision is the Goal'' (PitG), eliminate this bias by
+halting only once a target HDI width $\omega_{\rm goal}$ is reached; yet PitG
+frequently yields inconclusive outcomes rather than a premature verdict, most
+critically when the null is true.
+We propose ``Decisive Precision is the Goal'' (DPitG), which requires \textit{both}
+the precision target and a conclusive verdict to be satisfied simultaneously before
+stopping.
+In fair coin experiments (${\rm ROPE} = \theta_{\rm null} \pm 0.05$), PitG's
+conclusiveness ranges from $82.5\%$ to $0\%$ across $\omega_{\rm goal}=0.06$--$0.10$;
+DPitG's remains essentially flat at $97.2\%$--$97.9\%$.
+At $\omega_{\rm goal}=0.08$, DPitG reduces PitG's $63.3\%$ inconclusive rate to $2.3\%$
+at a median cost of only $4.7\%$ more samples than $N_{\rm goal}$, while preserving
+a zero false-positive rate; HDI+ROPE matches this conclusiveness only at a $6.2\%$
+false-positive cost.
 Results are demonstrated on single-group binary data; the framework extends naturally
 to continuous outcomes and two-group comparisons.
-This advantage holds broadly across true and null parameter values, and DPitG's
-fully pre-specified stopping rule is naturally compatible with pre-registration standards.
-We provide a closed-form planning formula ($N_{\rm goal} \propto 1/\omega_{\rm goal}^2$),
-an online interactive calculator, and open-source code to support prospective planning
-and interpretation of sequential experiments.
+This advantage holds broadly across true and null parameter values.
+We provide a closed-form planning formula
+($N_{\rm goal} \propto V/\omega_{\rm goal}^2$, where $V$ is the per-observation variance),
+an online interactive calculator, and open-source code.
+DPitG's fully pre-specified stopping rule is compatible with pre-registration standards
+and is the method of choice whenever a reliable verdict is required and the budget
+reaches $N_{\rm goal}$.
 
 %%TODO: note that the phrasing of "nlike methods that can only reject the null hypothesis, the precision-based framework also permits its positive acceptance" are 
 %% a bit decieinvg, b/c, e.g, Bayes Factors can also accept the null, but only when the data are extremely strong, whereas the precision-based framework can accept the null when the data are sufficiently precise, which is a more common occurrence.
