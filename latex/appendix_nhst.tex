@@ -59,9 +59,31 @@ would not be apparent at shorter horizons.
   a decision at or before $N$; their sum is 100\% at every point.
   \textit{Red solid line}: reject $\theta_{\rm null}$.
   \textit{Gray dashed line}: inconclusive.
-  The smaller experiment count ($M=50$ vs.\ $2{,}000$) reflects the higher
+  The smaller experiment count ($M=50$ vs.\ $2{,}000$) and higher $N_{\rm max}$ reflects the higher
   computational cost of evaluating p-values relative to HDI-based criteria,
   which also accounts for the stepped appearance of the curves.}
+  Alt text: A single panel with a logarithmic $x$-axis (iteration,
+  $10^{0}$--$3{\times}10^{4}$) and a linear $y$-axis (proportion of $M=50$
+  experiments, $0$--$1$).
+  Title: $\theta_{\rm true}=0.50$, $\theta_{\rm null}=0.50$,
+  $\alpha_{\rm FPR}=0.05$.
+  Two curves are shown: a red solid line (reject $\theta_{\rm null}$) and a
+  grey dashed line (not reject / inconclusive); at every iteration the two
+  proportions sum to $1$.
+  A light grey horizontal dot-dashed line marks the $\alpha_{\rm FPR}=0.05$
+  reference level near the bottom of the panel.
+  At $N=1$ the reject curve opens near $0$ and the inconclusive curve starts
+  at $1.0$.
+  Around $N\approx10$ the reject curve steps up to $\sim\!0.06$, already near
+  the $\alpha_{\rm FPR}$ reference line, then continues rising in irregular
+  steps as more experiments accumulate sufficient evidence to reject.
+  The inconclusive curve mirrors this descent.
+  The two curves cross near $N\approx3{,}000$--$5{,}000$.
+  By $N\approx3{\times}10^{4}$ the reject curve reaches $\sim\!0.60$ while
+  the inconclusive curve falls to $\sim\!0.40$, illustrating the unbounded
+  growth of the false rejection rate under continuous NHST peeking.
+  The stepped appearance of both curves reflects the small experiment count
+  ($M=50$).
   \label{fig:fair_decisions_nhst}
 \end{figure}
 
