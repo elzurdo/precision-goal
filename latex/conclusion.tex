@@ -11,24 +11,23 @@
 % rule. In the fair-coin case, PitG achieves zero false positives, but at the cost of a
 % high inconclusive rate of 63.3\%, because precision and decisiveness
 % are not required to coincide.
-PitG decouples the stopping criterion from the decision criterion, eliminating the
-early-peeking bias of coupled methods \citep{kruschke2015doing}, but at an inconclusive
-rate ranging from $17.5\%$ to $100\%$ across $\omega_{\rm goal}=0.06$--$0.10$ in the
-fair-coin case --- most critically when the null is true.
+PitG eliminates the early-peeking bias of coupled methods by decoupling the stopping
+and decision criteria \citep{kruschke2015doing}, but accepts high inconclusive rates
+as the price: from $17.5\%$ to $100\%$ across $\omega_{\rm goal}=0.06$--$0.10$ in
+the fair-coin case, and rising most steeply precisely where the null is true and a
+reliable verdict is most needed.
 
-We have proposed Decisive Precision is the Goal (DPitG), a conservative variant of
-PitG that joins the two criteria: data collection continues until the HDI is
-simultaneously narrower than $\omega_{\rm goal}$ \textit{and} falls cleanly inside
-or outside the ROPE\@.
-This single change yields a $2.7\times$ gain in conclusiveness over PitG at a median
-cost of only 4\% more samples ($\theta_{\rm true}=0.5$, $\omega_{\rm goal}=0.08$,
-$\Delta_{\rm ROPE}=0.1$), while preserving a zero false-positive rate.
-This advantage is robust: DPitG's conclusiveness varies by less than one percentage
-point ($97.2\%$--$97.9\%$) across $\omega_{\rm goal}=0.06$--$0.10$, a range over
-which PitG's conclusiveness collapses from $82.5\%$ to zero.
-The gain is most pronounced near the ROPE boundaries, where correct decisions matter
-most; once $\theta_{\rm true}$ moves well outside the ROPE, DPitG converges to PitG
-and both stop at $N_{\rm goal}(\theta_{\rm true})$.
+DPitG closes this gap by imposing both requirements simultaneously: data collection
+continues until the HDI is narrower than $\omega_{\rm goal}$ \textit{and} its
+position yields a conclusive verdict.
+This joint requirement delivers a $2.7\times$ gain in conclusiveness over PitG at a
+median cost of only 4.7\% more samples ($\theta_{\rm true}=0.5$, $\omega_{\rm goal}=0.08$,
+$\Delta_{\rm ROPE}=0.1$), while preserving the zero false-positive rate that HDI+ROPE
+forfeits.
+The gain is robust: DPitG's conclusiveness holds nearly flat ($97.2\%$--$97.9\%$)
+across the full $\omega_{\rm goal}=0.06$--$0.10$ range over which PitG's collapses
+from $82.5\%$ to zero, and is largest near the ROPE boundaries where evidence is
+hardest to read.
 
 Unlike NHST (see Appendix~\ref{app:nhst}), which can only reject or fail to reject
 the null, the HDI+ROPE decision rule enables positive \textit{acceptance} of the null

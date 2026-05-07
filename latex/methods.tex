@@ -230,6 +230,16 @@ The panels of Figure~\ref{fig:posteriors} make this concrete under the default s
         above $0.5$. We are \textit{not} claiming the true rate equals $0.635$.
 \end{enumerate}
 
+Two error types follow directly.
+A \textit{false-accept} arises when a conclusive Accept verdict is reached but
+$\theta_{\rm true}$ lies outside the ROPE --- the HDI+ROPE analogue of a false
+negative, since the data appear to confirm equivalence when it does not hold.
+A \textit{false-reject} arises when a conclusive Reject verdict is reached but
+$\theta_{\rm true}$ lies inside the ROPE --- the analogue of a false positive, since
+the data appear to refute a null that is in fact practically true.
+Their rates across $\theta_{\rm true}$ values are characterised in
+Section~\ref{sec:results}.
+
 \subsection{Sequential Stopping Algorithms}\label{sec:sequential_stopping_algorithms}
 
 Table \ref{tab:comparison} provides a high-level comparison of the three algorithms. Each algorithm shares the same Decision Rule (Algorithm \ref{alg:decision_criterion}) but differs in when it triggers the stop condition.
