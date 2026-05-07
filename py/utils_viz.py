@@ -965,6 +965,12 @@ def plot_stop_iterations_by_truth_two_panel(
             plt.subplot(nrows, ncols, subplot_idx)
 
             df_plot = algo_stats_df[subset_name][algo_name].query("count >= 20")
+            
+            df_plot_low = algo_stats_df_1[subset_name][algo_name].query("count < 20")
+
+            if df_plot_low.shape[0] > 0:
+                print(f"Warning: {subset_name} rows with count < 20 for {METHOD_SHORT[algo_name]} in {subset_label} subset. These will be excluded from the plot.")
+                display(df_plot_low.shape)
 
             theta_true_values = df_plot.index.tolist()
             
@@ -1191,3 +1197,115 @@ def plot_n_goal_by_parameter():
         fontsize=20
     )
     plt.tight_layout()
+
+
+def plot_graphical_abstract(
+        conclusiveness=None,
+        false_positive_rates=None,
+        sampling_premium_pct=4.7,
+        figsize=(5, 4)):
+    """
+    Performance-envelope graphical abstract.
+
+    Plots conclusiveness rate (x) vs false-positive rate (y) for the three
+    algorithms. Default values are from the fair coin simulation (omega_goal=0.08,
+    M=2000, theta_true=0.5, ROPE=0.5±0.05).
+
+    Parameters
+    ----------
+    conclusiveness : dict, optional
+        Keys: "hdi_rope", "pitg", "epitg". Overrides built-in defaults.
+    false_positive_rates : dict, optional
+        Keys: "hdi_rope", "pitg", "epitg". Overrides built-in defaults.
+    sampling_premium_pct : float
+        Median DPitG sampling premium over PitG, shown as annotation.
+    figsize : tuple
+        Figure size in inches. At dpi=350 this sets the output resolution.
+
+    Returns
+    -------
+    fig, ax
+    """
+    from matplotlib.patches import Rectangle
+
+    _conclusiveness = {"hdi_rope": 0.982, "pitg": 0.367, "epitg": 0.977}
+    _fp             = {"hdi_rope": 0.062, "pitg": 0.000, "epitg": 0.000}
+
+    if conclusiveness is not None:
+        _conclusiveness.update(conclusiveness)
+    if false_positive_rates is not None:
+        _fp.update(false_positive_rates)
+
+    method_markers = {"hdi_rope": "s", "pitg": "o", "epitg": "*"}
+    method_sizes   = {"hdi_rope": 250,  "pitg": 250,  "epitg": 600}
+
+    # Text colours: lightgreen is unreadable on white, override for labels only.
+    label_colors = dict(ALGO_COLORS)
+    label_colors["epitg"] = "darkgreen"
+
+    # Label placement: HDI+ROPE goes left (avoids crowding with DPitG at similar x).
+    label_offsets = {
+        "hdi_rope": (-0.015,  0.004),
+        "pitg":     ( 0.015,  0.004),
+        "epitg":    ( 0.015, 0.007),
+    }
+    label_ha = {"hdi_rope": "right", "pitg": "left", "epitg": "left"}
+    label_va = {"hdi_rope": "bottom", "pitg": "bottom", "epitg": "top"}
+
+    fig, ax = plt.subplots(figsize=figsize)
+
+    # Ideal zone: high conclusiveness, zero false positives.
+    ideal = Rectangle(
+        (0.88, 0), 0.19, 0.014,
+        linewidth=1.2, edgecolor="darkgreen",
+        facecolor="lightgreen", alpha=0.15, zorder=0, linestyle="--"
+    )
+    ax.add_patch(ideal)
+    ax.text(0.893, 0.015, "ideal zone", fontsize=8,
+            color="darkgreen", alpha=0.85, va="bottom", style="italic")
+
+    # Plot algorithm points.
+    for algo in ["hdi_rope", "pitg", "epitg"]:
+        x = _conclusiveness[algo]
+        y = _fp[algo]
+        color = ALGO_COLORS[algo]
+        ec = "darkgreen" if algo == "epitg" else color
+
+        ax.scatter(x, y, color=color, marker=method_markers[algo],
+                   s=method_sizes[algo], edgecolors=ec, linewidths=1.5, zorder=5)
+
+        dx, dy = label_offsets[algo]
+        ax.annotate(
+            METHOD_SHORT[algo],
+            xy=(x, y), xytext=(x + dx, y + dy),
+            fontsize=11, fontweight="bold", color=label_colors[algo],
+            ha=label_ha[algo], va=label_va[algo],
+        )
+
+    # Annotate DPitG with its modest sampling premium over PitG.
+    ex, ey = _conclusiveness["epitg"], _fp["epitg"]
+    ax.annotate(
+        f"median +{sampling_premium_pct}%\nsamples vs. PitG",
+        xy=(ex, ey),
+        xytext=(ex - 0.18, ey - 0.006),
+        fontsize=8, color="dimgray", ha="center",
+        arrowprops=dict(arrowstyle="->", color="dimgray", lw=1.0),
+    )
+
+    ax.set_xlabel("Conclusiveness Rate", fontsize=12)
+    ax.set_ylabel("False-Positive Rate", fontsize=12)
+    ax.set_xlim(-0.02, 1.06)
+    ax.set_ylim(-0.006, 0.085)
+    ax.xaxis.set_major_formatter(
+        plt.FuncFormatter(lambda v, _: f"{v:.0%}"))
+    ax.yaxis.set_major_formatter(
+        plt.FuncFormatter(lambda v, _: f"{v:.1%}"))
+    ax.grid(alpha=0.3)
+    ax.set_title(
+        r"Fair coin ($\theta_{\rm true}=0.5$,"
+        r" $\omega_{\rm goal}=0.08$, ROPE $=0.5\pm0.05$)",
+        fontsize=9, color="dimgray"
+    )
+
+    plt.tight_layout()
+    return fig, ax
