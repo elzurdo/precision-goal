@@ -15,7 +15,7 @@ Version-controlled record of decisions made during paper preparation for RSS: Da
 
 ## Numbers and Framing
 
-- **4%, not 4.7%** — The median sampling premium cited in the abstract and introduction is 4%, which is the median for the *conclusive subset* of experiments. The 4.7% figure (all experiments) was used in earlier drafts and has been replaced for consistency.
+- **4.7%, not 4%** — The median sampling premium cited in the abstract and introduction is 4.7%, which is the median for the all of experiments. The 4% figure (*conclusive subset*) was used in earlier drafts and has been replaced for consistency.
 - **Percentage framing in prose** — e.g. "4% larger", "41% larger"; ratios (1.04, 1.41) reserved for the table column itself.
 - **Zero-premium case** — phrased as "median DPitG stop equals $N_{\rm goal}$ (no premium)", not "0% overhead".
 - **Fair coin qualifier** — "$(\Delta_{\rm ROPE}=0.1)$" added wherever the 0%–41% sampling premium range is cited outside `sec:goal_impact`, since those numbers are specific to that setting.

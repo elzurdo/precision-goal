@@ -1,3 +1,8 @@
+---
+name: editor_arxiv
+description: Prepares LaTeX source files for arXiv submission. Use when ready to submit a paper to arXiv and need to produce a clean submission directory with comments stripped, bibliography pre-compiled, and only referenced images included — without modifying any original source files.
+---
+
 # Skill: editor_arxiv
 
 Prepares the `latex/` source for arXiv submission into a clean `latex/arxiv_latex/` directory.

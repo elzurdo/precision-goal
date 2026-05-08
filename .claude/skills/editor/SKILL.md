@@ -1,3 +1,8 @@
+---
+name: editor
+description: Reviews and edits academic manuscripts for journal submission. Use when reviewing content, structure, or clarity of a paper, checking compliance with a target journal's requirements, or editing specific sections such as abstract, introduction, or full paper.
+---
+
 # Skill: editor
 
 Reviews and edits academic manuscripts for journal submission.

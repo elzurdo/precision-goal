@@ -12,7 +12,7 @@ Outstanding items for `sec:fair_coin_large_scale` in `latex/results.tex`.
 
 ## Could Improve
 
-2. **Forward reference to bias figure** (line ~131) — `(see Figure~\ref{fig:success_by_truth_conclusive} for how bias emerges as symmetry breaks)` — reader hasn't been introduced to the bias story at this point. Discuss after Alt Text is added to that figure.
 
-**Why:** Item 1 requires cross-section coordination; item 2 depends on Alt Text being added first.
-**How to apply:** Address item 1 when revising abstract/discussion/conclusion; address item 2 after Alt Text pass.
+**Why:** Item 1 requires cross-section coordination.
+
+**How to apply:** Address item 1 when revising abstract/discussion/conclusion.
