@@ -1,4 +1,4 @@
-\section{Extensions to Two-Group Settings}\label{app:extensions}
+\section{Precision-Based Sample Size Planning for Two-Group Settings}\label{app:extensions}
 
 The HDI+ROPE precision-goal framework presented in the main text for single-group
 Bernoulli data generalises to two-group comparisons.
@@ -6,29 +6,29 @@ This appendix outlines the key adaptations for two-group binomial and continuous
 outcomes, together with the corresponding sample-size planning equations.
 For single-group continuous data, the expected stop iteration is derived in
 Appendix~\ref{app:expected_stop}.
-Empirical validation for utility of DPitG in these extensions is left for future work.
+Empirical validation of DPitG in these two-group settings is left for future work.
 
 \subsection*{Two-Group Comparisons}
 
 For two-group comparisons --- whether binomial ($\theta_1 - \theta_2$) or continuous
 ($\mu_1 - \mu_2$) --- the standard error of the difference serves as the precision
-metric, enabling sequential A/B testing under the same HDI+ROPE decision framework
+metric, enabling sequential two-group testing under the same HDI+ROPE decision framework
 \citep{kruschke2013}.
 % \citet{kruschke2013}: Kruschke's BEST paper introduces the HDI+ROPE framework for
 % two-group comparisons of proportions and means, making it the primary reference for
 % extending the HDI+ROPE decision rule to the two-group setting discussed here.
 For the binomial case with conjugate Beta posteriors, the posterior of the difference
 can be evaluated by direct i.i.d.\ sampling from each Beta distribution separately,
-without Markov Chain Monte Carlo (MCMC) \citep{gelman2013bayesian}.
-% \citet{gelman2013bayesian}: BDA3 (Chapter 2/3) is the standard reference for
-% deriving posterior quantities by direct Monte Carlo simulation. Cited here because
-% it supports drawing i.i.d. samples from independent Beta posteriors to obtain the
-% difference distribution exactly, without requiring a Markov chain.
+without Markov Chain Monte Carlo (MCMC; \citealt{gelman2013bayesian}).
+% \citet{gelman2013bayesian}: BDA3 §2.4 covers exact posterior simulation for
+% conjugate families, showing that i.i.d. draws from each marginal posterior suffice
+% to obtain the joint posterior of any function of the parameters --- here the
+% difference $\theta_1 - \theta_2$ --- without a Markov chain.
 For the continuous case, under a weakly informative prior the posterior of
 $\mu_1 - \mu_2$ converges to the frequentist sampling distribution by the
 Bernstein--von Mises theorem \citep{gelman2013bayesian}, so the standard error from
 Welch's approximation provides a reliable surrogate for the posterior HDI width when
-samples are of moderate size or larger.
+$N \gtrsim 30$ (see Appendix~\ref{app:expected_stop}).
 % \citet{gelman2013bayesian}: BDA3 also covers the Bernstein--von Mises theorem and
 % the conditions under which posteriors converge to the frequentist sampling distribution
 % under weakly informative priors (Chapter 4), justifying the use of Welch's standard
@@ -42,10 +42,12 @@ the difference $\theta_1 - \theta_2$ is approximated via the standard error
     \text{SE}(\hat\theta_1 - \hat\theta_2) \approx
     \sqrt{\frac{\theta_1(1-\theta_1)}{N_1} + \frac{\theta_2(1-\theta_2)}{N_2}}.
 \end{equation}
-This uses the CLT form with $N_i$ in the denominator; the exact Beta posterior
-variance replaces $N_i$ with $N_i+1$ (cf.\ the Binomial Case in
-Appendix~\ref{app:expected_stop}).
-Setting the HDI width $2z_* \cdot \text{SE} = \omega_{\rm goal}$ and writing
+Here $\theta_i$ is replaced in practice by the posterior mean $\hat\theta_i = s_i/N_i$;
+the exact Beta posterior variance replaces $N_i$ with $N_i+1$ (cf.\ the Binomial Case
+in Appendix~\ref{app:expected_stop}).
+Setting the HDI width $2z_*\,\text{SE} = \omega_{\rm goal}$ (where $z_*$ is the
+normal critical value for the chosen credible interval level;
+see Appendix~\ref{app:expected_stop}) and writing
 $N_1 = rN_2$ for group-size ratio $r = N_1/N_2 > 0$, solving for $N_2$ gives
 \begin{equation}\label{eq:ngoal_two_group_binomial}
     N_2 \approx \frac{4 z_{*}^{2}}{\omega_{\rm goal}^{2}}
