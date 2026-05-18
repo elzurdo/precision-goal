@@ -1,6 +1,6 @@
 \section{Derivation of Expected Precision Goal Stop Iteration}\label{app:expected_stop}
 
-The precision-based stopping algorithms (PitG \citep{kruschke2015doing} and DPitG) halt when the HDI width
+The precision-based stopping algorithms (PitG \citealt{kruschke2015doing} and DPitG) halt when the HDI width
 (see Appendix~\ref{app:hdi})
 falls below the precision goal $\omega_{\rm goal}$. Because the posterior HDI width
 shrinks as $N^{-1/2}$, one can predict in advance the iteration at which this
@@ -35,8 +35,14 @@ N_{\rm goal} \approx \frac{4 z_{*}^{2}}{\omega_{\rm goal}^{2}}\,V(\theta).
 
 \subsection*{Binomial Case}
 
-For Bernoulli outcomes the posterior under a flat prior is $\mathrm{Beta}(s,\,f)$,
-where $s$ is the number of successes and $f = N - s$ the number of failures.
+For Bernoulli outcomes the posterior under the Haldane prior $\mathrm{Beta}(0,0)$
+is $\mathrm{Beta}(s,\,f)$, where $s$ is the number of successes and
+$f = N - s$ the number of failures.\footnote{This appendix uses the
+Haldane prior rather than the flat $\mathrm{Beta}(1,1)$ prior of
+Appendix~\ref{app:hdi}: the Haldane convention yields the clean $-1$ correction
+in the planning formula and is consistent with the planning function in the
+accompanying code (\texttt{binomial\_rate\_ci\_width\_to\_sample\_size} in
+\texttt{utils\_stats.py}).}
 Its exact variance is
 \[
 \mathrm{Var}(\theta \mid s, f) = \frac{\hat\theta\,(1-\hat\theta)}{N+1},
@@ -56,9 +62,58 @@ $\theta$ moves towards $0$ or $1$.
 Equation~\ref{eq:pitg_stop_iteration} in the main text uses the CLT approximation
 (Equation~\ref{eq:expected_stop_iteration_clt}), which replaces $N+1$ with $N$ and
 drops the $-1$ term, negligible for large $N$.
+%
+% -----------------------------------------------------------------------
+% AUTHOR NOTE: Why two prior conventions coexist (Option A decision)
+%
+% Appendix~\ref{app:hdi} uses the flat prior $\mathrm{Beta}(1,1)$, giving
+% posterior $\mathrm{Beta}(s+1, f+1)$, as the principled default for
+% posterior computation.  This appendix deliberately retains the Haldane
+% prior $\mathrm{Beta}(0,0)$ --- an improper prior (one that does not
+% integrate to 1) that assigns infinite weight to the boundary values
+% $\theta=0$ and $\theta=1$ --- because it is the only convention that
+% yields a clean $-1$ correction in the planning formula.  Here is why
+% the two priors lead to different results.
+%
+% \textbf{Haldane prior} $\mathrm{Beta}(0,0) \;\Rightarrow\;$
+% posterior $\mathrm{Beta}(s,\,f)$:
+% \begin{equation}
+%   \mathrm{Var}(\theta \mid s, f)
+%     = \frac{\hat\theta\,(1-\hat\theta)}{N+1}, \qquad \hat\theta = s/N.
+% \end{equation}
+% Setting $2z_{*}\sqrt{\mathrm{Var}} = \omega_{\rm goal}$ and solving for $N$:
+% \begin{equation}
+%   N_{\rm goal}
+%     = \frac{4z_{*}^{2}}{\omega_{\rm goal}^{2}}\,\theta(1-\theta) - 1.
+% \end{equation}
+% The $-1$ comes directly from the $N+1$ denominator.
+% This is the formula coded in
+% \texttt{binomial\_rate\_ci\_width\_to\_sample\_size} (\texttt{utils\_stats.py}):
+% \texttt{n\_ = p * (1 - p) / variance\_ - 1}.
+%
+% \textbf{Flat prior} $\mathrm{Beta}(1,1) \;\Rightarrow\;$
+% posterior $\mathrm{Beta}(s+1,\,f+1)$:
+% \begin{equation}
+%   \mathrm{Var}(\theta \mid s+1, f+1)
+%     = \frac{(s+1)(f+1)}{(N+2)^{2}(N+3)}.
+% \end{equation}
+% This does not simplify to a clean $-1$ correction.
+% The leading-order CLT approximation (without any correction term) is the
+% practical planning result:
+% \begin{equation}
+%   N_{\rm goal}
+%     \approx \frac{4z_{*}^{2}}{\omega_{\rm goal}^{2}}\,\theta(1-\theta).
+% \end{equation}
+% Since the CLT approximation already discards $O(1/N)$ terms, and the
+% difference between the two priors is also $O(1/N)$, using either
+% convention in the planning formula changes the answer by at most 1
+% sample for the regime of interest ($N \gg 1$).  The $-1$ correction is
+% therefore retained here for consistency with the code, not because it
+% is numerically significant.
+% -----------------------------------------------------------------------
 
 
-\subsection*{Continuous Case (Mean Estimation)}
+\subsection*{Continuous Case}
 
 For continuous outcomes when the estimand is a mean $\mu$ with variance $\sigma^{2}$,
 two versions of the expected stop iteration are available.
@@ -75,7 +130,7 @@ approaches $z_{*}$.
 \textbf{Version B (Student-$t$ posterior).}
 Under a non-informative prior the posterior for $\mu$ is a scaled Student-$t$
 with $\nu = N-1$ degrees of freedom, giving HDI width
-$w = 2\,t_{\alpha/2,\,N-1}\,s/\!\sqrt{N}$ (see Useful Equations appendix).
+$w = 2\,t_{\alpha/2,\,N-1}\,s/\!\sqrt{N}$.
 Setting $w = \omega_{\rm goal}$ yields the implicit equation
 \begin{equation}\label{eq:expected_stop_iteration_mean_t}
 N_{\rm goal} = \frac{4\,t_{\alpha/2,\,N-1}^{2}\,\sigma^{2}}{\omega_{\rm goal}^{2}},
