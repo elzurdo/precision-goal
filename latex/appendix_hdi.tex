@@ -14,9 +14,13 @@ The HDI is the shortest interval satisfying Equation~\ref{eq:credible_interval}:
 \begin{equation}\label{eq:hdi}
   [L^*, U^*] = \underset{[L,U]:\;\int_L^U p(\theta|\mathbf{x})\,d\theta\,=\,1-\alpha}{\arg\min}\;(U - L).
 \end{equation}
-An equivalent characterisation: $[L^*, U^*]$ is the unique interval for which
-$p(L^* \mid \mathbf{x}) = p(U^* \mid \mathbf{x})$, so every point inside has posterior
-density at least as high as every point outside (hence ``highest density'').
+An equivalent characterisation for unimodal posteriors: $[L^*, U^*]$ is the unique
+interval for which $p(L^* \mid \mathbf{x}) = p(U^* \mid \mathbf{x})$, so every point
+inside has posterior density at least as high as every point outside (hence ``highest
+density'').\footnote{For multimodal posteriors, multiple intervals can satisfy the
+equal-density boundary condition, and the HDI may be a union of disjoint intervals;
+the shortest-interval definition in Equation~\ref{eq:hdi} selects the one with minimum
+total width. All posteriors in this paper are unimodal.}
 
 \subsection*{Equal-Tailed Interval (ETI)}
 
@@ -33,18 +37,42 @@ where the HDI is noticeably shorter and therefore preferred.
 
 \subsection*{Numerical Computation}
 
-The HDI is computed numerically by minimising the interval width over the quantile
-function (\texttt{HDIofICDF} in the accompanying code, implemented via
-\texttt{scipy.optimize.fmin} applied to the distribution's percent-point function):
+The HDI is computed numerically by minimising the interval width over the lower tail
+probability $\ell$ using unconstrained Nelder-Mead optimisation (\texttt{HDIofICDF}
+in the accompanying code, implemented via \texttt{scipy.optimize.fmin}):
 \begin{equation}
-  \min_{\ell \in [0,\,\alpha]}\left[F^{-1}(1-\alpha+\ell) - F^{-1}(\ell)\right].
+  \min_{\ell \,\geq\, 0}\left[F^{-1}(1-\alpha+\ell) - F^{-1}(\ell)\right].
 \end{equation}
 The minimising $\ell^*$ gives $L^* = F^{-1}(\ell^*)$ and
 $U^* = F^{-1}(1-\alpha+\ell^*)$.
-For the Binomial model used in this work, the posterior after $s$ successes and $f$
-failures is $\mathrm{Beta}(s,\,f)$, and the HDI is found by applying the above
-minimisation to the Beta quantile function.
-% The same \texttt{HDIofICDF} function handles the continuous setting by substituting
-% the Student-$t$ quantile function with location equal to the sample mean and scale
-% equal to the standard error (see \texttt{continuous\_hdi\_ci\_limits} in the
-% accompanying code).
+For the Binomial model used in this work, under a flat (uniform) prior
+$\mathrm{Beta}(1,1)$, the posterior after $s$ successes and $f$ failures is
+$\mathrm{Beta}(s+1,\,f+1)$, and the HDI is found by applying the above minimisation
+to the Beta quantile function.
+% Prior convention note (for the author):
+% The flat prior Beta(1,1) adds one pseudo-count to both successes and failures,
+% giving posterior Beta(s+1, f+1). This is the standard Bayesian conjugate update
+% for Bernoulli data and is the convention used by Kruschke (DBDA2).
+%
+% The alternative is the Haldane prior Beta(0,0), named after geneticist J.B.S.
+% Haldane. It is an improper prior (it does not integrate to 1) that assigns infinite
+% weight to the boundary values theta=0 and theta=1. Under this convention the
+% posterior is simply Beta(s, f) --- i.e. the raw count data directly parameterise
+% the posterior, with no pseudo-counts. This can feel natural in code (just pass
+% successes and failures straight to scipy.stats.beta), but it is undefined when
+% s=0 or f=0, requiring an ad hoc +1 workaround for degenerate cases. The earlier
+% version of this code used Beta(s, f), implicitly adopting the Haldane convention
+% without stating it. For the sample sizes used in this paper (N >> 1) the numerical
+% difference between Beta(s,f) and Beta(s+1,f+1) is negligible, but the flat prior
+% is the better-motivated and more transparent default.
+%
+% CODE NOTE: switching to Beta(s+1, f+1) here requires updating
+% successes_failures_to_hdi_ci_limits() calls in utils_stats.py to pass
+% (s+1, f+1) instead of (s, f). The edge-case +1 workarounds in
+% stop_decision_multiple_experiments_pitg() can then be removed.
+
+The same \texttt{HDIofICDF} function handles the continuous setting by substituting
+the Student-$t$ quantile function with location equal to the sample mean and scale
+equal to the standard error (\texttt{continuous\_hdi\_ci\_limits} in the accompanying
+code); the corresponding sample-size formula is derived in
+Appendix~\ref{app:expected_stop}.

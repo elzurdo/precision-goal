@@ -1,14 +1,14 @@
 To created pdf
 
 ```bash
-latexmk -pdf dptig.tex
+latexmk -pdf dpitg.tex
 ```
 
 
 For word counts:
 
 ```bash
-texcount -inc -sum dptig.tex
+texcount -inc -sum dpitg.tex
 ```
 
 * `-inc` follows `\input` files
@@ -57,12 +57,12 @@ Or, if appendices live in a separate `\input` file, ignore the whole file:
 Add `-v` for a per-section breakdown:
 
 ```bash
-texcount -inc -sum -v dptig.tex
+texcount -inc -sum -v dpitg.tex
 ```
 
 #### Conditional alt text in the PDF
 
-To toggle alt text visibility at build time without editing source files, add this to the preamble of `dptig.tex`:
+To toggle alt text visibility at build time without editing source files, add this to the preamble of `dpitg.tex`:
 
 ```latex
 \ifdefined\noalttext
@@ -83,13 +83,13 @@ Then replace each alt text block with the command:
 Build without alt text:
 
 ```bash
-latexmk -pdf -usepretex="\def\noalttext{}" dptig.tex
+latexmk -pdf -usepretex="\def\noalttext{}" dpitg.tex
 ```
 
 Build with alt text (default):
 
 ```bash
-latexmk -pdf dptig.tex
+latexmk -pdf dpitg.tex
 ```
 
 `-usepretex` injects code before `\documentclass`, so `\noalttext` is defined by the time the preamble `\ifdefined` check runs.
