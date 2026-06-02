@@ -2,7 +2,13 @@
 
 \subsection*{Setting the ROPE}
 
-The ROPE is the most consequential and subjective design input in the framework.
+Three design inputs must be fixed before data collection: the precision goal
+$\omega_{\rm goal}$, the ROPE, and the maximum sample size $N_{\rm max}$.
+The precision goal should satisfy $\omega_{\rm goal} \leq$ ROPE width --- ensuring
+that a sufficiently narrow HDI can reach a conclusive verdict --- and directly
+determines the expected stop iteration $N_{\rm goal}$
+(Equation~\ref{eq:pitg_stop_iteration}); $N_{\rm max}$ is set by budget.
+The ROPE is the most consequential and subjective of the three inputs.
 It should be determined from domain knowledge rather than from the data ---
 a requirement that forces the researcher to commit to a practically meaningful
 effect-size threshold before observing outcomes \citep{kruschke2018}.
@@ -13,18 +19,18 @@ effect-size threshold before observing outcomes \citep{kruschke2018}.
 In clinical research the Minimal Clinically Important Difference (MCID) provides a
 principled basis \citep{jaeschke1989}; in bioequivalence testing, regulatory guidelines
 define the permissible deviation corridor \citep{schuirmann1987}; in industrial quality
-control, engineering tolerances serve the same role.
+control, engineering tolerances provide an equivalent principled basis.
 When no domain standard exists, sensitivity analyses across a range of ROPE widths
 are recommended before committing to a single value \citep{lakens2018}.
 
 \subsection*{Broader Adoption Considerations}
 
-Three further considerations support the broader adoption of this approach.
+Three considerations support broader adoption of the DPitG framework.
 
 First, formally accepting the null via the HDI+ROPE criterion parallels the objective
 of frequentist equivalence testing through the Two One-Sided Tests (TOST) procedure
 \citep{schuirmann1987, lakens2018}, providing a Bayesian counterpart to a methodology
-already accepted in regulatory and applied settings \citep{fda2010bayesian}.
+established in regulatory and applied settings \citep{fda2010bayesian}.
 % \citet{schuirmann1987}: The original paper introducing the TOST procedure for
 % bioequivalence testing --- the canonical frequentist method for formally accepting
 % a null (within a margin), making it the natural comparator for the HDI+ROPE Accept
@@ -41,9 +47,10 @@ already accepted in regulatory and applied settings \citep{fda2010bayesian}.
 % regulatory practice.
 
 Second, because $\omega_{\rm goal}$, the ROPE, and $N_{\rm max}$ must all be specified
-before data collection begins, DPitG is naturally compatible with pre-registration
-standards \citep{nosek2018}, directly reducing the researcher degrees of freedom that
-drive selective reporting.
+before data collection begins, DPitG is structurally compatible with pre-registration
+standards \citep{nosek2018}, directly reducing the researcher degrees of freedom ---
+the analytic choices that enable post-hoc optimisation of results --- that drive
+selective reporting.
 % \citet{nosek2018}: Nosek et al.\ (2018) is the landmark paper establishing
 % pre-registration as a standard remedy for selective reporting and p-hacking;
 % cited here because DPitG's fully specified stopping rule is directly and
@@ -52,8 +59,7 @@ drive selective reporting.
 Third, the replication crisis has been partly attributed to underpowered studies whose
 imprecise estimates fail to replicate \citep{osc2015, gelman2014}; DPitG addresses this
 at the design stage by making precision a non-negotiable stopping criterion rather than
-an aspiration --- one that is structurally enforced, since the stopping rule cannot fire
-until the precision goal is met.
+an aspiration --- one that is structurally enforced by construction.
 % \citet{osc2015}: The Open Science Collaboration (2015) documented that a substantial
 % fraction of published psychological findings failed to replicate, motivating the search
 % for design-stage remedies.
