@@ -15,6 +15,7 @@ Does **not** modify any original files.
    - `dpitg.tex` with comments stripped, `\today` replaced by today's date, and the 4-pass `\typeout` appended
    - `dpitg.bbl` (pre-compiled bibliography — `.bib` is excluded)
    - `images/` subdirectory with only the PNG files actually referenced in the tex sources
+   - If `latex/arxiv_latex/` already contains files, they are archived to `latex/arxiv_latex/_legacy/<YYYY-MM-DD--HH-MM>/` before the new run begins
 2. Verifies the output compiles cleanly
 3. Reports any warnings or issues found
 
@@ -65,6 +66,7 @@ Tell the user:
 | Comment-only lines removed entirely (not blanked) | A line that is entirely a comment (e.g. `  %Left: Bernoulli case.`) must be deleted, not left as a blank line. Blank lines inside a `\caption{}` argument are a paragraph break, which crashes LaTeX with `! Paragraph ended before \NR@gettitle was complete`. |
 | 4-pass `\typeout` appended | Ensures `cleveref`/`autonum` references resolve correctly |
 | `grep -oP` replaced by `perl -ne` throughout the script | macOS ships BSD grep, which does not support `-P` (Perl-compatible regex). All pattern extraction uses `perl -ne '...' ` instead. |
+| Previous `arxiv_latex/` contents archived to `_legacy/<timestamp>/` | Preserves prior submission snapshots without a destructive `rm -rf`; `_legacy/` is excluded from the live directory listing and tarball. |
 
 ## Reference documents
 

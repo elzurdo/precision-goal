@@ -16,15 +16,29 @@ MAIN="dpitg"
 
 echo "=== Preparing arXiv submission from $SRC/ → $OUT/ ==="
 
-# Clean and recreate output directory
-rm -rf "$OUT"
+# If output directory already has content, archive it to _legacy/<timestamp>
+if [[ -d "$OUT" ]] && [[ -n "$(ls -A "$OUT" 2>/dev/null | grep -v '^_legacy$')" ]]; then
+    TIMESTAMP=$(date +"%Y-%m-%d--%H-%M")
+    LEGACY="$OUT/_legacy/$TIMESTAMP"
+    mkdir -p "$LEGACY"
+    find "$OUT" -maxdepth 1 ! -name '_legacy' ! -path "$OUT" -exec mv {} "$LEGACY/" \;
+    echo "  archived previous contents → $LEGACY"
+fi
 mkdir -p "$OUT/images"
 
 # ---------------------------------------------------------------------------
-# Helper: strip LaTeX comments while preserving \% (escaped percent signs)
+# Helper: strip LaTeX comments and alt text lines
+#   - removes comment-only lines and inline comments (preserving \%)
+#   - removes "Alt text: ..." lines (RSS requires these in the manuscript;
+#     arXiv would print them as visible body text)
 # ---------------------------------------------------------------------------
 strip_comments() {
     perl -ne '
+        if (/^\s*Alt text:/) { $in_alt = 1; next }
+        if ($in_alt) {
+            if (/\\label\{/) { $in_alt = 0 }
+            else { next }
+        }
         next if /^\s*%/;
         s/(?<!\\)%.*$//;
         print;
