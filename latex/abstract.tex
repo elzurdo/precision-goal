@@ -2,31 +2,32 @@ Sequential hypothesis testing offers flexibility over fixed-sample designs, but 
 rules coupled to decision criteria risk confirmation bias through early peeking.
 The HDI+ROPE algorithm exemplifies this: it stops as soon as the Bayesian posterior
 Highest Density Interval (HDI) lies entirely inside or outside a pre-specified Region
-of Practical Equivalence (ROPE) around the null. This enables positive \textit{acceptance} of the null, 
-unlike Null Hypothesis Significance Testing. But a wide HDI can wander into a decisive position on early unrepresentative samples,
+of Practical Equivalence (ROPE) around the null hypothesis. This enables positive \textit{acceptance} of the null hypothesis ---
+something Null Hypothesis Significance Testing cannot do. However, a wide HDI can satisfy the stopping criterion on early, unrepresentative samples,
 incurring a systematic false-positive cost.
-Decoupled methods, such as ``Precision is the Goal'' (PitG), eliminate this bias by
-halting only once a target HDI width $\omega_{\rm goal}$ is reached; yet PitG
-frequently yields inconclusive outcomes rather than a premature verdict, most
-critically when the null is true.
+Fully decoupled methods, such as ``Precision is the Goal'' (PitG), eliminate this bias by
+halting only once a target HDI width $\omega_{\rm goal}$ is reached; yet, by divorcing
+the stopping rule from the decision criterion, PitG frequently yields inconclusive
+outcomes, most critically when the null hypothesis is true.
 We propose ``Decisive Precision is the Goal'' (DPitG), which requires \textit{both}
 the precision target and a conclusive verdict to be satisfied simultaneously before
 stopping.
 In fair coin experiments (ROPE: $\theta = 0.5 \pm 0.05$), PitG's
-conclusiveness ranges from $82.5\%$ to $0\%$ across $\omega_{\rm goal}=0.06$--$0.10$;
-DPitG's remains essentially flat at $97.2\%$--$97.9\%$.
-At $\omega_{\rm goal}=0.08$, DPitG reduces PitG's $63.3\%$ inconclusive rate to $2.3\%$
+conclusiveness ranges from $82.5\%$ to $0\%$ (completely inconclusive) as $\omega_{\rm goal}$
+widens from $0.06$ to $0.10$;
+DPitG's conclusiveness remains essentially flat at $97.2\%$--$97.9\%$.
+E.g., at $\omega_{\rm goal}=0.08$, DPitG reduces PitG's $63.3\%$ inconclusive rate to $2.3\%$
 at a median cost of only $4.7\%$ more samples than PitG, while preserving
 a zero false-positive rate; HDI+ROPE matches this conclusiveness only at a $6.2\%$
-false-positive cost. This advantage holds broadly across true and null parameter values.
-Results are demonstrated on single-group binary data; the framework extends naturally
+false-positive cost. This advantage holds broadly across both null and alternative parameter settings.
+Results are demonstrated on single-group binary data; the framework extends straightforwardly
 to continuous outcomes and two-group comparisons.
 We provide a closed-form planning formula
-($N_{\rm goal} \propto V/\omega_{\rm goal}^2$, where $V$ is the per-observation variance),
+($N_{\rm goal} \propto V/\omega_{\rm goal}^2$, where $V$ is the observation variance),
 an online interactive calculator, and open-source code.
 DPitG's fully pre-specified stopping rule is compatible with pre-registration standards
-and is the method of choice whenever a reliable verdict is required and the budget
-reaches $N_{\rm goal}$.
+and is the method of choice whenever a reliable verdict is required and the study
+can afford to collect at least $N_{\rm goal}$ observations.
 
 %%TODO: note that the phrasing of "nlike methods that can only reject the null hypothesis, the precision-based framework also permits its positive acceptance" are 
 %% a bit decieinvg, b/c, e.g, Bayes Factors can also accept the null, but only when the data are extremely strong, whereas the precision-based framework can accept the null when the data are sufficiently precise, which is a more common occurrence.
