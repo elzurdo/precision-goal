@@ -12,7 +12,7 @@ set -euo pipefail
 
 SRC="latex"
 OUT="latex/arxiv_latex"
-MAIN="dptig"
+MAIN="dpitg"
 
 echo "=== Preparing arXiv submission from $SRC/ → $OUT/ ==="
 

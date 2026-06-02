@@ -12,8 +12,8 @@ Does **not** modify any original files.
 
 1. Runs `scripts/prepare_arxiv.sh` to produce `latex/arxiv_latex/` containing:
    - All active `\input` `.tex` files with comments stripped
-   - `dptig.tex` with comments stripped, `\today` replaced by today's date, and the 4-pass `\typeout` appended
-   - `dptig.bbl` (pre-compiled bibliography — `.bib` is excluded)
+   - `dpitg.tex` with comments stripped, `\today` replaced by today's date, and the 4-pass `\typeout` appended
+   - `dpitg.bbl` (pre-compiled bibliography — `.bib` is excluded)
    - `images/` subdirectory with only the PNG files actually referenced in the tex sources
 2. Verifies the output compiles cleanly
 3. Reports any warnings or issues found
@@ -39,7 +39,7 @@ Review the output for any `WARNING` lines and resolve them before proceeding.
 ### Step 2 — verify compilation
 
 ```bash
-cd latex/arxiv_latex && latexmk -pdf dptig.tex
+cd latex/arxiv_latex && latexmk -pdf dpitg.tex
 ```
 
 The `-pdf` flag is required: without it `latexmk` defaults to DVI mode, which cannot determine the size of PNG images and will crash immediately.
@@ -58,7 +58,7 @@ Tell the user:
 
 | Decision | Rationale |
 |----------|-----------|
-| Images kept in `images/` subdirectory | Avoids changing `\graphicspath` in `dptig.tex`; arXiv compiles from root and supports subdirectories. If compilation fails, see the note in the script about flattening. |
+| Images kept in `images/` subdirectory | Avoids changing `\graphicspath` in `dpitg.tex`; arXiv compiles from root and supports subdirectories. If compilation fails, see the note in the script about flattening. |
 | `.bbl` included, `.bib` excluded | arXiv uses the pre-compiled bibliography (per arxiv_uploading_paper_tips.md) |
 | `\today` replaced with hardcoded date | arXiv periodically rebuilds PDFs; `\today` would drift (per arxiv_tex_submissions.md) |
 | Comments stripped from all `.tex` files | Source is public on arXiv; comments may contain notes not intended for readers |

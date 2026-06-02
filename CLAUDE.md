@@ -26,10 +26,10 @@ python -m pytest tests/test_utils_experiments.py
 python -m pytest tests/test_utils_experiments.py::test_name
 
 # Build LaTeX paper
-cd latex && latexmk dptig.tex
+cd latex && latexmk dpitg.tex
 
 # Word count (excluding appendices/references/abstract)
-cd latex && texcount -inc -sum dptig.tex
+cd latex && texcount -inc -sum dpitg.tex
 ```
 
 ## Architecture
@@ -71,4 +71,4 @@ Tests in `tests/` are deterministic regression tests using handpicked sequences 
 
 ## Paper Structure (`latex/`)
 
-The paper is split across section files (`abstract.tex`, `introduction.tex`, `methods.tex`, `results.tex`, `discussion.tex`, `conclusion.tex`, etc.) included from `dptig.tex`.
+The paper is split across section files (`abstract.tex`, `introduction.tex`, `methods.tex`, `results.tex`, `discussion.tex`, `conclusion.tex`, etc.) included from `dpitg.tex`.
