@@ -1,9 +1,13 @@
-We study three algorithms that rely on two Bayesian heuristics that together characterise the
-posterior distribution: its \textit{location} (which conveys the effect size, i.e., how far the estimate sits from the null)
-and its \textit{width} (how uncertain that estimate is)\footnote{Here we refer to \textit{epistemic uncertainty} meaning the uncertainty in our knowledge about the true value of a parameter, as opposed to aleatory uncertainty which is inherent variability in the system being studied.}.
+We study three algorithms built on two summary properties of the posterior
+distribution: its \textit{location} (how far the estimate sits from the null,
+conveying the effect size) and its \textit{width} (how uncertain that estimate
+is)\footnote{Here \textit{epistemic uncertainty} means the uncertainty in our
+knowledge about the true value of a parameter, as opposed to
+\textit{aleatory uncertainty}, which is the inherent variability of the system
+being studied.}.
 Location is formalised by where the posterior credible interval sits relative to a
 pre-specified equivalence region around the null; width by how broad that interval is.
-Together they define a shared Decision Rule that all three algorithms apply once
+Together they inform a shared Decision Rule that all three algorithms apply once
 their respective stopping criteria are met.
 
 Section~\ref{sec:shared_components} introduces the shared inference components ---
@@ -11,7 +15,7 @@ the ROPE, the HDI, and the Decision Rule --- that all three algorithms apply
 identically.
 Section~\ref{sec:sequential_stopping_algorithms} describes the three algorithms,
 which differ only in their stopping criteria.
-Section~\ref{sec:expected_stop_iteration} derives the expected stop iteration for
+Section~\ref{sec:expected_stop_iteration} derives the expected stopping iteration for
 precision-based methods analytically.
 Section~\ref{sec:experimental_design} details the simulation design used to evaluate
 and compare all three algorithms.
