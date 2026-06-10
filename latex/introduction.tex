@@ -115,24 +115,27 @@ This fully pre-specified rule is also naturally compatible with pre-registration
 \citep{nosek2018} and directly addresses the design-stage imprecision implicated in
 the replication crisis \citep{osc2015, gelman2014}.
 
-Applied to dichotomous data, this more conservative rule substantially reduces
-inconclusive outcomes while preserving a zero false-positive rate, at a modest
-median sampling cost --- advantages that hold broadly across precision goals and
-true parameter values (Sections~\ref{sec:fair_coin}--\ref{sec:trends}).
-
 We compare DPitG and PitG against HDI+ROPE --- a coupled baseline that stops as
 soon as the posterior yields a decisive result --- through simulations with
-single-group dichotomous data\footnote{Two other widely used approaches --- NHST
+single-group dichotomous data.\footnote{Two other widely used approaches --- NHST
 (p-value-based) and Bayes Factors --- are not among the three algorithms studied
-here.
-Both lack an explicit effect-size criterion (the ROPE); NHST cannot formally accept
-the null, while Bayes Factors lack a direct precision goal.
+here. Both lack an explicit effect-size criterion (the ROPE); NHST cannot formally
+accept the null, while Bayes Factors lack a direct precision goal.
 Their limitations are illustrated in Appendices~\ref{app:nhst}
-and~\ref{app:bayes_factors}, respectively.}; the framework extends naturally to continuous
-outcomes (Appendix~\ref{app:expected_stop}) and two-group comparisons
+and~\ref{app:bayes_factors}, respectively.}
+Applied to this setting, DPitG substantially outperforms both alternatives: for
+example, at $\omega_{\rm goal}=0.08$, it reduces PitG's $63.3\%$ inconclusive rate
+to $2.3\%$ at a median cost of only $4.7\%$ extra samples, while preserving a zero
+false-positive rate --- an advantage HDI+ROPE matches only at a $6.2\%$
+false-positive cost (Section~\ref{sec:fair_coin}). These advantages hold broadly
+across precision goals and true parameter values
+(Sections~\ref{sec:fair_coin}--\ref{sec:trends}).
+The framework extends naturally to continuous outcomes
+(Appendix~\ref{app:expected_stop}) and two-group comparisons
 (Appendix~\ref{app:extensions}).
 Alongside the empirical results we provide a closed-form planning formula, an online
 interactive calculator, and open-source code to support adoption in applied settings.
+
 Section~\ref{sec:methods} describes the theoretical framework and the three stopping
 algorithms; Section~\ref{sec:results} presents simulation results; and
 Section~\ref{sec:discussion} places the findings in methodological context.
