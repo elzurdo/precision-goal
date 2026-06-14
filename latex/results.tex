@@ -23,7 +23,7 @@ as \href{https://github.com/elzurdo/precision-goal/blob/main/py/utils_experiment
 
 Despite arising from the same sequence of coin tosses, the three algorithms reach
 sharply different decisions.
-HDI+ROPE stops early at iteration 126 (vertical red dashed line) and, incorrectly,
+The HDI+ROPE algorithm stops early at iteration 126 (vertical red dashed line) and, incorrectly,
 rejects $\theta_{\rm null}$.
 PitG stops at iteration 598 (first purple dot, where the precision goal is first met)
 but is left inconclusive, as the HDI straddles the ROPE boundary.
@@ -114,7 +114,7 @@ statistics in Tables~\ref{tab:fair_overall} and~\ref{tab:fair_conclusive}.
   \label{fig:fair_iter_vs_rate}
 \end{figure}
 
-Figure~\ref{fig:fair_iter_vs_rate} shows that HDI+ROPE yields a wide range of stop
+Figure~\ref{fig:fair_iter_vs_rate} shows that the HDI+ROPE algorithm yields a wide range of stop
 iterations and sample proportions $\hat{\theta}$, with a non-negligible proportion
 of results falling outside the ROPE ($\hat{\theta}$ ranging from $\sim\!0.25$ to
 $\sim\!0.80$), leading to incorrect rejections
@@ -132,7 +132,7 @@ In Section~\ref{sec:trends} we demonstrate that some bias emerges as symmetry br
 The $N_{\rm stop}$ histograms in Figure~\ref{fig:fair_iter_vs_rate} make this concrete:
 DPitG's distribution begins near $N_{\rm goal}$, precisely where PitG's terminates,
 confirming the structural equivalence noted in
-Section~\ref{sec:expected_stop_iteration}: DPitG behaves as HDI+ROPE with
+Section~\ref{sec:expected_stop_iteration}: DPitG behaves as the HDI+ROPE algorithm with
 $N_{\rm min} \approx N_{\rm goal}$ rather than a fixed small floor.
 
 
@@ -170,7 +170,7 @@ $N_{\rm min} \approx N_{\rm goal}$ rather than a fixed small floor.
   \label{fig:fair_decisions}
 \end{figure}
 
-Figure~\ref{fig:fair_decisions} shows that HDI+ROPE's rejection rate (left panel) quickly asymptotes to 6\%, while its acceptance
+Figure~\ref{fig:fair_decisions} shows that the HDI+ROPE algorithm's rejection rate (left panel) quickly asymptotes to 6\%, while its acceptance
 rate begins rising near $N\sim 400$, reflecting a gradual shift from incorrect rejections
 to correct acceptances as more data accumulate.
 
@@ -180,7 +180,7 @@ For PitG (middle panel), the acceptance rate rises as a near step-function, jump
 $N_{\rm goal}$ to 36.7\%, with the inconclusive rate settling at the complement 63.3\%.
 
 DPitG (right panel) presents a hybrid of the other two: it preserves the zero-rejection
-property of PitG while achieving a high conclusiveness rate akin to HDI+ROPE, but with
+property of PitG while achieving a high conclusiveness rate akin to the HDI+ROPE algorithm, but with
 a more gradual transition from inconclusive to conclusive outcomes.
 
 Table~\ref{tab:fair_overall} summarises stop-iteration statistics across all $M$ experiments;
@@ -210,7 +210,7 @@ into acceptance and rejection rates alongside the $\hat{\theta}$ distribution at
 \end{center}
 \end{table}
 
-HDI+ROPE achieves the highest conclusiveness rate (98.2\%), but at the cost of a 6.2\%
+The HDI+ROPE algorithm achieves the highest conclusiveness rate (98.2\%), but at the cost of a 6.2\%
 false-positive rate. PitG delivers zero false positives, but its conclusiveness rate of
 only 36.7\% is strikingly low, with stop iterations all clustering at $N_{\rm goal}$.
 DPitG delivers the balance sought in Section~\ref{sec:decisive_pitg}: a 97.7\%
@@ -312,7 +312,7 @@ set $N_{\rm max}$ generously to allow DPitG to reach its full potential.
 \end{center}
 \end{table}
 
-The fair coin case thus demonstrates that DPitG combines HDI+ROPE's high
+The fair coin case thus demonstrates that DPitG combines the HDI+ROPE algorithm's high
 conclusiveness with PitG's zero-false-positive guarantee at a modest median cost.
 Section~\ref{sec:trends} shows that this advantage persists as $\theta_{\rm true}$
 departs from $\theta_{\rm null}$.
@@ -348,16 +348,16 @@ across $\omega_{\rm goal}$ values (Section~\ref{sec:goal_impact}).
   ${\rm ROPE}_{\rm max}=0.55$.
   Each panel displays three curves: red (HDI+ROPE), blue (PitG), and green (DPitG).
   \textit{Left panel} (conclusiveness rates): at $\theta_{\rm true}=0.5$,
-  HDI+ROPE and DPitG both open near $0.98$, while PitG opens at $\sim\!0.37$.
+  The HDI+ROPE algorithm and DPitG both open near $0.98$, while PitG opens at $\sim\!0.37$.
   All three dip sharply as $\theta_{\rm true}$ approaches ${\rm ROPE}_{\rm max}$,
   reaching minima of $\sim\!0.37$ (HDI+ROPE), $\sim\!0.05$ (PitG), and
   $\sim\!0.19$ (DPitG) at the boundary.
-  After the boundary, HDI+ROPE and DPitG recover to near $1.0$ by
+  After the boundary, the HDI+ROPE algorithm and DPitG recover to near $1.0$ by
   $\theta_{\rm true}\approx0.60$; PitG recovers more slowly, asymptoting to
   $1.0$ near $\theta_{\rm true}\approx0.64$.
   \textit{Middle panel} (acceptance and rejection rates):
   solid lines show acceptance; dashed lines show rejection.
-  Within the ROPE, the HDI+ROPE rejection line (red dashed) rises from
+  Within the ROPE, the HDI+ROPE algorithm's rejection line (red dashed) rises from
   $\sim\!0.06$ at $\theta_{\rm true}=0.5$ to $\sim\!0.30$ at
   ${\rm ROPE}_{\rm max}$; PitG and DPitG rejection lines remain near zero
   throughout this region.
@@ -373,13 +373,13 @@ across $\omega_{\rm goal}$ values (Section~\ref{sec:goal_impact}).
 \end{figure}
 
 The left panel of Figure \ref{fig:conclusiveness_rates} shows that all three algorithms show a dip in conclusiveness as $\theta_{\rm true}$ approaches
-${\rm ROPE}_{\rm max}$, after which conclusiveness rises again. HDI+ROPE and DPitG
+${\rm ROPE}_{\rm max}$, after which conclusiveness rises again. The HDI+ROPE algorithm and DPitG
 recover to near 100\% by $\theta_{\rm true}=0.6$; PitG only asymptotes to 100\% at
 $\theta_{\rm true}\approx 0.64$, at which point DPitG and PitG become effectively
 equivalent (for $\theta_{\rm null}=0.5$).
 
 The precision-based methods are deliberately conservative near the ROPE boundaries,
-yielding lower conclusiveness rates than HDI+ROPE in this region; at ${\rm ROPE}_{\rm max}$
+yielding lower conclusiveness rates than the HDI+ROPE algorithm in this region; at ${\rm ROPE}_{\rm max}$
 itself, DPitG is conclusive in only 19\% of experiments and PitG in only 5\%.
 This dip is a natural consequence of the Decision Rule
 (see Section~\ref{sec:accept_reject_meaning}): the ROPE boundaries are exactly the region
@@ -389,12 +389,12 @@ Breaking the conclusiveness into its acceptance and rejection components (middle
 reveals the error structure.
 For $\theta_{\rm null}=0.5$, acceptance is the correct decision within the ROPE
 ($\theta_{\rm true}\le 0.55$) and rejection is correct outside it.
-HDI+ROPE's false-positive rate climbs from $\sim\!6\%$ at $\theta_{\rm true}=0.5$
+The HDI+ROPE algorithm's false-positive rate climbs from $\sim\!6\%$ at $\theta_{\rm true}=0.5$
 to $\sim\!30\%$ at ${\rm ROPE}_{\rm max}$; its false-negative rate peaks at
 $\sim\!10\%$ at the ROPE boundary before dropping to $0\%$ by
 $\theta_{\rm true}=0.57$. Both precision-based methods maintain a near-zero false-positive rate throughout:
 exactly zero well within the ROPE interior, rising to a small level near the boundary ---
-DPitG reaching $\sim\!10\%$ alongside HDI+ROPE, and PitG lower only because its
+DPitG reaching $\sim\!10\%$ alongside the HDI+ROPE algorithm, and PitG lower only because its
 conclusiveness rate is much smaller there.
 Both also show a small false-negative rate near the ROPE boundary, which drops quickly
 as $\theta_{\rm true}$ moves outside.
@@ -410,11 +410,11 @@ to future work.
 
 All three algorithms reach their minimum accuracy at ${\rm ROPE}_{\rm max}$. Within
 the ROPE, DPitG consistently leads PitG, reaching 99.5\% at $\theta_{\rm true}=0.5$
-compared to PitG's 98.5\%. Outside the ROPE, HDI+ROPE and DPitG reach 100\% by
+compared to PitG's 98.5\%. Outside the ROPE, the HDI+ROPE algorithm and DPitG reach 100\% by
 $\theta_{\rm true}=0.58$, whereas PitG achieves this only at
 $\theta_{\rm true}\approx 0.60$.
 
-That HDI+ROPE reaches 100\% accuracy at $\theta_{\rm true}=0.58$ despite
+That the HDI+ROPE algorithm reaches 100\% accuracy at $\theta_{\rm true}=0.58$ despite
 producing biased $\hat{\theta}$ estimates motivates a closer look at the observed
 sample proportion statistics. Figure~\ref{fig:success_by_truth_conclusive} shows, for
 conclusive experiments, the IQR of $\hat{\theta}(N_{\rm stop})$ (left panel) and the
@@ -449,7 +449,7 @@ the ROPE.
   $y$-axis spans $\sim\!0.40$--$1.0$; two horizontal dotted lines mark the ROPE
   boundaries at $0.45$ and $0.55$; a diagonal parity line $\hat{\theta}=\theta_{\rm
   true}$ runs from $(0.50,\,0.50)$ to $(0.80,\,0.80)$.
-  The HDI+ROPE IQR band (red) is wide: both bounds track above the parity line
+  The HDI+ROPE algorithm's IQR band (red) is wide: both bounds track above the parity line
   beyond ${\rm ROPE}_{\rm max}$, with the upper IQR reaching $\sim\!0.87$ at
   $\theta_{\rm true}=0.80$.
   The PitG IQR band (blue, hatched) and the DPitG band (green) are both narrow
@@ -458,7 +458,7 @@ the ROPE.
   \textit{Right panel} (median bias $\hat{\theta}_{50\%}-\theta_{\rm true}$):
   $y$-axis spans $-0.10$ to $0.10$; horizontal dotted lines at $0$ and $\pm0.05$.
   At $\theta_{\rm true}=0.5$ all three curves are near zero.
-  The HDI+ROPE curve (red) spikes to $\sim\!+0.065$ near ${\rm ROPE}_{\rm max}$,
+  The HDI+ROPE algorithm's curve (red) spikes to $\sim\!+0.065$ near ${\rm ROPE}_{\rm max}$,
   then settles to $\sim\!+0.025$--$0.030$ and declines slowly toward $0$.
   The PitG curve (blue) dips to $\sim\!-0.030$ just below ${\rm ROPE}_{\rm max}$,
   briefly oscillates, then returns to near zero.
@@ -467,12 +467,12 @@ the ROPE.
   \label{fig:success_by_truth_conclusive}
 \end{figure}
 
-HDI+ROPE's $\hat{\theta}$ bias is therefore more telling as a symptom of its lack of a
+The HDI+ROPE algorithm's $\hat{\theta}$ bias is therefore more telling as a symptom of its lack of a
 precision requirement than as a decision-quality metric. At $\theta_{\rm true}=0.5$,
 all three algorithms show zero bias, as expected from the symmetry of the fair coin
-case. Once $\theta_{\rm true}$ deviates from $0.5$, HDI+ROPE's bias grows markedly: its
+case. Once $\theta_{\rm true}$ deviates from $0.5$, the HDI+ROPE algorithm's bias grows markedly: its
 median bias approaches ${\rm ROPE}_{\rm max}$, with the upper
-IQR extending substantially further---because HDI+ROPE can stop on skewed samples before
+IQR extending substantially further---because the HDI+ROPE algorithm can stop on skewed samples before
 sufficient data have accumulated to constrain the posterior.
 
 The precision-based methods exhibit substantially smaller $\hat{\theta}$ bias, well
@@ -495,7 +495,7 @@ we now quantify its sampling cost.
 Figure~\ref{fig:stop_iterations_by_truth_conclusive} quantifies $N_{\rm stop}$ for all three
 algorithms, restricting to conclusive outcomes since inconclusive experiments always stop
 at $N_{\rm max}$ and their stop iteration therefore carries no information about
-algorithm behaviour; including HDI+ROPE also illustrates why the precision
+algorithm behaviour; including the HDI+ROPE algorithm also illustrates why the precision
 requirement matters.
 
 \begin{figure}[h!]
@@ -550,7 +550,7 @@ requirement matters.
   \label{fig:stop_iterations_by_truth_conclusive}
 \end{figure}
 
-HDI+ROPE shows distinctly different behaviour inside and outside the ROPE.
+The HDI+ROPE algorithm shows distinctly different behaviour inside and outside the ROPE.
 Within the ROPE, $N_{\rm stop}$ loosely tracks $N_{\rm goal}(\theta_{\rm true})$, but
 with a wide IQR reflecting the absence of a precision criterion.
 Right at ${\rm ROPE}_{\rm max}$, a distinctive V-shaped signature is visible:
@@ -558,7 +558,7 @@ $N_{\rm stop}$ dips to a narrow trough at the boundary, as the few conclusive
 experiments there stop early by catching a chance excursion of the HDI just outside
 the ROPE.
 Outside the ROPE, $N_{\rm stop}$ falls well below $N_{\rm goal}(\theta_{\rm true})$:
-HDI+ROPE correctly
+The HDI+ROPE algorithm correctly
 rejects $\theta_{\rm null}$ much faster than precision-based methods, but does so on
 the basis of imprecise posteriors, producing the strong $\hat{\theta}$ bias
 (cf.\ Figure~\ref{fig:success_by_truth_conclusive}).
