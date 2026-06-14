@@ -115,7 +115,7 @@ This fully pre-specified rule is also naturally compatible with pre-registration
 \citep{nosek2018} and directly addresses the design-stage imprecision implicated in
 the replication crisis \citep{osc2015, gelman2014}.
 
-We compare DPitG and PitG against HDI+ROPE --- a coupled baseline that stops as
+We compare DPitG and PitG against the HDI+ROPE algorithm --- a coupled baseline that stops as
 soon as the posterior yields a decisive result --- through simulations with
 single-group dichotomous data.\footnote{Two other widely used approaches --- NHST
 (p-value-based) and Bayes Factors --- are not among the three algorithms studied
@@ -126,7 +126,7 @@ and~\ref{app:bayes_factors}, respectively.}
 Applied to this setting, DPitG substantially outperforms both alternatives: for
 example, at $\omega_{\rm goal}=0.08$, it reduces PitG's $63.3\%$ inconclusive rate
 to $2.3\%$ at a median cost of only $4.7\%$ extra samples, while preserving a zero
-false-positive rate --- an advantage HDI+ROPE matches only at a $6.2\%$
+false-positive rate --- an advantage the HDI+ROPE algorithm matches only at a $6.2\%$
 false-positive cost (Section~\ref{sec:fair_coin}). These advantages hold broadly
 across precision goals and true parameter values
 (Sections~\ref{sec:fair_coin}--\ref{sec:trends}).
