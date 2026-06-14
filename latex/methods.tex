@@ -208,12 +208,12 @@ notion of practical equivalence, each verdict carries positive evidential weight
 Accept and Reject are both affirmative findings, not merely the presence or absence of a
 signal.\footnote{Note that Bayes Factors can also yield positive evidence for the null, but do so
 by comparing marginal likelihoods rather than by assessing practical equivalence
-(see Appendix~\ref{app:bayes_factors}).} The HDI+ROPE Accept verdict is therefore
+(see Appendix~\ref{app:bayes_factors}).} The HDI+ROPE framework's Accept verdict is therefore
 distinctive in being grounded in a pre-specified effect-size criterion.
 
 Crucially, neither Accept nor Reject identifies the sample estimate $\hat\theta$ as the
 true value; both are statements about $\theta_{\rm null}$, not $\hat\theta$. The posterior
-distributes probability continuously across parameter space, and the HDI+ROPE rule distils
+distributes probability continuously across parameter space, and the HDI+ROPE framework distils
 this into a verdict by asking whether the bulk of posterior mass lies inside, outside, or
 straddling the ROPE. The full posterior remains available for a more nuanced reading: in
 particular, a ``Reject null'' decision does not endorse $\hat\theta$ as the true value
@@ -240,7 +240,7 @@ The panels of Figure~\ref{fig:posteriors} make this concrete under the default s
 
 Two error types follow directly.
 A \textit{false-accept} arises when a conclusive Accept verdict is reached but
-$\theta_{\rm true}$ lies outside the ROPE --- the HDI+ROPE analogue of a false
+$\theta_{\rm true}$ lies outside the ROPE --- the HDI+ROPE framework analogue of a false
 negative, since the data appear to confirm equivalence when it does not hold.
 A \textit{false-reject} arises when a conclusive Reject verdict is reached but
 $\theta_{\rm true}$ lies inside the ROPE --- the analogue of a false positive, since
@@ -250,14 +250,22 @@ Section~\ref{sec:results}.
 
 \subsection{Sequential Stopping Algorithms}\label{sec:sequential_stopping_algorithms}
 
-Table \ref{tab:comparison} provides a high-level comparison of the three algorithms. Each algorithm shares the same Decision Rule (Algorithm \ref{alg:decision_criterion}) but differs in when it triggers the stop condition.
+Table \ref{tab:comparison} provides a high-level comparison of the three algorithms.
+Each algorithm shares the same Decision Rule (Algorithm \ref{alg:decision_criterion})
+but differs in when it triggers the stop condition.
+Because the term ``HDI+ROPE'' serves two distinct roles in this work, we use distinct names
+throughout. \textit{HDI+ROPE framework} denotes the shared Decision Rule applied
+identically by all three algorithms (Section~\ref{sec:decision_criterion}).
+\textit{HDI+ROPE algorithm} (equivalently, \textit{HDI+ROPE stopping rule}) denotes
+the specific sequential stopping algorithm described in
+Section~\ref{sec:hdi_rope_stopping}.
 
 \begin{table}[h!]
     \begin{center}
       \begin{tabular}{l|c|l|l}
         \textbf{Algorithm} & \textbf{Key Input} & \textbf{Stop Criterion} &  \textbf{Precision/Location Coupling} \\
         \hline
-        HDI + ROPE & $N_\mathrm{min}$ & Decision is conclusive & Location only \\
+        HDI+ROPE & $N_\mathrm{min}$ & Decision is conclusive & Location only \\
         Precision is the Goal & $\omega_{\rm Goal}$ & $\omega_{\rm HDI}$ $\le$ $\omega_{\rm Goal}$ & Precision then Location \\
         Decisive PitG & $\omega_{\rm Goal}$ & $\omega_{\rm HDI}$ $\le$ $\omega_{\rm Goal}$ AND & Precision $+$ Location \\
          & & Decision is conclusive & \\
@@ -270,7 +278,7 @@ Table \ref{tab:comparison} provides a high-level comparison of the three algorit
   \end{table}
 
 The Key Input column identifies the characteristic parameter that must be determined
-before data collection: $N_{\rm min}$ for HDI+ROPE (sensitive to early outliers and
+before data collection: $N_{\rm min}$ for the HDI+ROPE algorithm (sensitive to early outliers and
 therefore requiring a minimum sample size, e.g.\ 30) and $\omega_{\rm Goal}$ for the
 precision methods, where by definition $\omega_{\rm Goal}$ must be narrower than or
 equal to the ROPE width $\Delta_{\rm ROPE}$ to allow the HDI to fit fully within the ROPE.
@@ -287,9 +295,9 @@ All three algorithms below assume one data point is collected per iteration
 the increment step ($N \mathrel{+}= 1$) can be replaced by a batch size to
 accommodate grouped collection.
 
-\subsubsection{HDI + ROPE Stopping: Location Only}\label{sec:hdi_rope_stopping}
+\subsubsection{HDI+ROPE Stopping: Location Only}\label{sec:hdi_rope_stopping}
 
-The HDI + ROPE method stops data collection as soon as the posterior's location allows for a decisive acceptance or rejection of the null hypothesis. It does not explicitly demand a specific degree of precision (width), only that the HDI does not straddle the ROPE boundary.
+The HDI+ROPE algorithm stops data collection as soon as the posterior's location allows for a decisive acceptance or rejection of the null hypothesis. It does not explicitly demand a specific degree of precision (width), only that the HDI does not straddle the ROPE boundary.
 
 Algorithm \ref{alg:hdi_rope} details the procedure. Note the inclusion of $N_\mathrm{min}$
 (minimal sample size); this is critical because, with small sample sizes, the HDI can
@@ -302,7 +310,7 @@ variability dominates, and the HDI can wander into a misleadingly decisive posit
 than true effect.
 
 \begin{algorithm}
-    \caption{HDI + ROPE (highlighted: the stopping condition)}\label{alg:hdi_rope}
+    \caption{HDI+ROPE algorithm (highlighted: the stopping condition)}\label{alg:hdi_rope}
     \begin{algorithmic}
     \Require $N_\mathrm{min}$, $N_\mathrm{max}$, $\theta_{\rm null}$, $\mathrm{ROPE}_\mathrm{min}$, $\mathrm{ROPE}_\mathrm{max}$
     \State Stop = False
@@ -448,9 +456,9 @@ for the Bernoulli case across $\omega_{\rm goal}$.
   \label{fig:min_sample_by_goal}
 \end{figure}
 
-This also illuminates DPitG's relationship to HDI+ROPE: because the precision
-condition must be satisfied before any decision is possible, DPitG behaves
-approximately as HDI+ROPE with $N_{\rm min} \approx N_{\rm goal}$, replacing
+This also illuminates DPitG's relationship to the HDI+ROPE algorithm: because the
+precision condition must be satisfied before any decision is possible, DPitG behaves
+approximately as the HDI+ROPE algorithm with $N_{\rm min} \approx N_{\rm goal}$, replacing
 the ad-hoc floor (e.g.\ $N_{\rm min}=30$) with a precision-derived bound.
 
 For completeness, we mention that for continuous outcomes, $V(\theta)$ is replaced by the
