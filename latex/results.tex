@@ -129,6 +129,11 @@ ROPE boundary, yielding a high rate of inconclusive decisions
 DPitG exhibits a narrower $\hat{\theta}(N_{\rm stop})$ distribution than PitG but extends
 to later iterations, achieving more conclusive results while maintaining zero estimation bias.\footnote{
 In Section~\ref{sec:trends} we demonstrate that some bias emerges as symmetry breaks.}
+The $N_{\rm stop}$ histograms in Figure~\ref{fig:fair_iter_vs_rate} make this concrete:
+DPitG's distribution begins near $N_{\rm goal}$, precisely where PitG's terminates,
+confirming the structural equivalence noted in
+Section~\ref{sec:expected_stop_iteration}: DPitG behaves as HDI+ROPE with
+$N_{\rm min} \approx N_{\rm goal}$ rather than a fixed small floor.
 
 
 \begin{figure}[h!]

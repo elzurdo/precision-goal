@@ -56,9 +56,9 @@ The appropriate ROPE width is domain-specific: a board game manufacturer require
 dice to be fair to a reasonable standard, but not to a precision indistinguishable
 to a casual player; conversely, a casino requires a much stricter tolerance (a narrower
 ROPE) to ensure regulatory compliance and fair play.
-Principled approaches for setting the ROPE --- including domain standards such as the
-MCID and bioequivalence guidelines, and sensitivity
-analyses --- are discussed in Appendix~\ref{app:practical_guidance}.
+Appendix~\ref{app:practical_guidance} discusses principled approaches for setting
+the ROPE, including domain standards such as the MCID and bioequivalence guidelines,
+and robustness checks across a range of ROPE widths when no domain standard exists.
 
 \subsubsection{Highest Density Interval (HDI)}\label{sec:precision_hdi}
 
@@ -104,11 +104,13 @@ should consider the lower thresholds noted above.}
 Crucially, we distinguish between the \textit{Stopping Rule} (when to stop collecting data)
 and the \textit{Decision Rule} (what to conclude once stopped). While the three algorithms
 discussed later differ in their \textit{stopping} criteria, they all share an identical
-\textit{Decision Rule}.
+Decision Rule.
 
 The decision is determined solely by the
 relationship between the HDI and the ROPE.
-Let ${\rm ROPE} = [{\rm ROPE}_{\rm min}, {\rm ROPE}_{\rm max}]$ and the posterior HDI limits be $[{\rm HDI}_{\rm min}, {\rm HDI}_{\rm max}]$.
+Let ${\rm ROPE} = [{\rm ROPE}_{\rm min}, {\rm ROPE}_{\rm max}]$ and the posterior HDI limits be
+$[{\rm HDI}_{\rm min}, {\rm HDI}_{\rm max}]$,
+we define three outcomes based on their relative positions:
 
 \begin{enumerate}[label=(\alph*)]
     \item \textit{Accept Null}: The HDI is completely \textit{inside} the ROPE. \\
@@ -196,8 +198,10 @@ Algorithm \ref{alg:decision_criterion} further formalises this logic.
 A key conceptual distinction between Bayesian and frequentist inference lies in what it
 means to \textit{accept} the null hypothesis. In NHST, a small p-value justifies
 \textit{rejecting} the null; a large p-value only means there is insufficient evidence
-to reject it. One cannot formally \textit{accept} the null --- only ``fail to reject''
-it. Absence of evidence is not evidence of absence.
+to reject it. One cannot formally \textit{accept} the null, only ``fail to reject'' it.
+Absence of evidence is not evidence of absence: NHST can conclusively reject
+the null but cannot deliver its symmetric counterpart, a positive verdict that
+the null actually holds.
 
 The HDI+ROPE framework resolves this asymmetry: because the ROPE encodes a pre-specified
 notion of practical equivalence, each verdict carries positive evidential weight ---
@@ -274,8 +278,7 @@ equal to the ROPE width $\Delta_{\rm ROPE}$ to allow the HDI to fit fully within
 The table also excludes two universal parameters required by all three algorithms:
 \begin{enumerate}[label=(\alph*)]
     \item The ROPE boundaries $\mathrm{ROPE}_\mathrm{min}$ and $\mathrm{ROPE}_\mathrm{max}$,
-    with $\Delta_\mathrm{ROPE} \equiv \mathrm{ROPE}_\mathrm{max} - \mathrm{ROPE}_\mathrm{min}$
-    the ROPE width.
+    with $\Delta_\mathrm{ROPE} \equiv \mathrm{ROPE}_\mathrm{max} - \mathrm{ROPE}_\mathrm{min}$.
     \item $N_\mathrm{max}$ (Final Budget): The maximum sample size or budget limit.
 \end{enumerate}
 
@@ -444,6 +447,11 @@ for the Bernoulli case across $\omega_{\rm goal}$.
   most expensive for any fixed $\omega_{\rm goal}$.
   \label{fig:min_sample_by_goal}
 \end{figure}
+
+This also illuminates DPitG's relationship to HDI+ROPE: because the precision
+condition must be satisfied before any decision is possible, DPitG behaves
+approximately as HDI+ROPE with $N_{\rm min} \approx N_{\rm goal}$, replacing
+the ad-hoc floor (e.g.\ $N_{\rm min}=30$) with a precision-derived bound.
 
 For completeness, we mention that for continuous outcomes, $V(\theta)$ is replaced by the
 estimand variance $\sigma^2$; see Appendix~\ref{app:expected_stop} for the full
