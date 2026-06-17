@@ -12,7 +12,7 @@ $0.5$ upwards, across and beyond the ROPE (Section~\ref{sec:trends}).
 
 \subsubsection{A Hand-Picked Sequence}\label{sec:fair_coin_sequence}
 
-Figure~\ref{fig:iterations} presents a hand-picked fair coin experiment chosen to
+Figure~\ref{fig:iterations} presents a hand-picked randomly generated fair coin experiment chosen to
 illustrate contrasting outcomes across the three algorithms (note that all performance claims
 rest on the large-scale simulation study of
 Section~\ref{sec:fair_coin_large_scale}).\footnote{This figure is similar to the top
@@ -37,7 +37,8 @@ follows.
   \centering
   \includegraphics[width=1\textwidth]{cherry_iterations.png}
   \caption{Cumulative sample proportion $\hat{\theta}(N)$ at each iteration $N$ of a
-  hand-picked fair coin experiment ($\theta_{\rm true}=\theta_{\rm null}=0.5$, $\omega_{\rm goal}=0.08$)
+  hand-picked randomly generated fair coin experiment
+  ($\theta_{\rm true}=\theta_{\rm null}=0.5$, $\omega_{\rm goal}=0.08$, $N_{\rm min}=30$)
   illustrating varied outcomes across sampling.
   $\hat{\theta}(N)$ denotes the observed proportion of successes (heads) in $N$ trials.
   \textit{Gray band}: 95\% HDI of the posterior; its width is $\omega_{\rm HDI}$.
@@ -76,7 +77,7 @@ statistics in Tables~\ref{tab:fair_overall} and~\ref{tab:fair_conclusive}.
   \centering
   \includegraphics[width=1\textwidth]{fair_experiments_iter_vs_rate.png}
   \caption{Outcomes of $M=2{,}000$ fair coin experiments ($\theta_{\rm true}=\theta_{\rm null}=0.5$,
-  $\omega_{\rm goal}=0.08$).
+  $\omega_{\rm goal}=0.08$, $N_{\rm min}=30$).
   \textit{Main panel}: scatter plot of sample proportion $\hat{\theta}(N_{\rm stop})$
   vs.\ stop iteration $N_{\rm stop}$.
   \textit{Symbols}: red squares: HDI+ROPE; blue circles: PitG; green Xs: DPitG.
@@ -199,23 +200,23 @@ into acceptance and rejection rates alongside the $\hat{\theta}$ distribution at
     \hline
   \end{tabular}
   \caption{Summary statistics for all $M=2{,}000$ fair coin experiments
-  ($\theta_{\rm true}=\theta_{\rm null}=0.5$, $\omega_{\rm goal}=0.08$;
+  ($\theta_{\rm true}=\theta_{\rm null}=0.5$, $\omega_{\rm goal}=0.08$, $N_{\rm min}=30$;
   cf.\ Figure~\ref{fig:fair_iter_vs_rate}).
   $N_{\rm 50\%}$: median stop iteration;
   $N_{\rm 25\%}$--$N_{\rm 75\%}$: interquartile range of stop iteration.
   Conclusive Rate values are color-coded: \textcolor{red}{\textbf{red}} flags a
   concerningly low rate (PitG); \textcolor{green}{\textbf{green}} highlights DPitG's
-  strong rate with zero false positives (cf.\ Table~\ref{tab:fair_conclusive}).}
+  strong rate with zero false rejections (cf.\ Table~\ref{tab:fair_conclusive}).}
   \label{tab:fair_overall}
 \end{center}
 \end{table}
 
 The HDI+ROPE algorithm achieves the highest conclusiveness rate (98.2\%), but at the cost of a 6.2\%
-false-positive rate. PitG delivers zero false positives, but its conclusiveness rate of
+false-reject rate. PitG delivers zero false rejections, but its conclusiveness rate of
 only 36.7\% is strikingly low, with stop iterations all clustering at $N_{\rm goal}$.
 DPitG delivers the balance sought in Section~\ref{sec:decisive_pitg}: a 97.7\%
 conclusiveness rate with zero false
-positives. The lower quartile ($N_{\rm 25\%}=598$) nearly equals $N_{\rm goal}=599$,
+rejections. The lower quartile ($N_{\rm 25\%}=598$) nearly equals $N_{\rm goal}=599$,
 confirming that a substantial fraction of DPitG experiments stop as soon as the
 precision goal is first met; the wider IQR of $598$--$794$ reflects those that
 require additional iterations to satisfy the joint precision-and-conclusiveness
@@ -242,8 +243,7 @@ than PitG.
   $\hat{\theta}_{\rm 50\%}$: median sample proportion at stop;
   $\hat{\theta}_{\rm 25\%} - \hat{\theta}_{\rm 75\%}$: interquartile range of
   sample proportion at stop.
-  \textcolor{red}{\textbf{Red}} flags a non-zero false positive rate (HDI+ROPE,
-  Rejection Rate); \textbf{bold} flags a concerningly low conclusive count (PitG).}
+  \textcolor{red}{\textbf{Red}} flags a non-zero false-reject rate (HDI+ROPE); \textbf{bold} flags a concerningly low conclusive count (PitG).}
   \label{tab:fair_conclusive}
 \end{center}
 \end{table}
@@ -269,7 +269,7 @@ $\omega_{\rm goal}=0.08$ to 41\% at $\omega_{\rm goal}=0.10$.
 At the tightest setting ($\omega_{\rm goal}=0.06$), the DPitG $N_{\rm stop}$ $\Delta_{\rm IQR}$ is zero:
 most experiments stop at exactly $N_{\rm goal}$, leaving no room for the additional
 iterations that DPitG normally uses to resolve borderline cases.
-At the loosest setting ($\omega_{\rm goal}=0.10=\Delta_{\rm ROPE}$, equal to the ROPE width), PitG is always
+At the loosest setting, when equal to the ROPE width ($\omega_{\rm goal}=0.10=\Delta_{\rm ROPE}$), PitG is always
 inconclusive, but DPitG still achieves 97.9\% conclusiveness by collecting more data until
 both precision and conclusiveness are jointly satisfied.
 
@@ -313,7 +313,7 @@ set $N_{\rm max}$ generously to allow DPitG to reach its full potential.
 \end{table}
 
 The fair coin case thus demonstrates that DPitG combines the HDI+ROPE algorithm's high
-conclusiveness with PitG's zero-false-positive guarantee at a modest median cost.
+conclusiveness with PitG's zero-false-reject guarantee at a modest median cost.
 Section~\ref{sec:trends} shows that this advantage persists as $\theta_{\rm true}$
 departs from $\theta_{\rm null}$.
 
@@ -389,14 +389,14 @@ Breaking the conclusiveness into its acceptance and rejection components (middle
 reveals the error structure.
 For $\theta_{\rm null}=0.5$, acceptance is the correct decision within the ROPE
 ($\theta_{\rm true}\le 0.55$) and rejection is correct outside it.
-The HDI+ROPE algorithm's false-positive rate climbs from $\sim\!6\%$ at $\theta_{\rm true}=0.5$
-to $\sim\!30\%$ at ${\rm ROPE}_{\rm max}$; its false-negative rate peaks at
+The HDI+ROPE algorithm's false-reject rate climbs from $\sim\!6\%$ at $\theta_{\rm true}=0.5$
+to $\sim\!30\%$ at ${\rm ROPE}_{\rm max}$; its false-accept rate peaks at
 $\sim\!10\%$ at the ROPE boundary before dropping to $0\%$ by
-$\theta_{\rm true}=0.57$. Both precision-based methods maintain a near-zero false-positive rate throughout:
+$\theta_{\rm true}=0.57$. Both precision-based methods maintain a near-zero false-reject rate throughout:
 exactly zero well within the ROPE interior, rising to a small level near the boundary ---
 DPitG reaching $\sim\!10\%$ alongside the HDI+ROPE algorithm, and PitG lower only because its
 conclusiveness rate is much smaller there.
-Both also show a small false-negative rate near the ROPE boundary, which drops quickly
+Both also show a small false-accept rate near the ROPE boundary, which drops quickly
 as $\theta_{\rm true}$ moves outside.
 
 The right panel of Figure \ref{fig:conclusiveness_rates} shows overall \textit{accuracy}, the proportion of correct decisions

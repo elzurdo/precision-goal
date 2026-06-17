@@ -331,12 +331,15 @@ than true effect.
 \end{algorithm}
 
 This method serves as the coupled baseline throughout: lacking a precision requirement,
-it is susceptible to false-positive and false-negative decisions, as demonstrated in
+it is susceptible to false-reject and false-accept decisions, as demonstrated in
 Section~\ref{sec:results}.
 
 \subsubsection{Precision is the Goal Stopping: Precision then Decision}\label{sec:pitg}
 
-Introduced by \cite{kruschke2015doing}, Precision is the Goal shifts the stopping condition from the \textit{decision} to the \textit{precision} (width) of the estimate. Data collection stops when the width of the HDI is narrower than a pre-specified Goal (e.g., 80\% of the ROPE width).
+Introduced by \cite{kruschke2015doing}, Precision is the Goal shifts the stopping condition
+from the \textit{decision} to the \textit{precision} (width) of the estimate.
+Data collection stops when the width of the HDI is narrower than a pre-specified Goal
+(e.g., $\omega_{\rm Goal}=0.8 \Delta_{\rm ROPE}$).
 
 Algorithm \ref{alg:pitg} shows that this method separates stopping from decision:
 stopping depends on width alone, while the decision depends on location.
@@ -435,8 +438,8 @@ for the Bernoulli case across $\omega_{\rm goal}$.
   \centering
   \includegraphics[width=1\textwidth]{min_sample_by_goal.png}
   \caption{Expected minimum precision-based stop iteration
-  $N_{\rm goal}(\theta_{\rm true}, \omega_{\rm goal})$ as a function of
-  $\theta_{\rm true}$ for several values of $\omega_{\rm goal}$ in the Bernoulli case.
+  $N_{\rm goal}(\theta, \omega_{\rm goal})$ as a function of
+  $\theta$ for several values of $\omega_{\rm goal}$ in the Bernoulli case.
   (Equation~\ref{eq:pitg_stop_iteration})
   %Left: Bernoulli case.
   %Right: continuous case with $\sigma^2=1$.
@@ -483,7 +486,7 @@ ensuring that DPitG can reach its stopping criterion in the vast majority of exp
 We test multiple scenarios for the ground truth probability $0.5 \le \theta_{\rm true} \le 0.8$
 against a null hypothesis of $\theta_{\rm null}=0.5$, including the fair-coin case
 $\theta_{\rm true}=\theta_{\rm null}=0.5$.
-\subsubsection{Algorithm Configuration}
+\subsubsection*{Simulation Configuration}
 
 Unless stated otherwise, we use the following default parameters, chosen to reflect realistic experimental conditions (e.g., opinion polling):
 
