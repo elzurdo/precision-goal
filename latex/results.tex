@@ -295,7 +295,7 @@ set $N_{\rm max}$ generously to allow DPitG to reach its full potential.
   \end{tabular}
   \caption{Impact of $\omega_{\rm goal}$ on PitG and DPitG performance
   ($\theta_{\rm true}=\theta_{\rm null}=0.5$, $M=2{,}000$ experiments,
-  $N_{\rm max}=1{,}500$, ${\rm ROPE}_{\rm max}-{\rm ROPE}_{\rm min}=0.1$).
+  $N_{\rm max}=1{,}500$, $\Delta_{\rm ROPE}=0.1$).
   $N_{\rm goal}$: expected precision-based stop iteration (Equation~\ref{eq:pitg_stop_iteration});
   Conclusiveness: fraction of $M$ experiments with a conclusive outcome;
   Conclusiveness Ratio: DPitG/PitG conclusiveness (undefined at $\omega_{\rm goal}=0.10$
@@ -320,9 +320,16 @@ departs from $\theta_{\rm null}$.
 \subsection{General Trends Across $\theta_{\rm true}$ Values}\label{sec:trends}
 
 Building on the fair coin baseline, we now examine how all three algorithms perform as
-$\theta_{\rm true}$ increases from $0.5$ upwards, across and beyond the ROPE,\footnote{By symmetry, results for $\theta_{\rm true}<0.5$ mirror those shown
-here, as reflected in Equation~\ref{eq:pitg_stop_iteration} and Figure~\ref{fig:min_sample_by_goal}.}
+$\theta_{\rm true}$ increases from $0.5$ upwards, across and beyond the ROPE,%
+\footnote{By symmetry, results for $\theta_{\rm true}<0.5$ mirror those shown
+here, as reflected in Equation~\ref{eq:pitg_stop_iteration} and
+Figure~\ref{fig:min_sample_by_goal}.}
 with ${\rm ROPE}_{\rm max}=0.55$ serving as a key inflection point.
+The primary case throughout is $\theta_{\rm null}=0.5$, where the null coincides
+with the precision maximum; we also include $\theta_{\rm null}=0.7$ in
+Figure~\ref{fig:stop_iterations_by_truth_conclusive} to examine behaviour when
+this symmetry breaks and the planned sample size is no longer a conservative
+upper bound.
 We present four complementary views via
 Figures~\ref{fig:conclusiveness_rates}--\ref{fig:stop_conclusiveness_ratios}:
 conclusiveness and decision rates, overall accuracy, estimation bias at stop, and a
@@ -394,10 +401,10 @@ to $\sim\!30\%$ at ${\rm ROPE}_{\rm max}$; its false-accept rate peaks at
 $\sim\!10\%$ at the ROPE boundary before dropping to $0\%$ by
 $\theta_{\rm true}=0.57$. Both precision-based methods maintain a near-zero false-reject rate throughout:
 exactly zero well within the ROPE interior, rising to a small level near the boundary ---
-DPitG reaching $\sim\!10\%$ alongside the HDI+ROPE algorithm, and PitG lower only because its
+DPitG reaching $\sim\!10\%$, and PitG lower only because its
 conclusiveness rate is much smaller there.
-Both also show a small false-accept rate near the ROPE boundary, which drops quickly
-as $\theta_{\rm true}$ moves outside.
+Both also have false-accept rates that mirror the false-reject rates around
+the ROPE boundary, which drops quickly as $\theta_{\rm true}$ moves outside.
 
 The right panel of Figure \ref{fig:conclusiveness_rates} shows overall \textit{accuracy}, the proportion of correct decisions
 across all $M$ experiments. Since the three algorithms have different conclusiveness
@@ -432,7 +439,7 @@ the ROPE.
   \includegraphics[width=1\textwidth]{success_by_truth_conclusive.png}
   \caption{Sample proportion $\hat{\theta}(N_{\rm stop})$ at the stop iteration as a
   function of $\theta_{\rm true}$, for conclusive experiments only (subsets of $M=2{,}000$,
-  $\theta_{\rm null}=0.5$, $\omega_{\rm goal}=0.08$).
+  $\theta_{\rm null}=0.5$, $\omega_{\rm goal}=0.08$, $N_{\rm min}=30$).
   \textit{Colors}: red: HDI+ROPE; blue: PitG; green: DPitG.
   \textit{Horizontal dotted lines}: ROPE boundaries.
   \textit{Vertical dashed line}: ${\rm ROPE}_{\rm max}$.
@@ -528,8 +535,7 @@ requirement matters.
   a single vertical dashed line marks ${\rm ROPE}_{\rm max}=0.55$.
   HDI+ROPE (top-left, red): wide pink IQR band near $\theta_{\rm true}=0.5$; the
   median and IQR show a distinctive V-shaped dip centred on ${\rm ROPE}_{\rm max}=0.55$,
-  with $N_{\rm stop}$ elevated on both sides of the boundary and dropping to a narrow
-  trough right at it, before remaining low and falling monotonically outside the ROPE.
+  with $N_{\rm stop}$ elevated on both sides of the boundary and dropping to a trough right at it, before remaining low and falling monotonically outside the ROPE.
   PitG (middle-left, blue): solid blue median tracks the orange $N_{\rm goal}(\theta_{\rm
   true})$ curve tightly; IQR band is very narrow throughout.
   DPitG (bottom-left, green): median lies above the $N_{\rm goal}(\theta_{\rm true})$
@@ -556,7 +562,7 @@ with a wide IQR reflecting the absence of a precision criterion.
 Right at ${\rm ROPE}_{\rm max}$, a distinctive V-shaped signature is visible:
 $N_{\rm stop}$ dips to a narrow trough at the boundary, as the few conclusive
 experiments there stop early by catching a chance excursion of the HDI just outside
-the ROPE.
+the ROPE. % By excursion I mean: chance fluctuation carrying the HDI outside the ROPE. "Excursion" is a legitimate technical term in probability and stochastic processes. In that context it means a transient departure of a process from some reference level or region — specifically one that eventually returns. 
 Outside the ROPE, $N_{\rm stop}$ falls well below $N_{\rm goal}(\theta_{\rm true})$:
 The HDI+ROPE algorithm correctly
 rejects $\theta_{\rm null}$ much faster than precision-based methods, but does so on
@@ -585,18 +591,18 @@ so any deviation of $\theta_{\rm true}$ reduces the required sample, here the sy
 breaks: the same deviation can either reduce or increase $N_{\rm goal}$ depending on
 its direction.
 
-When $\theta_{\rm true}>\theta_{\rm null}=0.7$ (moving further from $0.5$),
-$N_{\rm goal}(\theta_{\rm true})<N_{\rm goal}(\theta_{\rm null})$ and experiments
-stop sooner than planned.
-When $\theta_{\rm true}<\theta_{\rm null}$ (moving closer to $0.5$), however,
+In particular, when $\theta_{\rm true}<\theta_{\rm null}$ (moving closer to $0.5$),
 $N_{\rm goal}(\theta_{\rm true})>N_{\rm goal}(\theta_{\rm null}=0.7)\approx 503$:
 the planned budget underestimates the samples required, and
-$N_{\rm goal}(\theta_{\rm null})$ acts as a lower bound rather than an upper one.
+$N_{\rm goal}(\theta_{\rm null})$ acts as a lower bound rather than an upper
+one.\footnote{When $\theta_{\rm true}>\theta_{\rm null}=0.7$ (moving further from
+$0.5$), $N_{\rm goal}(\theta_{\rm true})<N_{\rm goal}(\theta_{\rm null})$ and
+experiments stop sooner than planned.
 The PitG median stop iteration visibly exceeds $N_{\rm goal}(\theta_{\rm null})=503$
 for $\theta_{\rm true}<0.7$, confirming this underestimate.
-DPitG shows qualitatively similar patterns to the $\theta_{\rm null}=0.5$ column near
-both ROPE boundaries, elevated above $N_{\rm goal}(\theta_{\rm true})$ where the
-conclusiveness gain is largest.
+DPitG shows qualitatively similar patterns to the $\theta_{\rm null}=0.5$ column
+near both ROPE boundaries, elevated above $N_{\rm goal}(\theta_{\rm true})$ where
+the conclusiveness gain is largest.}
 
 In general, $N_{\rm goal}(\theta_{\rm null})$ serves as the researcher's advance
 planning estimate: a conservative upper bound when $\theta_{\rm null}$ lies at the
@@ -613,7 +619,10 @@ $N_{\rm goal}(\theta_{\rm true})$.
 Figure~\ref{fig:stop_conclusiveness_ratios} places the DPitG--PitG trade-off in direct
 comparison by overlaying the ratio of conclusiveness rates
 (from Figure~\ref{fig:conclusiveness_rates}) and the ratio of $N_{\rm stop}$
-(from Figure~\ref{fig:stop_iterations_by_truth_conclusive}) across $\theta_{\rm true}$.
+(from Figure~\ref{fig:stop_iterations_by_truth_conclusive}) across $\theta_{\rm true}$.\footnote{The
+apparent flattening of both ratios near ${\rm ROPE}_{\rm max}$ is an artefact of
+the finite cap $N_{\rm max}=1{,}500$; with a larger cap both curves would peak sharply
+at the boundary.}
 
 
 \begin{figure}[h!]
@@ -673,9 +682,6 @@ conclusiveness ratio varies with $\omega_{\rm goal}$.
 % substantially higher conclusiveness, with both methods converging to equivalent
 % stopping behaviour once $\theta_{\rm true}$ is well outside the ROPE.
 
-The apparent flattening of both ratios near ${\rm ROPE}_{\rm max}$ is an artefact of
-the finite cap $N_{\rm max}=1{,}500$; with a larger cap both curves would peak sharply
-at the boundary.
 The DPitG advantage documented here generalises: qualitatively similar conclusiveness
 gains hold for $\theta_{\rm null}=0.7$ (as shown in the right panel of
 Figure~\ref{fig:stop_iterations_by_truth_conclusive}) and across $\omega_{\rm goal}$
