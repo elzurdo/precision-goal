@@ -18,15 +18,15 @@ the fair-coin case, and rising most steeply precisely where the null is true and
 reliable verdict is most needed.
 
 DPitG closes this gap by imposing both requirements simultaneously: data collection
-continues until the HDI is narrower than $\omega_{\rm goal}$ \textit{and} its
+continues until $\omega_{\rm HDI} \le \omega_{\rm goal}$ \textit{and} its
 position yields a conclusive verdict.
 This joint requirement delivers a $2.7\times$ gain in conclusiveness over PitG at a
 median cost of only 4.7\% more samples ($\theta_{\rm true}=0.5$, $\omega_{\rm goal}=0.08$,
 $\Delta_{\rm ROPE}=0.1$), while preserving the zero false-reject (false-positive) rate that the HDI+ROPE algorithm
 forfeits.
 The gain is robust: DPitG's conclusiveness holds nearly flat ($97.2\%$--$97.9\%$)
-across the full $\omega_{\rm goal}=0.06$--$0.10$ range over which PitG's collapses
-from $82.5\%$ to zero, and is largest near the ROPE boundaries where evidence is
+across the same $\omega_{\rm goal}$ range, over which PitG's conclusiveness
+collapses to zero, and is largest near the ROPE boundaries where evidence is
 hardest to read.
 
 Unlike NHST (see Appendix~\ref{app:nhst}), which can only reject or fail to reject
@@ -48,7 +48,8 @@ theoretical derivations; stopping-property validation beyond the single-group Be
 case remains to be completed in a dedicated simulation study.}
 All algorithms are implemented in openly available
 code\footnote{\href{https://github.com/elzurdo/dpitg}{https://github.com/elzurdo/dpitg}},
-with an interactive online calculator for prospective sample-size planning available at
+with an interactive online calculator for prospective sample-size planning and
+retrospective analysis available at
 \href{https://r-w-t-y.streamlit.app}{https://r-w-t-y.streamlit.app}.
 
 DPitG is the method of choice whenever a reliable verdict --- acceptance, rejection,
