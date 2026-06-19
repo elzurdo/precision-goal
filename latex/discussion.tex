@@ -104,6 +104,8 @@ The ROPE must be grounded in domain knowledge rather than chosen to suit the dat
 approaches for setting it --- including the MCID, bioequivalence standards, and
 sensitivity analyses --- together with three broader considerations supporting
 DPitG's adoption (equivalence testing, pre-registration, and the replication crisis).
+Together with $\omega_{\rm goal}$ and $N_{\rm max}$, the ROPE completes the three
+design parameters that must be fixed before data collection begins.
 
 With those design inputs committed, the joint operating characteristics of DPitG can
 be assessed prospectively: a researcher can check, analytically or via simulation,
@@ -111,27 +113,27 @@ that the planned $N_{\rm max}$ achieves the target conclusiveness rate at the ef
 sizes of interest.
 As the Results demonstrate, error rates are negligible except near the ROPE boundaries,
 where neither an accept nor a reject verdict is easily justified.
-Notably, DPitG's conclusiveness is more sensitive to $N_{\rm max}$ than to
-$\omega_{\rm goal}$ (Section~\ref{sec:goal_impact}); for the fair coin case
-($\Delta_{\rm ROPE}=0.1$), the median sampling premium relative to $N_{\rm goal}$
+A key practical implication (Section~\ref{sec:goal_impact}) is that conclusiveness
+is more sensitive to $N_{\rm max}$ than to $\omega_{\rm goal}$: for the fair coin
+case ($\Delta_{\rm ROPE}=0.1$), the median sampling premium relative to $N_{\rm goal}$
 is zero for $\omega_{\rm goal}\le 0.07$ and rises to 41\% at $\omega_{\rm goal}=0.10$,
 so setting $N_{\rm max}$ generously is the primary practical lever for ensuring high
 conclusiveness across a range of precision goals.
 
-We now turn to the boundaries of the present work.
+We now turn to the limits of the present work.
 Four limitations deserve acknowledgement.
 First, the results are sensitive to the three design parameters --- the ROPE,
 $\omega_{\rm goal}$, and $N_{\rm max}$ --- all of which must be committed to before
 data collection begins.
-A narrower ROPE increases the sample size required for acceptance and raises the
-inconclusive rate near its boundaries; a tighter $\omega_{\rm goal}$ or a smaller
-$N_{\rm max}$ both raise the inconclusive rate.
-Second, the stopping properties are validated empirically only for Bernoulli trials
-with a conjugate Beta posterior; the normal approximation underpinning
-$N_{\rm goal}$ (Equation~\ref{eq:pitg_stop_iteration}) may underestimate the required
-sample size in small-sample settings or for highly skewed likelihoods.
-In such cases the exact Binomial result in Appendix~\ref{app:expected_stop} should be
-preferred (the Student-$t$ variant for continuous outcomes is also provided there).
+A narrower ROPE (and with it a tighter $\omega_{\rm goal}$) increases the sample size
+required for decisiveness and raises the
+inconclusive rate near its boundaries.
+Second, the stopping properties are validated empirically only for binary (Bernoulli)
+data under a conjugate Beta prior.
+The normal approximation underpinning $N_{\rm goal}$
+(Equation~\ref{eq:pitg_stop_iteration}) may underestimate the required sample size
+in small-sample settings or for highly skewed likelihoods; in such cases the exact
+Binomial result in Appendix~\ref{app:expected_stop} should be preferred.
 Third, the present analysis uses a flat (uniform) prior throughout, as a conservative
 choice that avoids imposing unverified assumptions.
 The flat prior contributes no pseudo-observations, requiring more data to achieve
@@ -152,7 +154,8 @@ we defer a full treatment of principled prior selection to a later study.
 Fourth, while DPitG applies in principle to any posterior admitting such an interval,
 this paper does not characterise its behaviour when the HDI is estimated from MCMC
 samples.
-In such settings the HDI estimate carries Monte Carlo error that could affect stopping
+In such settings the HDI estimate carries Monte Carlo error \citep{kruschke2015doing}
+that could affect stopping
 calibration --- particularly in early data collection when the posterior is diffuse ---
 and this remains an open question for subsequent investigation.
 
