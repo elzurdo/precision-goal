@@ -1,6 +1,7 @@
 \section{HDI and ETI: Credible Interval Variants}\label{app:hdi}
 
-Given a posterior density $p(\theta \mid \mathbf{x})$, a $(1-\alpha)$ credible interval
+Given a posterior density $p(\theta \mid \mathbf{x})$, where $\theta$ is the parameter
+of interest and $\mathbf{x}$ the observed data, a $(1-\alpha)$ credible interval
 $[L, U]$ satisfies
 \begin{equation}\label{eq:credible_interval}
   \int_L^U p(\theta \mid \mathbf{x})\,d\theta = 1 - \alpha.
@@ -21,6 +22,13 @@ density'').\footnote{For multimodal posteriors, multiple intervals can satisfy t
 equal-density boundary condition, and the HDI may be a union of disjoint intervals;
 the shortest-interval definition in Equation~\ref{eq:hdi} selects the one with minimum
 total width. All posteriors in this paper are unimodal.}
+For the Binomial model used in this work, under a flat prior $\mathrm{Beta}(1,1)$, the
+posterior after $s$ successes and $f$ failures is $\mathrm{Beta}(s+1,\,f+1)$, and the
+HDI is found by minimising the interval width over the lower tail
+probability.\footnote{Specifically, minimise
+  $F^{-1}(1-\alpha+\ell)-F^{-1}(\ell)$ over $\ell\geq 0$; the minimiser $\ell^*$
+  gives $L^*=F^{-1}(\ell^*)$ and $U^*=F^{-1}(1-\alpha+\ell^*)$
+  (\texttt{HDIofICDF} in the accompanying code).}
 
 \subsection*{Equal-Tailed Interval (ETI)}
 
@@ -35,20 +43,6 @@ For symmetric, unimodal posteriors the HDI and ETI coincide; they diverge for sk
 distributions --- for instance, a Beta posterior near $\theta = 0$ or $\theta = 1$ ---
 where the HDI is noticeably shorter and therefore preferred.
 
-\subsection*{Numerical Computation}
-
-The HDI is computed numerically by minimising the interval width over the lower tail
-probability $\ell$ using unconstrained Nelder-Mead optimisation (\texttt{HDIofICDF}
-in the accompanying code, implemented via \texttt{scipy.optimize.fmin}):
-\begin{equation}
-  \min_{\ell \,\geq\, 0}\left[F^{-1}(1-\alpha+\ell) - F^{-1}(\ell)\right].
-\end{equation}
-The minimising $\ell^*$ gives $L^* = F^{-1}(\ell^*)$ and
-$U^* = F^{-1}(1-\alpha+\ell^*)$.
-For the Binomial model used in this work, under a flat (uniform) prior
-$\mathrm{Beta}(1,1)$, the posterior after $s$ successes and $f$ failures is
-$\mathrm{Beta}(s+1,\,f+1)$, and the HDI is found by applying the above minimisation
-to the Beta quantile function.
 % Prior convention note (for the author):
 % The flat prior Beta(1,1) adds one pseudo-count to both successes and failures,
 % giving posterior Beta(s+1, f+1). This is the standard Bayesian conjugate update
@@ -71,8 +65,7 @@ to the Beta quantile function.
 % (s+1, f+1) instead of (s, f). The edge-case +1 workarounds in
 % stop_decision_multiple_experiments_pitg() can then be removed.
 
-The same \texttt{HDIofICDF} function handles the continuous setting by substituting
-the Student-$t$ quantile function with location equal to the sample mean and scale
-equal to the standard error (\texttt{continuous\_hdi\_ci\_limits} in the accompanying
-code); the corresponding sample-size formula is derived in
-Appendix~\ref{app:expected_stop}.
+% NOTE: The same HDIofICDF function handles the continuous setting by substituting
+% the Student-t quantile function (location = sample mean, scale = standard error);
+% see continuous_hdi_ci_limits in the code and Appendix app:expected_stop for the
+% sample-size formula.

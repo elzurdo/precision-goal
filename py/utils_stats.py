@@ -24,6 +24,11 @@ def HDIofICDF(dist_name, ci_fraction=CI_FRACTION, **args):
     mathematically in Python.
 
     Example usage: HDIofICDF(beta, a=100, b=100)
+
+    The HDI is computed numerically by minimising the interval width over the lower tail probability ℓ using uncon-
+strained Nelder-Mead optimisation. $F^{-1}(1-\alpha+\ell)-F^{-1}(\ell)$ over $\ell\geq 0$; the minimiser $\ell^*$
+    gives $L^*=F^{-1}(\ell^*)$ and $U^*=F^{-1}(1-\alpha+\ell^*)$.
+    Credit: aloctavodia@github: https://github.com/aloctavodia/Doing_bayesian_data_analysis/blob/master/HDIofICDF.py
     """
     # freeze distribution with given arguments
     distri = dist_name(**args)
