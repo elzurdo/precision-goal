@@ -115,27 +115,21 @@ drops the $-1$ term, negligible for large $N$.
 
 \subsection*{Continuous Case}
 
-For continuous outcomes when the estimand is a mean $\mu$ with variance $\sigma^{2}$,
-two versions of the expected stop iteration are available.
-
-\textbf{Version A (CLT approximation).}
-Substituting $V(\mu)=\sigma^{2}$ (estimated by sample variance $s^2$) into
-Equation~\ref{eq:expected_stop_iteration_clt} gives
+For continuous outcomes when the estimand is a mean $\mu$ with variance
+$\sigma^{2}$, substituting $V(\mu)=\sigma^{2}$ (estimated by sample variance
+$s^{2}$) into Equation~\ref{eq:expected_stop_iteration_clt} gives the
+CLT-based expected stop iteration:
 \begin{equation}\label{eq:expected_stop_iteration_mean}
 N_{\rm goal} \approx \frac{4 z_{*}^{2}\sigma^{2}}{\omega_{\rm goal}^{2}}.
 \end{equation}
-This version is accurate for large $N$ where the Student-$t$ critical value
-approaches $z_{*}$.
-
-\textbf{Version B (Student-$t$ posterior).}
-Under a non-informative prior the posterior for $\mu$ is a scaled Student-$t$
-with $\nu = N-1$ degrees of freedom, giving HDI width
-$w = 2\,t_{\alpha/2,\,N-1}\,s/\!\sqrt{N}$.
-Setting $w = \omega_{\rm goal}$ yields the implicit equation
-\begin{equation}\label{eq:expected_stop_iteration_mean_t}
-N_{\rm goal} = \frac{4\,t_{\alpha/2,\,N-1}^{2}\,\sigma^{2}}{\omega_{\rm goal}^{2}},
-\end{equation}
-where $t_{\alpha/2,\,N-1}$ depends on $N$, so the equation must be solved
-numerically. For $N \ge 30$ the two versions are nearly identical; Version~A
-is preferred for sample-size planning.
+This approximation is accurate whenever $N \ge 30$, where the Student-$t$
+critical value approaches $z_{*}$.\footnote{%
+  For small samples ($N < 30$), the exact posterior for $\mu$ under a
+  non-informative prior is a scaled Student-$t$ with $\nu = N-1$ degrees
+  of freedom, giving HDI width $w = 2\,t_{\alpha/2,\,N-1}\,s/\!\sqrt{N}$,
+  where $\alpha = 1 - \text{CI fraction}$ (e.g.\ $\alpha = 0.05$ for
+  95\%).  Setting $w = \omega_{\rm goal}$ yields an implicit equation in
+  $N$ that must be solved numerically.  Because precision goals are seldom
+  met at such small $N$, this refinement is not recommended for
+  sample-size planning.}
 
