@@ -2,13 +2,12 @@
 
 \subsection*{Setting the ROPE}
 
-Three design inputs must be fixed before data collection: the precision goal
-$\omega_{\rm goal}$, the ROPE, and the maximum sample size $N_{\rm max}$.
-The precision goal should satisfy $\omega_{\rm goal} \leq$ ROPE width --- ensuring
-that a sufficiently narrow HDI can reach a conclusive verdict --- and directly
+Three design inputs must be fixed before data collection: the ROPE, the precision goal
+$\omega_{\rm goal}$, and the maximum sample size $N_{\rm max}$.
+The precision goal should satisfy $\omega_{\rm goal} \leq \Delta_{\rm ROPE}$ and directly
 determines the expected stop iteration $N_{\rm goal}$
 (Equation~\ref{eq:pitg_stop_iteration}); $N_{\rm max}$ is set by budget.
-The ROPE is the most consequential and subjective of the three inputs.
+Of these three subjective inputs the ROPE is the most consequential.
 It should be determined from domain knowledge rather than from the data ---
 a requirement that forces the researcher to commit to a practically meaningful
 effect-size threshold before observing outcomes \citep{kruschke2018}.
@@ -17,8 +16,8 @@ effect-size threshold before observing outcomes \citep{kruschke2018}.
 % a pre-specified practical equivalence threshold and must be justified from domain
 % knowledge rather than chosen to suit the data.
 In clinical research the Minimal Clinically Important Difference (MCID) provides a
-principled basis \citep{jaeschke1989}; in bioequivalence testing, regulatory guidelines
-define the permissible deviation corridor \citep{schuirmann1987}; in industrial quality
+principled basis \citep{jaeschke1989}; in bioequivalence testing, regulatory guidelines define the equivalence
+margin \citep{schuirmann1987}; in industrial quality
 control, engineering tolerances provide an equivalent principled basis.
 When no domain standard exists, sensitivity analyses across a range of ROPE widths
 are recommended before committing to a single value \citep{lakens2018}.
