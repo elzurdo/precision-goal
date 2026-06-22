@@ -1,0 +1,224 @@
+\section{Estimating $N_{\rm max}$}\label{app:nmax}
+
+Section~\ref{sec:expected_stop_iteration} derives $N_{\rm goal}$, the expected minimum sample
+size at which the precision condition $\omega_{\rm HDI} \le \omega_{\rm goal}$ is first met.
+This gives a principled lower bound on the data required for any precision-based stopping
+algorithm.
+For DPitG, however, $N_{\rm goal}$ is not sufficient for budget planning: the algorithm may
+continue beyond $N_{\rm goal}$ whenever the posterior has not yet settled on a decisive
+conclusion.
+Practitioners therefore need a principled upper budget $N_{\rm max}$ --- the sample size
+beyond which data collection halts regardless of decisiveness.
+
+This appendix derives analytical approximations for the percentiles of the DPitG stopping
+distribution, providing a principled basis for selecting $N_{\rm max}$.
+Under the same normal approximation used in Section~\ref{sec:expected_stop_iteration},
+we show that the $p$-th stopping percentile $N_p$ can be expressed in closed form for the
+Reject case and in near-closed form for the Accept case.
+A key finding is that the worst-case $\theta_{\rm true}$ for budget planning is not
+$\theta_{\rm true} = 0.5$ (as for $N_{\rm goal}$) but rather $\theta_{\rm true}$ near a ROPE
+boundary, where the decision may remain inconclusive regardless of how many observations are
+collected.
+
+\subsection*{Two-stage structure of DPitG stopping}
+
+DPitG requires both precision and decisiveness simultaneously.
+Because the precision condition blocks any stop before approximately $N_{\rm goal}$,
+the stopping time decomposes as
+\begin{equation}\label{eq:dpitg_stopping_time}
+    T_{\rm DPitG} \;=\; \min\bigl\{\,N \ge N_{\rm goal} : \text{Decision is conclusive}\,\bigr\}.
+\end{equation}
+For $N \ge N_{\rm goal}$ the HDI is sufficiently narrow, and the outstanding question is
+whether it sits entirely inside or entirely outside the ROPE.
+We approximate the cumulative distribution function (CDF) of $T_{\rm DPitG}$ by
+\begin{equation}\label{eq:dpitg_cdf_approx}
+    \Pr\bigl(T_{\rm DPitG} \le N\bigr)
+    \;\approx\; \Pr\bigl(\text{Decision conclusive at }N\bigr),
+    \qquad N \ge N_{\rm goal}.
+\end{equation}
+This \textit{sticky-decision} approximation rests on the observation that once the HDI lies
+entirely inside or entirely outside the ROPE, it tends to remain so as the posterior
+concentrates further.
+The approximation is accurate when $\theta_{\rm true}$ is not close to a ROPE boundary;
+near the boundary the HDI can oscillate between decisive and indecisive states, and the
+approximation underestimates the tail.
+We address this case separately in the final subsection.
+
+\subsection*{Probability of a conclusive decision at sample size $N$}
+
+Under the normal approximation, $\hat\theta_N \approx \mathcal{N}(\theta_{\rm true},\,V/N)$
+after $N$ observations, where $V = \theta_{\rm true}(1-\theta_{\rm true})$ for the Bernoulli
+case.
+Setting $\sigma_N = \sqrt{V/N}$, the 95\% HDI is approximately
+$\bigl[\hat\theta_N - z_*\sigma_N,\;\hat\theta_N + z_*\sigma_N\bigr]$.
+Define the normalised distances from $\theta_{\rm true}$ to each ROPE boundary:
+\begin{equation}\label{eq:normalised_distances}
+    d_R(N) \;=\; \frac{\mathrm{ROPE}_{\rm max} - \theta_{\rm true}}{\sigma_N},
+    \qquad
+    d_L(N) \;=\; \frac{\theta_{\rm true} - \mathrm{ROPE}_{\rm min}}{\sigma_N}.
+\end{equation}
+Both quantities are positive when $\theta_{\rm true}$ lies strictly inside the ROPE;
+$d_R < 0$ when $\theta_{\rm true}$ lies above the ROPE, and $d_L < 0$ when it lies below.
+Note that both scale as $\sqrt{N}$, growing without bound as data accumulate when
+$\theta_{\rm true}$ is in the interior of either region.
+
+The probabilities of each conclusive outcome are:
+
+\begin{enumerate}[label=(\alph*)]
+    \item \textit{Accept null} (applicable when $d_R > 0$ and $d_L > 0$):
+    \begin{equation}\label{eq:pr_accept}
+        \Pr(\text{Accept at }N) \;=\; \Phi\!\bigl(d_R - z_*\bigr) - \Phi\!\bigl(-d_L + z_*\bigr).
+    \end{equation}
+    \item \textit{Reject null above ROPE} (applicable when $d_R < 0$, i.e.\
+    $\theta_{\rm true} > \mathrm{ROPE}_{\rm max}$):
+    \begin{equation}\label{eq:pr_reject_above}
+        \Pr(\text{Reject at }N) \;=\; 1 - \Phi\!\bigl(d_R + z_*\bigr).
+    \end{equation}
+    \item \textit{Reject null below ROPE} (applicable when $d_L < 0$, i.e.\
+    $\theta_{\rm true} < \mathrm{ROPE}_{\rm min}$):
+    \begin{equation}\label{eq:pr_reject_below}
+        \Pr(\text{Reject at }N) \;=\; \Phi\!\bigl(d_L + z_*\bigr).
+    \end{equation}
+\end{enumerate}
+
+Here $\Phi$ denotes the standard normal CDF and $z_* \approx 1.96$ for 95\% HDI.
+Each probability increases monotonically with $N$ when $\theta_{\rm true}$ is strictly inside
+or outside the ROPE, and approaches 1 as $N \to \infty$ --- consistent with the posterior
+eventually producing a decisive verdict for any $\theta_{\rm true}$ not on the boundary.
+
+\subsection*{Percentile formulas}
+
+The $p$-th stopping percentile of DPitG is approximately
+\begin{equation}\label{eq:np_dpitg}
+    N_p \;\approx\; \max\!\bigl(N_{\rm goal},\;N_p^{\rm decision}\bigr),
+\end{equation}
+where $N_p^{\rm decision}$ is the sample size at which the conclusive-decision probability
+first reaches $p$, obtained by inverting the relevant equation above.
+When $N_p^{\rm decision} \le N_{\rm goal}$, the precision condition is the binding constraint
+and DPitG stops near $N_{\rm goal}$; when $N_p^{\rm decision} > N_{\rm goal}$, the decision
+condition dominates and more data are required.
+
+\paragraph{Reject case.}
+For $\theta_{\rm true} > \mathrm{ROPE}_{\rm max}$ (by symmetry, an analogous result holds
+for $\theta_{\rm true} < \mathrm{ROPE}_{\rm min}$), inverting Equation~\ref{eq:pr_reject_above}
+and solving for $N$ yields the closed form
+\begin{equation}\label{eq:np_reject}
+    N_p^{\rm reject}
+    \;=\;
+    \frac{\bigl(z_* + z_p\bigr)^2\,V}{\bigl(\theta_{\rm true} - \mathrm{ROPE}_{\rm max}\bigr)^2},
+\end{equation}
+where $z_p = \Phi^{-1}(p)$ is the $p$-th standard normal quantile
+(e.g., $z_{0.75} \approx 0.674$, $z_{0.95} \approx 1.645$).
+The denominator $(\theta_{\rm true} - \mathrm{ROPE}_{\rm max})^2$ encodes the signal-to-noise
+structure: the farther $\theta_{\rm true}$ lies outside the ROPE, the fewer observations are
+needed to render the decision conclusive, and $N_p^{\rm reject}$ falls well below
+$N_{\rm goal}$ for large effect sizes.
+
+\paragraph{Accept case --- symmetric scenario.}
+When $\theta_{\rm true} = \theta_{\rm null}$ is centred in the ROPE ($d_R = d_L$),
+inverting Equation~\ref{eq:pr_accept} gives
+\begin{equation}\label{eq:np_accept}
+    N_p^{\rm accept}
+    \;=\;
+    \frac{4\bigl(z_* + z_p'\bigr)^2\,V}{\Delta_{\rm ROPE}^2},
+\end{equation}
+where $z_p' = \Phi^{-1}\!\bigl((1+p)/2\bigr)$ accounts for the two-sided nature of the
+Accept condition (e.g., $z_{0.75}' \approx 0.674$, $z_{0.95}' \approx 1.96 = z_*$).
+For general (asymmetric) $\theta_{\rm true}$ inside the ROPE, $N_p^{\rm accept}$ must be
+obtained numerically from Equation~\ref{eq:pr_accept}.
+
+\subsection*{Relationship between $N_p$ and $N_{\rm goal}$}
+
+For the symmetric Accept scenario, dividing Equation~\ref{eq:np_accept} by
+$N_{\rm goal} = 4z_*^2\,V\,/\,\omega_{\rm goal}^2$
+(Equation~\ref{eq:expected_stop_iteration_clt}) gives
+\begin{equation}\label{eq:np_ratio}
+    \frac{N_p^{\rm accept}}{N_{\rm goal}}
+    \;=\;
+    \left(1 + \frac{z_p'}{z_*}\right)^{\!2}
+    \!\left(\frac{\omega_{\rm goal}}{\Delta_{\rm ROPE}}\right)^{\!2}.
+\end{equation}
+Under the default parameters of Section~\ref{sec:experimental_design}
+($\omega_{\rm goal} = 0.8\,\Delta_{\rm ROPE}$, $z_* \approx 1.96$):
+
+\begin{enumerate}[label=(\alph*)]
+    \item $N_{50\%} \approx 1.15\,N_{\rm goal}$: the median DPitG stop is only modestly beyond
+    $N_{\rm goal}$, with the Accept condition met quickly once precision is achieved.
+    \item $N_{95\%} \approx 2.56\,N_{\rm goal}$: for the symmetric Accept scenario,
+    setting $N_{\rm max} \approx 3\,N_{\rm goal}$ provides a 95\% budget guarantee.
+    For the default setup ($N_{\rm goal} \approx 600$ at $\theta_{\rm true} = 0.5$),
+    this gives $N_{\rm max} \approx 1{,}536$, consistent with the value of $N_{\rm max} = 1{,}500$
+    used in Section~\ref{sec:experimental_design}.
+\end{enumerate}
+
+More generally, from Equation~\ref{eq:np_ratio} with $p = 95\%$ (so $z_p' = z_*$):
+\begin{equation}\label{eq:n95_general}
+    N_{95\%}^{\rm accept} = \frac{16\,z_*^2\,V}{\Delta_{\rm ROPE}^2},
+\end{equation}
+independent of $\omega_{\rm goal}$.
+The ratio $N_{95\%}^{\rm accept} / N_{\rm goal} = 4(\omega_{\rm goal}/\Delta_{\rm ROPE})^2$
+decreases as $\omega_{\rm goal}$ becomes a smaller fraction of $\Delta_{\rm ROPE}$: a more
+demanding precision goal makes it easier for the HDI to land inside the ROPE once precision
+is achieved, so $N_{95\%}$ is closer to $N_{\rm goal}$.
+
+\subsection*{The boundary case and implications for $N_{\rm max}$}
+
+A fundamental asymmetry distinguishes $N_{\rm goal}$ and $N_p^{\rm DPitG}$:
+
+\begin{enumerate}[label=(\alph*)]
+    \item $N_{\rm goal}$ is maximised at $\theta_{\rm true} = 0.5$, the point of largest
+    Bernoulli variance $V = \theta(1-\theta)$.
+    \item $N_p^{\rm decision}$ diverges as $\theta_{\rm true}$ approaches a ROPE boundary,
+    irrespective of $\omega_{\rm goal}$.
+\end{enumerate}
+
+To see why, set $\theta_{\rm true} = \mathrm{ROPE}_{\rm max}$ exactly, so $d_R = 0$.
+From Equations~\ref{eq:pr_accept}--\ref{eq:pr_reject_above}, the total probability of a
+conclusive decision satisfies
+\begin{align}
+    \Pr(\text{conclusive at }N)\big|_{d_R=0}
+    &= \underbrace{\bigl[1 - \Phi(z_*)\bigr]}_{\text{Reject above}}
+     + \underbrace{\bigl[\Phi(-z_*) - \Phi(-d_L + z_*)\bigr]}_{\text{Accept}} \notag \\
+    &\;\to\; 2\bigl[1 - \Phi(z_*)\bigr] \;\approx\; 5\%
+    \quad \text{as } N \to \infty,\label{eq:boundary_conclusive}
+\end{align}
+since $d_L \to \infty$ and $\Phi(-d_L + z_*) \to 0$.
+The 5\% ceiling is not a finite-sample artefact: as $N$ grows, $\hat\theta_N$ concentrates
+around $\mathrm{ROPE}_{\rm max}$, and the HDI shrinks to straddle the boundary with
+probability $\approx 95\%$.
+The conclusive fraction ($\approx 5\%$ split equally between Accept and Reject) arises from
+the small probability that $\hat\theta_N$ wanders sufficiently far from $\theta_{\rm true}$
+in a given experiment, a probability that does not vanish with $N$ because $\sigma_N$ shrinks
+at the same rate as the excess required for decisiveness.\footnote{This 5\% figure coincides
+with the HDI credibility level in the sense that it equals $1 - \mathrm{CI}$ fraction.
+For a 94\% HDI the ceiling would be 6\%, and so on. Intuitively, a boundary $\theta_{\rm true}$
+is precisely the scenario in which the HDI has equal probability of just clearing the boundary
+on either side, and the HDI level sets how often this clearing occurs.}
+
+A practitioner who sizes $N_{\rm max}$ using $N_{\rm goal}$ alone will therefore
+underestimate the budget needed when $\theta_{\rm true}$ is near a ROPE boundary, because
+$N_{\rm goal}$ depends on $V(\theta_{\rm true})$ and is maximised at $\theta = 0.5$, whereas
+the boundary inconclusive problem is unrelated to variance and affects only values near
+$\mathrm{ROPE}_{\rm min}$ or $\mathrm{ROPE}_{\rm max}$.
+
+\subsection*{Practical guidance}
+
+\begin{enumerate}[label=(\alph*)]
+    \item \textit{When $\theta_{\rm true}$ is expected to lie clearly inside or outside the
+    ROPE}, use Equations~\ref{eq:np_reject}--\ref{eq:np_accept} to compute $N_{95\%}$ and
+    set $N_{\rm max}$ accordingly.
+    For the symmetric Accept scenario with $\omega_{\rm goal} = 0.8\,\Delta_{\rm ROPE}$,
+    the rule of thumb $N_{\rm max} \approx 3\,N_{\rm goal}$ provides a 95\% stopping
+    guarantee.
+
+    \item \textit{When $\theta_{\rm true}$ may lie near a ROPE boundary} --- signalling that
+    the prior on the effect size is genuinely uncertain --- the appropriate question shifts
+    from ``what $N_{\rm max}$ ensures 95\% stopping?'' to ``what inconclusive rate is
+    acceptable at a given $N_{\rm max}$?''
+    Equation~\ref{eq:boundary_conclusive} shows that near the boundary, the inconclusive rate
+    is approximately $95\%$ regardless of $N_{\rm max}$.
+    In such settings, $N_{\rm max}$ is a policy choice informed by the cost of
+    an inconclusive outcome, not a statistical one.
+    Reconsidering the ROPE width or the precision goal $\omega_{\rm goal}$ may be more
+    productive than simply increasing the budget.
+\end{enumerate}
