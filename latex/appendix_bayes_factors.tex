@@ -38,9 +38,20 @@ or the budget $N_{\rm max}$ is exhausted.
 
 \subsection*{Sequential Behaviour}
 
-\citet{kruschke2015doing} evaluates the operating characteristics of BF stopping
-sequentially across 1{,}000 simulated sequences of up to $N_{\rm max}=1{,}500$ flips,
-comparing it against NHST, the HDI+ROPE algorithm, and PitG (his Figures~13.6 and~13.7).
+Unlike frequentist $p$-values, BF stopping is valid under optional stopping: because
+the Bayes Factor depends only on the observed data and the assumed model---not on the
+sampling intention or the number of interim looks---sequential monitoring does not
+inflate it \citep{rouder2014}.
+% \citet{rouder2014}: The standard reference for the claim that Bayes Factors are not
+% inflated by sequential monitoring, since they satisfy the likelihood principle.
+% Naming this property here pre-empts the BF community's primary argument before
+% showing that practical operating characteristics still fall short.
+The question is therefore not whether BF stopping is theoretically principled, but
+whether it achieves adequate operating characteristics in practice.
+
+\citet{kruschke2015doing} evaluates those characteristics across $M=1{,}000$ simulated
+sequences of up to $N_{\rm max}=1{,}500$ flips, comparing BF stopping against NHST,
+the HDI+ROPE algorithm, and PitG (his Figures~13.6 and~13.7).
 The main findings relevant to this paper are as follows.
 
 \subsubsection*{When the null is true ($\theta_{\rm true}=\theta_{\rm null}=0.5$)}
@@ -48,26 +59,26 @@ The main findings relevant to this paper are as follows.
 This is the setting shown in Kruschke's Figure~13.6 (for which
 Figure~\ref{fig:fair_decisions} of this paper is analogous).
 The BF stopping rule converges to an asymptotic false rejection rate
-(referred to by \citeauthor{kruschke2015doing} as the \textit{false alarm rate})
+(i.e, the \textit{false alarm rate})
 of just over 20\%---lower than NHST, which diverges to 100\%, but substantially higher
 than PitG, which maintains a 0\% false rejection rate \citep{kruschke2015doing}.
 As demonstrated in this paper, DPitG also achieves a 0\% false rejection rate.
 The BF correctly accepts the null for the remaining sequences, although it can do
 so on the basis of precise or imprecise data indiscriminately.
 
-\subsubsection*{When the null is false ($\theta_{\rm true}=0.65$)}
+\subsubsection*{When the null is false ($\theta_{\rm true}=0.65, \ \theta_{\rm null}=0.5$)}
 
 This setting is displayed in Kruschke's Figure~13.7 (which is captured in the middle
 panel of Figure~\ref{fig:conclusiveness_rates}).
 The BF falsely accepts the null in approximately 40\% of sequences despite the true
-parameter lying outside the ROPE, a substantially higher false acceptance rate than
-either precision-based method.
+parameter lying outside the ROPE, an alarmingly higher false acceptance rate,
+whereas the precision-based methods yield 0 false acceptances.
 
 \subsubsection*{Parameter estimation at the stopping point}
 
 Because the BF stopping rule fires on the \emph{extremeness} of the likelihood ratio
 rather than the \emph{width} of the posterior, it can accept or reject with very little
-data.  As Kruschke's lower rows illustrate, $\hat{\theta}$ at stopping is noticeably
+data.  As the three lower rows of Figures 13.6 and 13.7 of \citet{kruschke2015doing} illustrate, $\hat{\theta}$ at stopping is noticeably
 biased away from $\theta_{\rm true}$ in both the accept and the reject case---more so
 than the HDI+ROPE algorithm, and substantially more than PitG.  This is the fundamental problem
 identified in \citet{kruschke2015doing}: a stopping rule based on extremeness in the data
@@ -81,11 +92,12 @@ Three structural limitations follow from the BF's definition.
 \subsubsection*{No effect-size criterion}
 
 $\mathrm{BF}_{01}$ compares the point null $\theta = \theta_{\rm null}$ against the
-prior-averaged alternative.  It carries no information about whether the true parameter
-is \emph{practically} different from the null---a parameter value just outside the ROPE
-is treated identically to one that is far from it.  The HDI+ROPE framework addresses
-this explicitly by requiring the HDI to fall cleanly inside or outside the ROPE before
-a verdict is issued.
+prior-averaged alternative.  While the alternative prior implicitly encodes a distribution
+over effect sizes, the BF provides no explicit mechanism to require the posterior to fall
+cleanly inside or outside a practically meaningful interval---a parameter value just
+outside the ROPE is treated identically to one that is far from it.  The HDI+ROPE
+decision framework addresses this explicitly by requiring the HDI to fall cleanly inside
+or outside the ROPE before a verdict is issued.
 
 \subsubsection*{Sensitivity to the alternative prior}
 
@@ -103,8 +115,8 @@ the HDI width to fall below $\omega_{\rm goal}$ before any verdict is issued, pr
 a structural guarantee that accepted or rejected conclusions rest on adequately precise
 estimates.
 
-These limitations notwithstanding, BF stopping and the HDI+ROPE framework are not mutually exclusive.
+These limitations notwithstanding, BF stopping and HDI+ROPE are not mutually exclusive.
 As noted in Section~\ref{sec:discussion}, a design requiring both a conclusive
-HDI+ROPE framework verdict \textit{and} a minimum Bayes Factor is a natural extension of DPitG,
+HDI+ROPE verdict \textit{and} a minimum Bayes Factor is a natural extension of DPitG,
 combining the precision guarantee of the latter with the evidential strength measure
 of the former.

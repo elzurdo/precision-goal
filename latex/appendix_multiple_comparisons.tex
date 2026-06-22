@@ -2,19 +2,21 @@
 
 \subsection*{Multiple Comparisons}
 
-A practical advantage of the HDI+ROPE framework over frequentist approaches concerns
+A practical advantage of the HDI+ROPE decision framework over frequentist approaches concerns
 multiple comparisons. In NHST, conducting several tests simultaneously inflates the
-Type~I error rate, requiring corrections (e.g.\ Bonferroni) that reduce the power of
+false-positive error rate (Type~I), requiring corrections (e.g.\ Bonferroni) that reduce the power of
 each individual test. Frequentist confidence intervals used for simultaneous inference inherit the same
 dependence on the full set of intended comparisons, since their simultaneous coverage
 properties are tied to p-values. Consequently, both power and precision planning must account for the number
 of planned tests.
 
 The Bayesian posterior is not affected in this way. Because the posterior distribution
-is determined solely by the observed data and the assumed data-generating process ---
-not by the set of tests that were intended but not performed --- the power of any one
-test is unaffected by how many other comparisons are planned, provided each test uses
-an independent model \citep{gelman2012, kruschke2015doing}.
+is determined solely by the observed data and the assumed data-generating process, it
+is unaffected by how many other comparisons were planned --- unlike frequentist
+p-values, which depend on the full set of intended tests even when some are never
+conducted \citep{gelman2012, kruschke2015doing}.
+The power of any one test is therefore unaffected by how many other comparisons are
+planned, provided each test uses an independent model.
 An independent model means each comparison is fitted separately, without shared
 parameters or a common prior; when tests are connected through a hierarchical model,
 posteriors are linked across comparisons and the independence no longer holds
